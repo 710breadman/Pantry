@@ -66,7 +66,7 @@ Plainly: the app should be boringly reliable before it becomes broad.
 | --- | --- |
 | Dry run | Review plan changes no system state. |
 | Dependencies | Dependencies are ordered before dependents. Current tests cover required dependency inclusion, dependency ordering, and cycle handling. |
-| Conflicts | Known conflicts are shown before execution. |
+| Conflicts | Known conflicts are shown before execution. Current tests cover symmetric warnings when selected apps conflict. |
 | Failure isolation | Failed app does not block unrelated app. |
 | Retry | Failed job can retry without duplicating completed work. |
 | Cancellation | Cancelled queue records final states. |

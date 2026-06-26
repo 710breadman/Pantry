@@ -20,12 +20,19 @@ public sealed class DryRunPlanner
                 recipe => IsSelected(recipe.Id, profileSelections, request.SelectionOverrides),
                 StringComparer.OrdinalIgnoreCase);
         var requiredBy = FindRequiredDependencies(recipesById, explicitlySelected);
+        var effectivelySelected = request.Catalog.Recipes
+            .ToDictionary(
+                recipe => recipe.Id,
+                recipe => explicitlySelected[recipe.Id] || requiredBy.ContainsKey(recipe.Id),
+                StringComparer.OrdinalIgnoreCase);
+        var activeConflicts = FindActiveConflicts(recipesById, effectivelySelected);
 
         var items = OrderByDependencies(request.Catalog.Recipes, recipesById)
             .Select(recipe => CreateItem(
                 recipe,
                 explicitlySelected[recipe.Id],
                 requiredBy.TryGetValue(recipe.Id, out var dependents) ? dependents : [],
+                activeConflicts.TryGetValue(recipe.Id, out var conflicts) ? conflicts : [],
                 request))
             .ToArray();
 
@@ -43,6 +50,7 @@ public sealed class DryRunPlanner
         Recipe recipe,
         bool explicitlySelected,
         IReadOnlyList<string> requiredBy,
+        IReadOnlyList<string> activeConflicts,
         DryRunPlanRequest request)
     {
         var selected = explicitlySelected || requiredBy.Count > 0;
@@ -66,6 +74,10 @@ public sealed class DryRunPlanner
             DetectionConfidence = detection.Confidence,
             DetectionSummary = detection.Summary,
             Dependencies = recipe.Dependencies,
+            Conflicts = activeConflicts,
+            ConflictSummary = activeConflicts.Count == 0
+                ? "None"
+                : $"Conflicts with selected app(s): {string.Join(", ", activeConflicts)}",
             PortableDestination = recipe.Catalog.IsPortable
                 ? request.PortableDestination ?? recipe.PortableDestinationHint
                 : null,
@@ -177,6 +189,50 @@ public sealed class DryRunPlanner
                 dependents.Add(rootSelectedAppId);
                 MarkDependencies(dependencyId, rootSelectedAppId);
             }
+        }
+    }
+
+    private static IReadOnlyDictionary<string, IReadOnlyList<string>> FindActiveConflicts(
+        IReadOnlyDictionary<string, Recipe> recipesById,
+        IReadOnlyDictionary<string, bool> effectivelySelected)
+    {
+        var conflictsByApp = new Dictionary<string, SortedSet<string>>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var recipe in recipesById.Values)
+        {
+            if (!effectivelySelected.TryGetValue(recipe.Id, out var recipeSelected) || !recipeSelected)
+            {
+                continue;
+            }
+
+            foreach (var conflictId in recipe.Conflicts)
+            {
+                if (!recipesById.TryGetValue(conflictId, out var conflictRecipe) ||
+                    !effectivelySelected.TryGetValue(conflictId, out var conflictSelected) ||
+                    !conflictSelected)
+                {
+                    continue;
+                }
+
+                AddConflict(recipe.Id, conflictRecipe.Catalog.Name);
+                AddConflict(conflictId, recipe.Catalog.Name);
+            }
+        }
+
+        return conflictsByApp.ToDictionary(
+            item => item.Key,
+            item => (IReadOnlyList<string>)item.Value.ToArray(),
+            StringComparer.OrdinalIgnoreCase);
+
+        void AddConflict(string appId, string conflictName)
+        {
+            if (!conflictsByApp.TryGetValue(appId, out var conflicts))
+            {
+                conflicts = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
+                conflictsByApp[appId] = conflicts;
+            }
+
+            conflicts.Add(conflictName);
         }
     }
 

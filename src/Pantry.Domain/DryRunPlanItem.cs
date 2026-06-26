@@ -24,6 +24,10 @@ public sealed record DryRunPlanItem
 
     public required IReadOnlyList<string> Dependencies { get; init; }
 
+    public required IReadOnlyList<string> Conflicts { get; init; }
+
+    public required string ConflictSummary { get; init; }
+
     public string? PortableDestination { get; init; }
 
     public required string Reason { get; init; }

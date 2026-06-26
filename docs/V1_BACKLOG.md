@@ -53,9 +53,9 @@ This backlog is ordered to prove safety and correctness before catalog size.
 | Item | Priority | Acceptance |
 | --- | --- | --- |
 | Dry-run queue planner | Done | App creates dependency-aware install/update/skip plan without changing system. |
-| Review screen | Done | User sees app, action, provider, scope, trust, admin need, dependencies, and portable destination. |
+| Review screen | Done | User sees app, action, provider, scope, trust, admin need, dependencies, conflicts, and portable destination. |
 | Dependency ordering | Done | Known dependencies are included in dry-run review and ordered before dependents. |
-| Conflict warnings | High | Known conflicts are visible before execution. |
+| Conflict warnings | Done | Known selected conflicts are visible before execution. |
 | Retry model | High | Failed jobs can be retried safely. |
 | Cancellation model | High | User can cancel without corrupting queue state. |
 | Failure isolation | High | One failed app does not stop unrelated jobs. |
@@ -132,4 +132,4 @@ The first feature should:
 - run detection in dry-run mode only if available: done for Winget list, uninstall registry reads, configured file paths, portable folder checks, and Pantry run-mode detection
 - write logs: done for simple operation logs and recent log display
 
-Next useful slice: conflict-aware dry-run review.
+Next useful slice: dependency injection composition root.

@@ -28,6 +28,7 @@ This document records product and engineering decisions so the project does not 
 | D-018 | Keep the first slice read-only. | The app should prove catalog/profile/review behavior before touching installs or admin work. |
 | D-019 | Portable mode is activated by a `pantry.portable` marker beside the app. | A marker is clearer and safer than guessing from drive type or folder name. |
 | D-020 | Known dependencies are auto-included in the dry-run review. | If a selected app needs another known app, the review must show that dependency before any real queue work exists. |
+| D-021 | Known selected conflicts are shown symmetrically in the dry-run review. | If A says it conflicts with B, both A and B should visibly warn the user when both are selected. |
 
 ## Proposed Technical Defaults
 

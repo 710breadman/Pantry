@@ -132,6 +132,45 @@ public sealed class DryRunPlannerTests
         Assert.Single(plan.Items, item => item.AppId == "beta");
     }
 
+    [Fact]
+    public async Task Selected_conflicts_are_reported_on_both_review_items()
+    {
+        var catalog = TestCatalog(
+        [
+            TestRecipe("alpha", "Alpha", conflicts: ["beta"]),
+            TestRecipe("beta", "Beta")
+        ],
+        [
+            new Selection
+            {
+                AppId = "alpha",
+                Preselected = true,
+                Reason = "First selected app."
+            },
+            new Selection
+            {
+                AppId = "beta",
+                Preselected = true,
+                Reason = "Second selected app."
+            }
+        ]);
+        var planner = new DryRunPlanner();
+
+        var plan = await planner.CreatePlanAsync(new DryRunPlanRequest
+        {
+            Catalog = catalog,
+            Profile = catalog.GetProfile("test-profile")
+        });
+
+        var alpha = Assert.Single(plan.Items, item => item.AppId == "alpha");
+        var beta = Assert.Single(plan.Items, item => item.AppId == "beta");
+
+        Assert.Contains("Beta", alpha.Conflicts);
+        Assert.Contains("Alpha", beta.Conflicts);
+        Assert.Contains("Conflicts with selected app", alpha.ConflictSummary);
+        Assert.Contains("Conflicts with selected app", beta.ConflictSummary);
+    }
+
     private static Task<CatalogSnapshot> LoadCatalogAsync()
     {
         var loader = new BundledCatalogLoader(new RecipeValidator());
@@ -172,7 +211,8 @@ public sealed class DryRunPlannerTests
     private static Recipe TestRecipe(
         string appId,
         string name,
-        IReadOnlyList<string>? dependencies = null)
+        IReadOnlyList<string>? dependencies = null,
+        IReadOnlyList<string>? conflicts = null)
     {
         return new Recipe
         {
@@ -196,7 +236,7 @@ public sealed class DryRunPlannerTests
             ScopePreference = MachineScopePreference.Preferred,
             AdministratorRequirement = AdministratorRequirement.Required,
             Dependencies = dependencies ?? [],
-            Conflicts = [],
+            Conflicts = conflicts ?? [],
             ExpectedExitCodes = [0],
             RebootBehavior = "No automatic reboot.",
             Detection = new DetectionRecipe

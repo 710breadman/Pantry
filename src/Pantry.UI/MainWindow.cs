@@ -354,6 +354,7 @@ public sealed class MainWindow : Window
             panel.Children.Add(new TextBlock { Text = $"Scope: {item.Scope} | Admin: {item.Admin}" });
             panel.Children.Add(new TextBlock { Text = $"Detection: {item.Detection}" });
             panel.Children.Add(new TextBlock { Text = $"Dependencies: {item.Dependencies}" });
+            panel.Children.Add(new TextBlock { Text = $"Conflicts: {item.Conflicts}" });
             panel.Children.Add(new TextBlock { Text = $"Portable destination: {item.PortableDestination}" });
             panel.Children.Add(new TextBlock
             {

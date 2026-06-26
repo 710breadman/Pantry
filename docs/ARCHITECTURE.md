@@ -61,7 +61,7 @@ Catalog service resolves Recipes
 Detection service checks current machine state with read-only checks
         |
         v
-Dry-run planner includes known dependencies and creates a review plan
+Dry-run planner includes known dependencies/conflicts and creates a review plan
         |
         v
 Review screen shows actions, scope, trust, admin needs, risks
@@ -219,8 +219,9 @@ Current dry-run behavior:
 - A known dependency of a selected app is automatically included in the review.
 - Dependencies are ordered before apps that need them.
 - Dependency cycles are handled without duplicating review items.
+- If selected apps conflict, both review items show the warning.
 
-Plainly: the planner can say "this app needs that app first" without installing anything.
+Plainly: the planner can say "this app needs that app first" and "these two do not belong together" without installing anything.
 
 The UI should explain risks in normal language and keep technical details expandable.
 
@@ -232,6 +233,7 @@ Most logic should be testable without WinUI:
 - trust decisions
 - detection merging
 - dry-run dependency planning
+- dry-run conflict warnings
 - queue planning
 - retry handling
 - failure isolation

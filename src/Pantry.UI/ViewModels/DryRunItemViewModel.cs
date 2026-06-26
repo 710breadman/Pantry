@@ -15,6 +15,7 @@ public sealed class DryRunItemViewModel
         Detection = $"{item.DetectionState} ({item.DetectionConfidence})";
         DetectionSummary = item.DetectionSummary;
         Dependencies = item.Dependencies.Count == 0 ? "None" : string.Join(", ", item.Dependencies);
+        Conflicts = item.ConflictSummary;
         PortableDestination = item.PortableDestination ?? "Not applicable";
         Reason = item.Reason;
     }
@@ -36,6 +37,8 @@ public sealed class DryRunItemViewModel
     public string DetectionSummary { get; }
 
     public string Dependencies { get; }
+
+    public string Conflicts { get; }
 
     public string PortableDestination { get; }
 
