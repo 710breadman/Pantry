@@ -8,7 +8,7 @@ Phase 1: Read-only foundation slice
 
 ## Summary
 
-The repository now contains a buildable read-only app slice. It can load the bundled catalog, validate Recipes, switch profiles, select apps, scan installed apps with read-only checks, detect its own portable/installed/unknown run mode, save latest scan results, remember profile/app choices, remember portable destination, write simple operation logs, show recent logs, show summary counts, produce a dependency/conflict-aware dry-run review plan, create and save a read-only queue plan, save review session summaries, prune old review/queue sessions, and show the saved-review count. Startup services are composed through dependency injection.
+The repository now contains a buildable read-only app slice. It can load the bundled catalog, validate Recipes, switch profiles, select apps, scan installed apps with read-only checks, detect its own portable/installed/unknown run mode, save latest scan results, remember profile/app choices, remember portable destination, write simple operation logs, show recent logs, show summary counts, produce a dependency/conflict-aware dry-run review plan, create and save a read-only queue plan, save review session summaries, prune old review/queue sessions, and show saved review/queue counts. Startup services are composed through dependency injection.
 
 The intended upstream repository is `https://github.com/710breadman/Pantry.git`. It is public and has the initial read-only slice pushed.
 
@@ -72,6 +72,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 - Added SQLite storage for queue sessions and queue jobs.
 - UI refresh now stores the read-only queue plan and shows queue job counts in the plan summary.
 - Added queue-session pruning. Default keeps latest 100 queue sessions.
+- Summary band now shows saved review and queue counts together.
 - Added a status summary band for catalog, selection, plan, detection counts, and run mode.
 - Added SQLite initialization with Windows SQLite provider.
 - Added operation log storage.
@@ -115,7 +116,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 
 Do not begin real installation or elevation yet.
 
-Next, add a tiny queue summary count in the UI.
+Next, add explicit queue job statuses for future execution.
 
 ## Approval Needed
 
@@ -153,4 +154,4 @@ Current approved choices:
 
 ## Next Milestone
 
-Recommended next phase: show queue-session count, still with no real installs.
+Recommended next phase: explicit queue job status model, still with no real installs.

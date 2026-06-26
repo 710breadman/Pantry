@@ -96,6 +96,7 @@ The app can now:
 - create a read-only queue plan from install/update review items
 - save read-only queue session summaries and jobs locally
 - keep only the latest 100 saved queue sessions by default
+- show saved review and queue counts in the summary band
 - mark non-`VerifiedUnattended` or conflicting queue jobs as needing review
 - show install/update/skip intent, provider, trust level, scope, administrator requirement, detection state, dependencies, conflicts, and portable destination
 

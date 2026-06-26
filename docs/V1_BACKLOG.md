@@ -62,7 +62,8 @@ This backlog is ordered to prove safety and correctness before catalog size.
 | Read-only queue session model | Done | Queue project can create job plans from install/update review items without execution. |
 | Persist queue sessions | Done | Queue plans are saved before any execution feature exists. |
 | Prune old queue sessions | Done | App keeps the latest 100 queue sessions by default. |
-| Show queue-session count | Medium | Summary band shows saved queue session count. |
+| Show queue-session count | Done | Summary band shows saved review and queue session counts. |
+| Add queue job status model | High | Planned queue jobs have explicit statuses before execution exists. |
 | Retry model | High | Failed jobs can be retried safely. |
 | Cancellation model | High | User can cancel without corrupting queue state. |
 | Failure isolation | High | One failed app does not stop unrelated jobs. |
@@ -139,4 +140,4 @@ The first feature should:
 - run detection in dry-run mode only if available: done for Winget list, uninstall registry reads, configured file paths, portable folder checks, and Pantry run-mode detection
 - write logs: done for simple operation logs and recent log display
 
-Next useful slice: show queue-session count.
+Next useful slice: queue job status model.

@@ -34,7 +34,7 @@ public sealed class MainViewModel : ObservableObject
     private string _planSummary = "Plan: pending";
     private string _detectionSummary = "Detection: not scanned";
     private string _modeSummary;
-    private string _reviewSessionSummary = "Reviews: 0 saved";
+    private string _reviewSessionSummary = "Saved: 0 reviews, 0 queues";
     private string _portableDestination = @"PantryTools";
 
     public MainViewModel(
@@ -358,6 +358,7 @@ public sealed class MainViewModel : ObservableObject
     private async Task UpdateReviewSessionSummaryAsync(CancellationToken cancellationToken)
     {
         var reviewCount = await _reviewSessionStore.CountAsync(cancellationToken).ConfigureAwait(true);
-        ReviewSessionSummary = $"Reviews: {reviewCount} saved";
+        var queueCount = await _queueSessionStore.CountAsync(cancellationToken).ConfigureAwait(true);
+        ReviewSessionSummary = $"Saved: {reviewCount} reviews, {queueCount} queues";
     }
 }
