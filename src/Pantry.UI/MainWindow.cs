@@ -18,6 +18,7 @@ public sealed class MainWindow : Window
     private readonly ComboBox _profilePicker = new();
     private readonly StackPanel _catalogPanel = new();
     private readonly StackPanel _reviewPanel = new();
+    private readonly StackPanel _logsPanel = new();
     private readonly TextBlock _status = new();
     private readonly TextBox _portableDestination = new();
 
@@ -91,6 +92,7 @@ public sealed class MainWindow : Window
                 new ColumnDefinition { Width = new GridLength(280) },
                 new ColumnDefinition { Width = new GridLength(280) },
                 new ColumnDefinition { Width = GridLength.Auto },
+                new ColumnDefinition { Width = GridLength.Auto },
                 new ColumnDefinition { Width = GridLength.Auto }
             }
         };
@@ -125,13 +127,22 @@ public sealed class MainWindow : Window
         Grid.SetColumn(scanButton, 2);
         controls.Children.Add(scanButton);
 
+        var logsButton = new Button
+        {
+            Content = "Refresh logs",
+            VerticalAlignment = VerticalAlignment.Bottom
+        };
+        logsButton.Click += async (_, _) => await _viewModel.RefreshLogsAsync().ConfigureAwait(true);
+        Grid.SetColumn(logsButton, 3);
+        controls.Children.Add(logsButton);
+
         var refreshButton = new Button
         {
             Content = "Refresh review",
             VerticalAlignment = VerticalAlignment.Bottom
         };
         refreshButton.Click += async (_, _) => await _viewModel.RefreshPlanAsync().ConfigureAwait(true);
-        Grid.SetColumn(refreshButton, 3);
+        Grid.SetColumn(refreshButton, 4);
         controls.Children.Add(refreshButton);
 
         header.Children.Add(controls);
@@ -145,7 +156,8 @@ public sealed class MainWindow : Window
             ColumnDefinitions =
             {
                 new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
-                new ColumnDefinition { Width = new GridLength(1.2, GridUnitType.Star) }
+                new ColumnDefinition { Width = new GridLength(1.2, GridUnitType.Star) },
+                new ColumnDefinition { Width = new GridLength(0.9, GridUnitType.Star) }
             }
         };
 
@@ -153,6 +165,9 @@ public sealed class MainWindow : Window
         var reviewColumn = BuildReviewColumn();
         Grid.SetColumn(reviewColumn, 1);
         body.Children.Add(reviewColumn);
+        var logColumn = BuildLogColumn();
+        Grid.SetColumn(logColumn, 2);
+        body.Children.Add(logColumn);
 
         Grid.SetRow(body, 1);
         root.Children.Add(body);
@@ -191,6 +206,19 @@ public sealed class MainWindow : Window
         return scrollViewer;
     }
 
+    private FrameworkElement BuildLogColumn()
+    {
+        var scrollViewer = new ScrollViewer
+        {
+            Content = _logsPanel
+        };
+
+        _logsPanel.Spacing = 10;
+        _logsPanel.Children.Add(SectionTitle("Recent logs"));
+
+        return scrollViewer;
+    }
+
     private async Task LoadAsync()
     {
         try
@@ -201,7 +229,9 @@ public sealed class MainWindow : Window
             _portableDestination.Text = _viewModel.PortableDestination;
             RenderCatalog();
             RenderReview();
+            RenderLogs();
             _viewModel.ReviewItems.CollectionChanged += (_, _) => RenderReview();
+            _viewModel.RecentLogs.CollectionChanged += (_, _) => RenderLogs();
             _status.Text = _viewModel.Status;
         }
         catch (Exception ex)
@@ -269,6 +299,47 @@ public sealed class MainWindow : Window
             });
 
             _reviewPanel.Children.Add(panel);
+        }
+    }
+
+    private void RenderLogs()
+    {
+        _logsPanel.Children.Clear();
+        _logsPanel.Children.Add(SectionTitle("Recent logs"));
+
+        foreach (var item in _viewModel.RecentLogs)
+        {
+            var panel = new StackPanel
+            {
+                Padding = new Thickness(10),
+                Spacing = 3,
+                Background = new SolidColorBrush(Colors.White)
+            };
+
+            panel.Children.Add(new TextBlock
+            {
+                Text = $"{item.Time} | {item.Category}",
+                FontWeight = FontWeights.SemiBold,
+                FontSize = 13
+            });
+            panel.Children.Add(new TextBlock
+            {
+                Text = item.Message,
+                TextWrapping = TextWrapping.Wrap
+            });
+
+            if (!string.IsNullOrWhiteSpace(item.Details))
+            {
+                panel.Children.Add(new TextBlock
+                {
+                    Text = item.Details,
+                    TextWrapping = TextWrapping.Wrap,
+                    FontSize = 12,
+                    Foreground = new SolidColorBrush(ColorHelper.FromArgb(255, 67, 72, 80))
+                });
+            }
+
+            _logsPanel.Children.Add(panel);
         }
     }
 

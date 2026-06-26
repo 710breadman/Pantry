@@ -19,7 +19,7 @@ This backlog is ordered to prove safety and correctness before catalog size.
 | --- | --- | --- |
 | Create solution and project structure | Done | Buildable solution with separated UI/core/domain/catalog/infrastructure/test projects. |
 | Add dependency injection | Not started | Services are currently composed directly in the UI shell. |
-| Add structured logging | Not started | App can write session/job logs with correlation IDs. |
+| Add structured logging | Partial | App writes simple operation logs and shows recent logs; session/job correlation comes later. |
 | Add settings service | Done | App stores last profile, portable destination, and app choices per profile. |
 | Add SQLite persistence | Done | Database initializes and stores operation logs plus latest scan results. |
 | Add portable/installed mode detection | Not started | App can tell whether it is running from installed or portable layout. |
@@ -129,6 +129,6 @@ The first feature should:
 - produce a review plan: done
 - install nothing yet: done
 - run detection in dry-run mode only if available: done for Winget list and portable folder checks
-- write logs: done for simple operation logs
+- write logs: done for simple operation logs and recent log display
 
-Next useful slice: add a basic log viewer.
+Next useful slice: dashboard/status polish.

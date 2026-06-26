@@ -77,6 +77,7 @@ The app can now:
 - remember portable destination
 - save latest scan results locally
 - write simple operation logs locally
+- show recent operation logs in the UI
 - create a dry-run review plan
 - show install/update/skip intent, provider, trust level, scope, administrator requirement, detection state, dependencies, and portable destination
 

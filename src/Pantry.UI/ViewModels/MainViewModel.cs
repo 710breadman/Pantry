@@ -52,6 +52,8 @@ public sealed class MainViewModel : ObservableObject
 
     public ObservableCollection<DryRunItemViewModel> ReviewItems { get; } = [];
 
+    public ObservableCollection<OperationLogEntryViewModel> RecentLogs { get; } = [];
+
     public Profile? SelectedProfile
     {
         get => _selectedProfile;
@@ -107,6 +109,7 @@ public sealed class MainViewModel : ObservableObject
             ?? Profiles.FirstOrDefault();
 
         await SelectProfileAsync(selectedProfile, persistChoice: false, cancellationToken).ConfigureAwait(true);
+        await RefreshLogsAsync(cancellationToken).ConfigureAwait(true);
     }
 
     public Task SelectProfileAsync(Profile? profile, CancellationToken cancellationToken = default)
@@ -212,7 +215,19 @@ public sealed class MainViewModel : ObservableObject
             .AppendAsync("detection", $"Read-only scan complete. Known states: {knownCount}/{_detectionResults.Count}.", cancellationToken: cancellationToken)
             .ConfigureAwait(true);
 
+        await RefreshLogsAsync(cancellationToken).ConfigureAwait(true);
+
         Status = $"Read-only scan complete. {knownCount} of {_detectionResults.Count} app(s) returned known detection state.";
+    }
+
+    public async Task RefreshLogsAsync(CancellationToken cancellationToken = default)
+    {
+        var entries = await _operationLogStore.ListRecentAsync(8, cancellationToken).ConfigureAwait(true);
+        RecentLogs.Clear();
+        foreach (var entry in entries)
+        {
+            RecentLogs.Add(new OperationLogEntryViewModel(entry));
+        }
     }
 
     private async Task SaveSelectionAndRefreshAsync(

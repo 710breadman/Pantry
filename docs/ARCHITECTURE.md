@@ -189,6 +189,7 @@ V1 should use a quiet, practical desktop UI:
 - read-only installed-app scan button
 - review screen
 - portable destination field
+- recent logs column
 
 Future UI work should add:
 
