@@ -21,12 +21,11 @@
     <ProjectReference Include="..\Pantry.Catalog\Pantry.Catalog.csproj" />
     <ProjectReference Include="..\Pantry.Core\Pantry.Core.csproj" />
     <ProjectReference Include="..\Pantry.Domain\Pantry.Domain.csproj" />
+    <ProjectReference Include="..\Pantry.Detection\Pantry.Detection.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\..\catalog\bundled\**\*.*"
-             Link="catalog\bundled\%(RecursiveDir)%(Filename)%(Extension)"
-             CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\catalog\bundled\**\*.*" Link="catalog\bundled\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

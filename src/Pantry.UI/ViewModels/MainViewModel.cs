@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Pantry.Catalog;
 using Pantry.Core;
+using Pantry.Detection;
 using Pantry.Domain;
 
 namespace Pantry.UI.ViewModels;
@@ -9,15 +10,19 @@ namespace Pantry.UI.ViewModels;
 public sealed class MainViewModel : ObservableObject
 {
     private readonly BundledCatalogLoader _catalogLoader;
+    private readonly AppDetectionService _detectionService;
     private readonly DryRunPlanner _planner;
     private CatalogSnapshot? _catalog;
     private Profile? _selectedProfile;
+    private IReadOnlyDictionary<string, AppDetectionResult> _detectionResults =
+        new Dictionary<string, AppDetectionResult>(StringComparer.OrdinalIgnoreCase);
     private string _status = "Loading bundled catalog...";
     private string _portableDestination = @"PantryTools";
 
-    public MainViewModel(BundledCatalogLoader catalogLoader, DryRunPlanner planner)
+    public MainViewModel(BundledCatalogLoader catalogLoader, AppDetectionService detectionService, DryRunPlanner planner)
     {
         _catalogLoader = catalogLoader;
+        _detectionService = detectionService;
         _planner = planner;
     }
 
@@ -114,6 +119,7 @@ public sealed class MainViewModel : ObservableObject
             Catalog = _catalog,
             Profile = SelectedProfile,
             SelectionOverrides = overrides,
+            DetectionResults = _detectionResults,
             PortableDestination = string.IsNullOrWhiteSpace(PortableDestination) ? null : PortableDestination
         }, cancellationToken).ConfigureAwait(true);
 
@@ -126,5 +132,22 @@ public sealed class MainViewModel : ObservableObject
         var selectedCount = plan.Items.Count(item => item.Intent is DryRunIntent.Install or DryRunIntent.Update);
         Status = $"Loaded {_catalog.Recipes.Count} Recipes from catalog {_catalog.CatalogVersion}. {selectedCount} item(s) selected for dry-run review.";
     }
-}
 
+    public async Task ScanInstalledAppsAsync(CancellationToken cancellationToken = default)
+    {
+        if (_catalog is null)
+        {
+            return;
+        }
+
+        Status = "Scanning installed apps with read-only checks...";
+        _detectionResults = await _detectionService
+            .ScanAsync(_catalog.Recipes, PortableDestination, cancellationToken)
+            .ConfigureAwait(true);
+
+        await RefreshPlanAsync(cancellationToken).ConfigureAwait(true);
+
+        var knownCount = _detectionResults.Count(result => result.Value.State != DetectedAppState.Unknown);
+        Status = $"Read-only scan complete. {knownCount} of {_detectionResults.Count} app(s) returned known detection state.";
+    }
+}

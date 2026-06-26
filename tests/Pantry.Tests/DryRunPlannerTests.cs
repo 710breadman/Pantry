@@ -37,9 +37,9 @@ public sealed class DryRunPlannerTests
         {
             Catalog = catalog,
             Profile = catalog.GetProfile("gaming-setup"),
-            DetectedStates = new Dictionary<string, DetectedAppState>(StringComparer.OrdinalIgnoreCase)
+            DetectionResults = new Dictionary<string, AppDetectionResult>(StringComparer.OrdinalIgnoreCase)
             {
-                ["7zip"] = DetectedAppState.UpdateAvailable
+                ["7zip"] = Detection("7zip", DetectedAppState.UpdateAvailable)
             }
         });
 
@@ -73,5 +73,16 @@ public sealed class DryRunPlannerTests
         var loader = new BundledCatalogLoader(new RecipeValidator());
         return loader.LoadAsync(CatalogTestPaths.BundledCatalogRoot());
     }
-}
 
+    private static AppDetectionResult Detection(string appId, DetectedAppState state)
+    {
+        return new AppDetectionResult
+        {
+            AppId = appId,
+            State = state,
+            Confidence = DetectionConfidence.High,
+            Evidence = [],
+            Summary = "Test detection result."
+        };
+    }
+}

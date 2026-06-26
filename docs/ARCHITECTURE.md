@@ -16,15 +16,16 @@ src/
   Pantry.UI/
   Pantry.Core/
   Pantry.Domain/
-  Pantry.Infrastructure/
   Pantry.Catalog/
+  Pantry.Detection/
+  Pantry.Infrastructure/
 tests/
   Pantry.Tests/
 catalog/
   bundled/
 ```
 
-More projects such as `Pantry.Providers`, `Pantry.Detection`, `Pantry.Queue`, `Pantry.Elevation`, `Pantry.Portable`, and `Pantry.Logging` should be added when those features begin.
+More projects such as `Pantry.Providers`, `Pantry.Queue`, `Pantry.Elevation`, `Pantry.Portable`, and `Pantry.Logging` should be added when those features begin.
 
 ## Module Responsibilities
 
@@ -35,8 +36,9 @@ More projects such as `Pantry.Providers`, `Pantry.Detection`, `Pantry.Queue`, `P
 | `Pantry.Domain` | Core types such as Recipe, app identity, trust level, install action, detection result, queue job, and provider result. |
 | `Pantry.Infrastructure` | Future file system, settings, SQLite access, HTTP download support, clocks, and platform adapters. |
 | `Pantry.Catalog` | Load bundled catalog and validate Recipe schema. Later it will apply local overrides and handle signed catalog updates. |
+| `Pantry.Detection` | Runs read-only detection. Current checks are Winget list parsing and portable folder existence. |
 | Future `Pantry.Providers` | Provider implementations such as Winget, MSI, EXE, Microsoft Store, GitHub release, and portable archive. |
-| Future `Pantry.Detection` | Detect installed apps using Winget, registry, AppX, files, services, portable folders, and Pantry history. |
+| Future richer detection | Registry, AppX, file versions, services, portable managed folders, and Pantry history. |
 | Future `Pantry.Queue` | Plan executable jobs, order dependencies, handle retries, cancellation, failure isolation, and final job states. |
 | Future `Pantry.Elevation` | Broker communication with the elevated helper and validate privileged job requests. |
 | Future `Pantry.Portable` | Portable mode detection, portable destination choices, managed folders, and portable tool deployment. |
@@ -53,7 +55,7 @@ User chooses profile/apps
 Catalog service resolves Recipes
         |
         v
-Detection service checks current machine state
+Detection service checks current machine state with read-only checks
         |
         v
 Dry-run planner creates a review plan
@@ -169,7 +171,9 @@ Providers should return structured results:
 
 The first provider should be Winget because it gives us a known integration point for a small first slice. MSI, official EXE, Microsoft Store, GitHub release, portable archive, and manual official providers can follow.
 
-The current slice does not execute Winget. It only records Winget as the preferred provider in dry-run output.
+The first real provider should be Winget because it gives us a known integration point. MSI, official EXE, Microsoft Store, GitHub release, portable archive, and manual official providers can follow.
+
+The current detection slice executes `winget list` for Winget-backed Recipes. It does not run `winget install`, `winget upgrade`, or `winget uninstall`.
 
 ## UI Shape
 
@@ -177,6 +181,7 @@ V1 should use a quiet, practical desktop UI:
 
 - profile selection
 - basic catalog list
+- read-only installed-app scan button
 - review screen
 - portable destination field
 

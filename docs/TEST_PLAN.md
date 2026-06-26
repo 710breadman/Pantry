@@ -53,11 +53,12 @@ Plainly: the app should be boringly reliable before it becomes broad.
 
 | Area | Test |
 | --- | --- |
-| Winget detection | Known package returns installed/update/not-installed evidence. |
+| Winget detection | Known package returns installed/update/not-installed evidence. Current tests cover parser behavior and safe `winget list` command construction. |
 | Registry detection | Uninstall registry keys are parsed correctly. |
 | File detection | Executable path and version rules work. |
 | Evidence merge | Conflicting evidence produces `Unknown` or lower confidence, not false `NotInstalled`. |
 | Installed newer | Newer installed app is not downgraded silently. |
+| Portable folder detection | Existing folder returns installed/current; missing folder returns not installed. |
 
 ## Phase 4 Queue Tests
 
@@ -144,4 +145,3 @@ Do not say a feature is tested unless the exact test was run.
 Do not treat a successful installer exit code as a passing install test unless detection confirms the app afterward.
 
 Do not weaken a test to make the build pass.
-

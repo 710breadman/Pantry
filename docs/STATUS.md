@@ -8,11 +8,11 @@ Phase 1: Read-only foundation slice
 
 ## Summary
 
-The repository now contains a buildable read-only app slice. It can load the bundled catalog, validate Recipes, switch profiles, select apps, and produce a dry-run review plan.
+The repository now contains a buildable read-only app slice. It can load the bundled catalog, validate Recipes, switch profiles, select apps, scan installed apps with read-only checks, and produce a dry-run review plan.
 
-The intended upstream repository is `https://github.com/710breadman/Pantry.git`. It is public and currently empty.
+The intended upstream repository is `https://github.com/710breadman/Pantry.git`. It is public and has the initial read-only slice pushed.
 
-It does not install, update, uninstall, elevate, or detect installed apps yet.
+It does not install, update, uninstall, elevate, or change installed apps.
 
 ## Completed
 
@@ -22,7 +22,7 @@ It does not install, update, uninstall, elevate, or detect installed apps yet.
 - Initialized this folder as a Git repository.
 - Added `origin` remote for `https://github.com/710breadman/Pantry.git`.
 - Added `.gitignore`.
-- Could not create the first commit because local Git identity is not configured.
+- Created and pushed the first commit.
 - Confirmed the intended GitHub repository: `710breadman/Pantry`.
 - Created Phase 0 documentation:
   - `docs/CURRENT_STATE.md`
@@ -38,6 +38,7 @@ It does not install, update, uninstall, elevate, or detect installed apps yet.
   - `src/Pantry.Domain`
   - `src/Pantry.Catalog`
   - `src/Pantry.Core`
+  - `src/Pantry.Detection`
   - `src/Pantry.Infrastructure`
   - `tests/Pantry.Tests`
 - Added JSON Recipe schema validation.
@@ -47,14 +48,18 @@ It does not install, update, uninstall, elevate, or detect installed apps yet.
   - Living-Room Media PC
   - Repair Toolkit — Safe
 - Added a basic WinUI shell for profile selection, app selection, and dry-run review.
+- Added read-only Winget detection using `winget list`.
+- Added read-only portable folder detection.
+- Fed detection state into the dry-run plan and UI.
 - Added xUnit tests for Recipe validation, catalog loading, profile defaults, and dry-run planning.
+- Added xUnit tests for Winget output parsing, Winget command safety, and portable folder detection.
 - Built the full solution successfully.
 - Ran all tests successfully.
 
 ## Not Started
 
 - SQLite database initialization and persistence.
-- Detection engine.
+- Rich detection engine beyond Winget list and portable folder checks.
 - Real queue execution.
 - Elevated helper.
 - Providers.
@@ -65,7 +70,7 @@ It does not install, update, uninstall, elevate, or detect installed apps yet.
 
 Do not begin real installation or elevation yet.
 
-Next, add read-only installed-app detection. That means the app can compare selected Recipes to the current machine and mark items as install, update, skip, or unknown without changing the PC.
+Next, add safe local state and logs. That means the app can remember scans/reviews and write plain operation records without executing installers.
 
 ## Approval Needed
 
@@ -92,16 +97,8 @@ Current approved choices:
 | Catalog update could be tampered with | Require signed catalog updates and atomic rollback. |
 | User may see too much technical detail | Keep UI plain by default and make details expandable. |
 | Recipes are still `Experimental` | Do not execute them until real provider tests prove safe behavior. |
+| Winget output format may vary | Parser is covered by tests, but more real-machine samples are needed. |
 
 ## Next Milestone
 
-Recommended next phase: Phase 2A, read-only detection.
-
-Before the first commit, set local Git identity for this repo only:
-
-```powershell
-git config --local user.name "Your Name"
-git config --local user.email "you@example.com"
-git add .
-git commit -m "Initial Pantry read-only slice"
-```
+Recommended next phase: Phase 2B, local state and logs.

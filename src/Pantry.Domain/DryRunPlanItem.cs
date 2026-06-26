@@ -16,10 +16,15 @@ public sealed record DryRunPlanItem
 
     public required AdministratorRequirement AdministratorRequirement { get; init; }
 
+    public required DetectedAppState DetectionState { get; init; }
+
+    public required DetectionConfidence DetectionConfidence { get; init; }
+
+    public required string DetectionSummary { get; init; }
+
     public required IReadOnlyList<string> Dependencies { get; init; }
 
     public string? PortableDestination { get; init; }
 
     public required string Reason { get; init; }
 }
-

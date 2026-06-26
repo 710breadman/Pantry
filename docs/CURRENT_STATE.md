@@ -8,12 +8,12 @@ The repository has a first read-only Phase 1 slice.
 
 | Area | Current state |
 | --- | --- |
-| Source code | Read-only WinUI shell plus separated domain, catalog, core, and infrastructure projects |
-| Tests | xUnit tests for Recipe validation, catalog loading, profile defaults, and dry-run planning |
+| Source code | Read-only WinUI shell plus separated domain, catalog, core, detection, and infrastructure projects |
+| Tests | xUnit tests for Recipe validation, catalog loading, profile defaults, dry-run planning, and read-only detection |
 | Build system | `.NET 10` solution file: `ThePantry.slnx` |
 | Git repository | Initialized locally; `origin` points to `https://github.com/710breadman/Pantry.git` |
 | Intended upstream | `https://github.com/710breadman/Pantry.git` |
-| Upstream state | Public GitHub repository, currently empty |
+| Upstream state | Public GitHub repository with the initial read-only slice pushed |
 | Existing docs | `AGENTS.md`, `docs/PRODUCT_SPEC.md` |
 | Phase | Phase 1: read-only foundation slice |
 
@@ -27,6 +27,7 @@ The repository has a first read-only Phase 1 slice.
 - `src/Pantry.Domain` contains the shared models.
 - `src/Pantry.Catalog` loads and validates bundled JSON Recipes.
 - `src/Pantry.Core` creates the dry-run review plan.
+- `src/Pantry.Detection` runs read-only installed-app checks.
 - `src/Pantry.Infrastructure` has the first SQLite dependency boundary, but no database persistence yet.
 - `tests/Pantry.Tests` covers the read-only foundation behavior.
 - `catalog/bundled` contains the JSON Schema, five approved Recipe files, and three profiles.
@@ -70,10 +71,11 @@ The app can now:
 - show the catalog in a basic WinUI interface
 - switch profiles
 - select and deselect apps
+- scan installed apps with read-only checks
 - create a dry-run review plan
-- show install/update/skip intent, provider, trust level, scope, administrator requirement, dependencies, and portable destination
+- show install/update/skip intent, provider, trust level, scope, administrator requirement, detection state, dependencies, and portable destination
 
-The app still cannot install, update, uninstall, elevate, or detect installed software.
+The app still cannot install, update, uninstall, elevate, or change installed software.
 
 ## Conflicts Or Gaps Found
 
@@ -86,15 +88,16 @@ The app still cannot install, update, uninstall, elevate, or detect installed so
 | Recipe format | Approved as JSON. | Continue JSON plus schema validation. |
 | SQLite library | `Microsoft.Data.Sqlite.Core` is referenced to establish the boundary without the vulnerable native bundle from `Microsoft.Data.Sqlite`. | Add actual database initialization in a later persistence slice. |
 | IPC mechanism | Strict IPC required but mechanism not chosen. | Start with a named pipe protocol between UI/core and elevated helper. Keep messages structured and validated. |
-| Installer providers | Many providers listed. | Start with Winget only for the first working path, then add MSI/EXE after the safety model is proven. |
-| Git identity | Local Git user name/email are not configured. | Commit was not created. Set local identity before the first commit. |
+| Installer providers | Many providers listed. | Start with Winget only after detection is stable; real installs are still blocked. |
+| Git status | Local Git repository tracks `origin/main`. | Commit and push after each safe slice. |
 
 ## Current Readiness
 
 The repository is ready for review of the read-only Phase 1 slice.
 
 - Build passed with 0 warnings and 0 errors.
-- Tests passed: 7 total, 0 failed.
+- Tests passed: 14 total, 0 failed.
 - Malformed Recipes are rejected by test.
 - UI scan found no installer/elevation execution logic.
-- Real install, update, uninstall, detection, elevation, logging, and SQLite persistence are not implemented yet.
+- Detection is read-only and limited to `winget list` plus portable folder existence checks.
+- Real install, update, uninstall, elevation, logging, and SQLite persistence are not implemented yet.

@@ -11,9 +11,8 @@ public sealed record DryRunPlanRequest
     public IReadOnlyDictionary<string, AppSelectionState> SelectionOverrides { get; init; }
         = new Dictionary<string, AppSelectionState>(StringComparer.OrdinalIgnoreCase);
 
-    public IReadOnlyDictionary<string, DetectedAppState> DetectedStates { get; init; }
-        = new Dictionary<string, DetectedAppState>(StringComparer.OrdinalIgnoreCase);
+    public IReadOnlyDictionary<string, AppDetectionResult> DetectionResults { get; init; }
+        = new Dictionary<string, AppDetectionResult>(StringComparer.OrdinalIgnoreCase);
 
     public string? PortableDestination { get; init; }
 }
-

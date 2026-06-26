@@ -33,12 +33,12 @@ public sealed class DryRunPlanner
         DryRunPlanRequest request)
     {
         var selected = IsSelected(recipe.Id, profileSelections, request.SelectionOverrides);
-        var detectedState = request.DetectedStates.TryGetValue(recipe.Id, out var state)
-            ? state
-            : DetectedAppState.NotInstalled;
+        var detection = request.DetectionResults.TryGetValue(recipe.Id, out var result)
+            ? result
+            : NotScanned(recipe.Id);
 
-        var intent = ResolveIntent(selected, detectedState);
-        var reason = ResolveReason(selected, detectedState);
+        var intent = ResolveIntent(selected, detection.State);
+        var reason = ResolveReason(selected, detection);
 
         return new DryRunPlanItem
         {
@@ -49,6 +49,9 @@ public sealed class DryRunPlanner
             TrustLevel = recipe.TrustLevel,
             ScopePreference = recipe.ScopePreference,
             AdministratorRequirement = recipe.AdministratorRequirement,
+            DetectionState = detection.State,
+            DetectionConfidence = detection.Confidence,
+            DetectionSummary = detection.Summary,
             Dependencies = recipe.Dependencies,
             PortableDestination = recipe.Catalog.IsPortable
                 ? request.PortableDestination ?? recipe.PortableDestinationHint
@@ -85,19 +88,31 @@ public sealed class DryRunPlanner
         };
     }
 
-    private static string ResolveReason(bool selected, DetectedAppState detectedState)
+    private static string ResolveReason(bool selected, AppDetectionResult detection)
     {
         if (!selected)
         {
             return "Not selected for this review.";
         }
 
-        return detectedState switch
+        return detection.State switch
         {
-            DetectedAppState.InstalledCurrent => "Already current according to supplied detection state.",
-            DetectedAppState.UpdateAvailable => "Selected and an update is available according to supplied detection state.",
-            _ => "Selected and not known to be installed in this read-only slice."
+            DetectedAppState.InstalledCurrent => "Already current according to read-only detection.",
+            DetectedAppState.UpdateAvailable => "Selected and an update is available according to read-only detection.",
+            DetectedAppState.NotInstalled => "Selected and not found by read-only detection.",
+            _ => $"Selected, but detection is unknown: {detection.Summary}"
+        };
+    }
+
+    private static AppDetectionResult NotScanned(string appId)
+    {
+        return new AppDetectionResult
+        {
+            AppId = appId,
+            State = DetectedAppState.Unknown,
+            Confidence = DetectionConfidence.Unknown,
+            Evidence = [],
+            Summary = "Detection has not been run."
         };
     }
 }
-

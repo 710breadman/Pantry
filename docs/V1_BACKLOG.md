@@ -41,10 +41,11 @@ This backlog is ordered to prove safety and correctness before catalog size.
 
 | Item | Priority | Acceptance |
 | --- | --- | --- |
-| Winget detection | High | Known Winget apps can be detected with evidence. |
+| Winget detection | Done | Known Winget apps can be detected with evidence from `winget list`. |
 | Registry detection | High | Installed desktop apps can be detected from uninstall registry keys. |
 | File/version detection | Medium | Recipe can check known executable paths and versions. |
-| Detection confidence model | High | Results include state, confidence, and evidence. |
+| Detection confidence model | Done | Results include state, confidence, and evidence. |
+| Portable folder detection | Done | Portable app path can be checked without changing files. |
 | Dashboard installed state | Medium | UI shows installed/update/unknown states. |
 
 ## Phase 4: Queue And Review
@@ -127,7 +128,7 @@ The first feature should:
 - show profiles with default selections: done
 - produce a review plan: done
 - install nothing yet: done
-- run detection in dry-run mode only if available: not started
+- run detection in dry-run mode only if available: done for Winget list and portable folder checks
 - write logs: not started
 
-Next useful slice: add read-only detection and feed those detection states into the dry-run plan.
+Next useful slice: add local state and structured logs.

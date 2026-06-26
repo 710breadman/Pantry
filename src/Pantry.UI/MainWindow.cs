@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Pantry.Catalog;
 using Pantry.Core;
+using Pantry.Detection;
 using Pantry.Domain;
 using Pantry.UI.ViewModels;
 
@@ -22,7 +23,12 @@ public sealed class MainWindow : Window
     public MainWindow()
     {
         Title = "The Pantry";
-        _viewModel = new MainViewModel(new BundledCatalogLoader(new RecipeValidator()), new DryRunPlanner());
+        _viewModel = new MainViewModel(
+            new BundledCatalogLoader(new RecipeValidator()),
+            new AppDetectionService(
+                new WingetDetectionProvider(new WindowsProcessRunner()),
+                new PortableFolderDetectionProvider()),
+            new DryRunPlanner());
         Content = BuildLayout();
 
         _viewModel.PropertyChanged += (_, args) =>
@@ -77,6 +83,7 @@ public sealed class MainWindow : Window
             {
                 new ColumnDefinition { Width = new GridLength(280) },
                 new ColumnDefinition { Width = new GridLength(280) },
+                new ColumnDefinition { Width = GridLength.Auto },
                 new ColumnDefinition { Width = GridLength.Auto }
             }
         };
@@ -98,13 +105,22 @@ public sealed class MainWindow : Window
         Grid.SetColumn(_portableDestination, 1);
         controls.Children.Add(_portableDestination);
 
+        var scanButton = new Button
+        {
+            Content = "Scan installed",
+            VerticalAlignment = VerticalAlignment.Bottom
+        };
+        scanButton.Click += async (_, _) => await _viewModel.ScanInstalledAppsAsync().ConfigureAwait(true);
+        Grid.SetColumn(scanButton, 2);
+        controls.Children.Add(scanButton);
+
         var refreshButton = new Button
         {
             Content = "Refresh review",
             VerticalAlignment = VerticalAlignment.Bottom
         };
         refreshButton.Click += async (_, _) => await _viewModel.RefreshPlanAsync().ConfigureAwait(true);
-        Grid.SetColumn(refreshButton, 2);
+        Grid.SetColumn(refreshButton, 3);
         controls.Children.Add(refreshButton);
 
         header.Children.Add(controls);
@@ -224,8 +240,15 @@ public sealed class MainWindow : Window
             });
             panel.Children.Add(new TextBlock { Text = $"Provider: {item.Provider} | Trust: {item.Trust}" });
             panel.Children.Add(new TextBlock { Text = $"Scope: {item.Scope} | Admin: {item.Admin}" });
+            panel.Children.Add(new TextBlock { Text = $"Detection: {item.Detection}" });
             panel.Children.Add(new TextBlock { Text = $"Dependencies: {item.Dependencies}" });
             panel.Children.Add(new TextBlock { Text = $"Portable destination: {item.PortableDestination}" });
+            panel.Children.Add(new TextBlock
+            {
+                Text = item.DetectionSummary,
+                TextWrapping = TextWrapping.Wrap,
+                Foreground = new SolidColorBrush(ColorHelper.FromArgb(255, 67, 72, 80))
+            });
             panel.Children.Add(new TextBlock
             {
                 Text = item.Reason,
@@ -276,4 +299,3 @@ public sealed class MainWindow : Window
         };
     }
 }
-

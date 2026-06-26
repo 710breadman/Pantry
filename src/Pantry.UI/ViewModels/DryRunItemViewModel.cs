@@ -12,6 +12,8 @@ public sealed class DryRunItemViewModel
         Trust = item.TrustLevel.ToString();
         Scope = item.ScopePreference.ToString();
         Admin = item.AdministratorRequirement.ToString();
+        Detection = $"{item.DetectionState} ({item.DetectionConfidence})";
+        DetectionSummary = item.DetectionSummary;
         Dependencies = item.Dependencies.Count == 0 ? "None" : string.Join(", ", item.Dependencies);
         PortableDestination = item.PortableDestination ?? "Not applicable";
         Reason = item.Reason;
@@ -29,10 +31,13 @@ public sealed class DryRunItemViewModel
 
     public string Admin { get; }
 
+    public string Detection { get; }
+
+    public string DetectionSummary { get; }
+
     public string Dependencies { get; }
 
     public string PortableDestination { get; }
 
     public string Reason { get; }
 }
-

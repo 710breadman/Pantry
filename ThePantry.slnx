@@ -2,6 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/Pantry.Catalog/Pantry.Catalog.csproj" />
     <Project Path="src/Pantry.Core/Pantry.Core.csproj" />
+    <Project Path="src/Pantry.Detection/Pantry.Detection.csproj" />
     <Project Path="src/Pantry.Domain/Pantry.Domain.csproj" />
     <Project Path="src/Pantry.Infrastructure/Pantry.Infrastructure.csproj" />
     <Project Path="src/Pantry.UI/Pantry.UI.csproj" />
