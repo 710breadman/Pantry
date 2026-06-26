@@ -88,6 +88,7 @@ The app can now:
 - create a dry-run review plan
 - save dry-run review session summaries locally
 - show a saved-review count in the summary band
+- keep only the latest 100 saved dry-run reviews by default
 - auto-include known dependencies in the dry-run review and order them before dependent apps
 - show conflict warnings when selected apps conflict
 - show install/update/skip intent, provider, trust level, scope, administrator requirement, detection state, dependencies, conflicts, and portable destination
@@ -113,7 +114,7 @@ The app still cannot install, update, uninstall, elevate, or change installed so
 The repository is ready for review of the read-only Phase 1 slice.
 
 - Build passed with 0 warnings and 0 errors.
-- Tests passed: 32 total, 0 failed.
+- Tests passed: 33 total, 0 failed.
 - Malformed Recipes are rejected by test.
 - UI scan found no installer/elevation execution logic.
 - Detection is read-only and limited to `winget list`, uninstall registry reads, configured file paths, and portable folder existence checks.

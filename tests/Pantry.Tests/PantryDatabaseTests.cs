@@ -157,6 +157,40 @@ public sealed class PantryDatabaseTests
         }
     }
 
+    [Fact]
+    public async Task Review_sessions_can_be_pruned_to_limit()
+    {
+        var testPath = TestDatabasePath();
+        var database = new PantryDatabase(testPath.DatabasePath);
+        var sessions = new ReviewSessionStore(database);
+
+        try
+        {
+            await database.InitializeAsync();
+            for (var index = 0; index < 4; index++)
+            {
+                await sessions.SaveAsync(new DryRunPlan
+                {
+                    ProfileId = $"profile-{index}",
+                    ProfileName = $"Profile {index}",
+                    Items = [TestPlanItem("steam", "Steam", DryRunIntent.Install)]
+                }, "0.1.0-test");
+            }
+
+            var pruned = await sessions.PruneToLimitAsync(2);
+            var count = await sessions.CountAsync();
+            var recent = await sessions.ListRecentAsync(5);
+
+            Assert.Equal(2, pruned);
+            Assert.Equal(2, count);
+            Assert.Equal(2, recent.Count);
+        }
+        finally
+        {
+            Directory.Delete(testPath.DirectoryPath, recursive: true);
+        }
+    }
+
     private static TestDatabaseLocation TestDatabasePath()
     {
         var folder = Path.Combine(Path.GetTempPath(), $"pantry-db-test-{Guid.NewGuid():N}");

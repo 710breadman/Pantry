@@ -7,6 +7,8 @@ namespace Pantry.Infrastructure;
 
 public sealed class ReviewSessionStore
 {
+    public const int DefaultRetentionLimit = 100;
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         WriteIndented = false,
@@ -77,6 +79,7 @@ public sealed class ReviewSessionStore
         command.Parameters.AddWithValue("$itemsJson", itemsJson);
 
         await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        await PruneToLimitAsync(connection, DefaultRetentionLimit, cancellationToken).ConfigureAwait(false);
         return id;
     }
 
@@ -141,5 +144,40 @@ public sealed class ReviewSessionStore
 
         var count = await command.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
         return Convert.ToInt32(count);
+    }
+
+    public async Task<int> PruneToLimitAsync(
+        int maxSessionsToKeep,
+        CancellationToken cancellationToken = default)
+    {
+        if (maxSessionsToKeep < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(maxSessionsToKeep), "Must keep at least one review session.");
+        }
+
+        await using var connection = _database.CreateConnection();
+        await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        return await PruneToLimitAsync(connection, maxSessionsToKeep, cancellationToken).ConfigureAwait(false);
+    }
+
+    private static async Task<int> PruneToLimitAsync(
+        SqliteConnection connection,
+        int maxSessionsToKeep,
+        CancellationToken cancellationToken)
+    {
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+            delete from review_sessions
+            where id not in (
+                select id
+                from review_sessions
+                order by created_utc desc, id desc
+                limit $maxSessionsToKeep
+            );
+            """;
+        command.Parameters.AddWithValue("$maxSessionsToKeep", maxSessionsToKeep);
+
+        return await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
     }
 }
