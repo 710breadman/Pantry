@@ -70,6 +70,7 @@ This backlog is ordered to prove safety and correctness before catalog size.
 | Cancellation model | Done | Planned jobs record before-start-only cancellation behavior. |
 | Failure isolation | Done | Planned jobs record pause-dependents/continue-unrelated behavior. |
 | Dependency blocking model | Done | Jobs with queued dependencies start as blocked by those app IDs. |
+| State transition validator | Done | Queue statuses can only move through safe planned/review/dependency/running/terminal transitions. |
 
 ## Phase 5: Elevated Execution
 
@@ -143,4 +144,4 @@ The first feature should:
 - run detection in dry-run mode only if available: done for Winget list, uninstall registry reads, configured file paths, portable folder checks, and Pantry run-mode detection
 - write logs: done for simple operation logs and recent log display
 
-Next useful slice: read-only queue state transition validator.
+Next useful slice: structured execution request model with validation, still no provider execution.

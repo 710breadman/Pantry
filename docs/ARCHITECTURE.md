@@ -247,6 +247,7 @@ Current queue behavior:
 - It records before-start-only cancellation behavior.
 - It records pause-dependents/continue-unrelated failure behavior.
 - It records queued dependency blockers and marks ready dependent jobs as waiting for dependencies.
+- It validates status transitions so jobs cannot skip review, dependency waits, or terminal states.
 - The UI shows the latest saved queue jobs as read-only rows.
 
 Plainly: Pantry can shape a future queue, but it cannot run it yet.

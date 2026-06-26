@@ -4,5 +4,10 @@ public enum QueueJobStatus
 {
     Planned,
     WaitingForReview,
-    WaitingForDependencies
+    WaitingForDependencies,
+    Running,
+    Succeeded,
+    Failed,
+    Cancelled,
+    Skipped
 }

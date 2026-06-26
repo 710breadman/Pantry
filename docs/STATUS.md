@@ -14,7 +14,7 @@ The intended upstream repository is `https://github.com/710breadman/Pantry.git`.
 
 It does not install, update, uninstall, elevate, or change installed apps.
 
-Latest checkpoint: read-only queue jobs now record dependency blockers.
+Latest checkpoint: queue status transitions are now validated in a read-only model.
 
 ## Completed
 
@@ -124,6 +124,13 @@ Latest checkpoint: read-only queue jobs now record dependency blockers.
   - ready jobs with blockers start as `WaitingForDependencies`
   - review-required jobs still wait for review first
 - Added SQLite schema upgrade for saved blocker app IDs.
+- Added terminal queue statuses:
+  - `Succeeded`
+  - `Failed`
+  - `Cancelled`
+  - `Skipped`
+- Added a queue state transition validator.
+- Added tests for allowed and rejected queue status transitions.
 - Built the full solution successfully.
 - Ran all tests successfully.
 
@@ -140,7 +147,7 @@ Latest checkpoint: read-only queue jobs now record dependency blockers.
 
 Do not begin real installation or elevation yet.
 
-Next, add a read-only queue state transition validator.
+Next, add a structured execution request model with validation.
 
 ## Approval Needed
 
@@ -178,4 +185,4 @@ Current approved choices:
 
 ## Next Milestone
 
-Recommended next phase: model valid queue state transitions, still with no real installs.
+Recommended next phase: model execution requests, still with no provider execution.
