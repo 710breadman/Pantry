@@ -8,7 +8,7 @@ Phase 1: Read-only foundation slice
 
 ## Summary
 
-The repository now contains a buildable read-only app slice. It can load the bundled catalog, validate Recipes, switch profiles, select apps, scan installed apps with read-only checks, detect its own portable/installed/unknown run mode, save latest scan results, remember profile/app choices, remember portable destination, write simple operation logs, show recent logs, show summary counts, produce a dependency/conflict-aware dry-run review plan, save review session summaries, prune old review sessions, and show the saved-review count. Startup services are composed through dependency injection.
+The repository now contains a buildable read-only app slice. It can load the bundled catalog, validate Recipes, switch profiles, select apps, scan installed apps with read-only checks, detect its own portable/installed/unknown run mode, save latest scan results, remember profile/app choices, remember portable destination, write simple operation logs, show recent logs, show summary counts, produce a dependency/conflict-aware dry-run review plan, create a read-only queue plan, save review session summaries, prune old review sessions, and show the saved-review count. Startup services are composed through dependency injection.
 
 The intended upstream repository is `https://github.com/710breadman/Pantry.git`. It is public and has the initial read-only slice pushed.
 
@@ -63,6 +63,12 @@ It does not install, update, uninstall, elevate, or change installed apps.
   - dependencies are ordered before dependents
   - dependency cycles do not duplicate review items
 - Added conflict warnings to the dry-run review when selected apps conflict.
+- Added `src/Pantry.Queue` for read-only queue session/job planning.
+- Queue planning now:
+  - includes install/update items
+  - skips skip items
+  - preserves dry-run order
+  - marks non-`VerifiedUnattended` or conflicting jobs as needing review
 - Added a status summary band for catalog, selection, plan, detection counts, and run mode.
 - Added SQLite initialization with Windows SQLite provider.
 - Added operation log storage.
@@ -85,6 +91,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 - Added xUnit tests for saved settings and per-profile app selections.
 - Added xUnit tests for dependency ordering and dependency-cycle handling.
 - Added xUnit tests for symmetric conflict warnings.
+- Added xUnit tests for read-only queue planning.
 - Added xUnit tests for review session storage.
 - Added xUnit tests for review-session pruning.
 - Built the full solution successfully.
@@ -103,7 +110,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 
 Do not begin real installation or elevation yet.
 
-Next, add the read-only queue session model.
+Next, persist read-only queue sessions.
 
 ## Approval Needed
 
@@ -141,4 +148,4 @@ Current approved choices:
 
 ## Next Milestone
 
-Recommended next phase: read-only queue session model, still with no real installs.
+Recommended next phase: persist read-only queue sessions, still with no real installs.

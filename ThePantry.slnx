@@ -5,6 +5,7 @@
     <Project Path="src/Pantry.Detection/Pantry.Detection.csproj" />
     <Project Path="src/Pantry.Domain/Pantry.Domain.csproj" />
     <Project Path="src/Pantry.Infrastructure/Pantry.Infrastructure.csproj" />
+    <Project Path="src/Pantry.Queue/Pantry.Queue.csproj" />
     <Project Path="src/Pantry.UI/Pantry.UI.csproj" />
   </Folder>
   <Folder Name="/tests/">

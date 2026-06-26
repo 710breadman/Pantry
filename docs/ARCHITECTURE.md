@@ -19,13 +19,14 @@ src/
   Pantry.Catalog/
   Pantry.Detection/
   Pantry.Infrastructure/
+  Pantry.Queue/
 tests/
   Pantry.Tests/
 catalog/
   bundled/
 ```
 
-More projects such as `Pantry.Providers`, `Pantry.Queue`, `Pantry.Elevation`, `Pantry.Portable`, and `Pantry.Logging` should be added when those features begin.
+More projects such as `Pantry.Providers`, `Pantry.Elevation`, `Pantry.Portable`, and `Pantry.Logging` should be added when those features begin.
 
 ## Module Responsibilities
 
@@ -39,7 +40,8 @@ More projects such as `Pantry.Providers`, `Pantry.Queue`, `Pantry.Elevation`, `P
 | `Pantry.Detection` | Runs read-only detection. Current checks are Winget list parsing, uninstall registry reads, configured file paths, file versions, and portable folder existence. |
 | Future `Pantry.Providers` | Provider implementations such as Winget, MSI, EXE, Microsoft Store, GitHub release, and portable archive. |
 | Future richer detection | AppX, services, portable managed folders, and Pantry history. |
-| Future `Pantry.Queue` | Plan executable jobs, order dependencies, handle retries, cancellation, failure isolation, and final job states. |
+| `Pantry.Queue` | Creates read-only queue session/job plans from dry-run review items. It does not execute jobs. |
+| Future richer `Pantry.Queue` | Plan executable jobs, handle retries, cancellation, failure isolation, and final job states. |
 | Future `Pantry.Elevation` | Broker communication with the elevated helper and validate privileged job requests. |
 | Future `Pantry.Portable` | Portable destination choices, managed folders, portable profiles, and portable tool deployment. |
 | Future `Pantry.Logging` | Structured operation logging and log index records. |
@@ -65,6 +67,9 @@ Detection service checks current machine state with read-only checks
         |
         v
 Dry-run planner includes known dependencies/conflicts and creates a review plan
+        |
+        v
+Read-only queue planner maps install/update items into future jobs
         |
         v
 Review screen shows actions, scope, trust, admin needs, risks
@@ -227,6 +232,15 @@ Current dry-run behavior:
 - If selected apps conflict, both review items show the warning.
 
 Plainly: the planner can say "this app needs that app first" and "these two do not belong together" without installing anything.
+
+Current queue behavior:
+
+- It only creates in-memory plans.
+- It includes install/update items and skips skip items.
+- It keeps the dry-run order.
+- It marks conflicts and non-`VerifiedUnattended` jobs as needing review.
+
+Plainly: Pantry can shape a future queue, but it cannot run it yet.
 
 The UI should explain risks in normal language and keep technical details expandable.
 
