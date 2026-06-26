@@ -8,7 +8,7 @@ The repository has a first read-only Phase 1 slice.
 
 | Area | Current state |
 | --- | --- |
-| Source code | Read-only WinUI shell plus separated domain, catalog, core, detection, and infrastructure projects |
+| Source code | Read-only WinUI shell plus separated domain, catalog, core, detection, infrastructure projects, and DI startup wiring |
 | Tests | xUnit tests for Recipe validation, catalog loading, profile defaults, dependency/conflict-aware dry-run planning, Winget/registry/file detection, run-mode detection, SQLite state, and saved settings |
 | Build system | `.NET 10` solution file: `ThePantry.slnx` |
 | Git repository | Initialized locally; `origin` points to `https://github.com/710breadman/Pantry.git` |
@@ -24,6 +24,7 @@ The repository has a first read-only Phase 1 slice.
 - The intended upstream repository is `710breadman/Pantry` on GitHub.
 - `ThePantry.slnx` contains the current .NET solution.
 - `src/Pantry.UI` contains a basic WinUI 3 shell.
+- `src/Pantry.UI/PantryServiceProvider.cs` contains the current dependency injection startup wiring.
 - `src/Pantry.Domain` contains the shared models.
 - `src/Pantry.Catalog` loads and validates bundled JSON Recipes.
 - `src/Pantry.Core` creates the dry-run review plan.
@@ -75,6 +76,7 @@ The app can now:
 - use Winget list, uninstall registry keys, configured file paths, and portable folder checks for read-only detection
 - detect whether the app is running in portable, installed, or unknown/development mode
 - use local app data for normal/unknown mode state and an app-local `data` folder when a `pantry.portable` marker exists
+- compose runtime services through a small dependency injection container
 - show catalog, selection, plan, and detection summary counts
 - remember last profile
 - remember app choices per profile
@@ -115,4 +117,5 @@ The repository is ready for review of the read-only Phase 1 slice.
 - Run-mode detection is read-only and uses a deliberate `pantry.portable` marker rather than guessing from drive type.
 - Dry-run dependency ordering is planner-only; it does not execute queue work.
 - Dry-run conflict warnings are planner-only; they do not block or execute anything yet.
+- The DI container validates registrations at app startup, but the WinUI project is not referenced from xUnit because it caused the test host to crash.
 - Real install, update, uninstall, and elevation are not implemented yet.

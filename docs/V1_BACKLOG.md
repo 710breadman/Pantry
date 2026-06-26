@@ -18,7 +18,7 @@ This backlog is ordered to prove safety and correctness before catalog size.
 | Item | Priority | Acceptance |
 | --- | --- | --- |
 | Create solution and project structure | Done | Buildable solution with separated UI/core/domain/catalog/infrastructure/test projects. |
-| Add dependency injection | Not started | Services are currently composed directly in the UI shell. |
+| Add dependency injection | Done | Startup services are registered in `PantryServiceProvider`; the window asks DI for `MainViewModel`. |
 | Add structured logging | Partial | App writes simple operation logs and shows recent logs; session/job correlation comes later. |
 | Add settings service | Done | App stores last profile, portable destination, and app choices per profile. |
 | Add SQLite persistence | Done | Database initializes and stores operation logs plus latest scan results. |
@@ -132,4 +132,4 @@ The first feature should:
 - run detection in dry-run mode only if available: done for Winget list, uninstall registry reads, configured file paths, portable folder checks, and Pantry run-mode detection
 - write logs: done for simple operation logs and recent log display
 
-Next useful slice: dependency injection composition root.
+Next useful slice: persist dry-run review sessions.

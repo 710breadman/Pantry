@@ -31,7 +31,7 @@ Plainly: the app should be boringly reliable before it becomes broad.
 | Area | Test |
 | --- | --- |
 | Solution | Builds cleanly. |
-| Dependency injection | Required services resolve. |
+| Dependency injection | App startup container validates registrations when built. Direct xUnit coverage is deferred because referencing the WinUI project crashed the test host. |
 | Settings | Settings can be saved and loaded. Current tests cover last profile, portable destination, and per-profile app choices. |
 | SQLite | Database initializes and can write/read basic records. Current tests cover operation logs and scan result storage. |
 | Logging | Operation log records include category, message, details, and timestamp. Session/job IDs come later with real queue sessions. |

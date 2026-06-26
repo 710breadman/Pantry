@@ -8,7 +8,7 @@ Phase 1: Read-only foundation slice
 
 ## Summary
 
-The repository now contains a buildable read-only app slice. It can load the bundled catalog, validate Recipes, switch profiles, select apps, scan installed apps with read-only checks, detect its own portable/installed/unknown run mode, save latest scan results, remember profile/app choices, remember portable destination, write simple operation logs, show recent logs, show summary counts, and produce a dependency/conflict-aware dry-run review plan.
+The repository now contains a buildable read-only app slice. It can load the bundled catalog, validate Recipes, switch profiles, select apps, scan installed apps with read-only checks, detect its own portable/installed/unknown run mode, save latest scan results, remember profile/app choices, remember portable destination, write simple operation logs, show recent logs, show summary counts, and produce a dependency/conflict-aware dry-run review plan. Startup services are now composed through dependency injection.
 
 The intended upstream repository is `https://github.com/710breadman/Pantry.git`. It is public and has the initial read-only slice pushed.
 
@@ -71,6 +71,8 @@ It does not install, update, uninstall, elevate, or change installed apps.
 - Added saved profile/app selections.
 - Wired the UI to restore the last profile, app choices, and portable destination.
 - Added a basic recent log viewer in the UI.
+- Added a small dependency injection composition root for startup service wiring.
+- Added `Microsoft.Extensions.DependencyInjection` to the UI project.
 - Added xUnit tests for Recipe validation, catalog loading, profile defaults, and dry-run planning.
 - Added xUnit tests for Winget output parsing, Winget command safety, and portable folder detection.
 - Added xUnit tests for registry detection and Winget-to-registry fallback.
@@ -96,7 +98,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 
 Do not begin real installation or elevation yet.
 
-Next, add a tiny dependency injection composition root so startup wiring is testable and the UI shell stays thinner.
+Next, add a small review/session model in SQLite so dry-run plans can be stored before real queue execution exists.
 
 ## Approval Needed
 
@@ -129,8 +131,9 @@ Current approved choices:
 | Portable mode depends on marker file | This is intentional for safety; a packaged portable build should create `pantry.portable`. |
 | Dependencies can surprise users | Dependencies are visible in the dry-run reason before any execution exists. |
 | Conflicts are warnings only | Current conflict handling warns in review; later queue work should decide whether conflicts block execution. |
+| DI startup wiring is not xUnit-covered | A direct WinUI project reference crashed the test host, so the app uses container startup validation and normal build coverage for now. |
 | Logs are minimal | Operation logs and a basic viewer exist, but no filtering or detailed log screen yet. |
 
 ## Next Milestone
 
-Recommended next phase: dependency injection composition root, still with no real installs.
+Recommended next phase: persist dry-run review sessions, still with no real installs.

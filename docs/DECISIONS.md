@@ -29,6 +29,7 @@ This document records product and engineering decisions so the project does not 
 | D-019 | Portable mode is activated by a `pantry.portable` marker beside the app. | A marker is clearer and safer than guessing from drive type or folder name. |
 | D-020 | Known dependencies are auto-included in the dry-run review. | If a selected app needs another known app, the review must show that dependency before any real queue work exists. |
 | D-021 | Known selected conflicts are shown symmetrically in the dry-run review. | If A says it conflicts with B, both A and B should visibly warn the user when both are selected. |
+| D-022 | Use `Microsoft.Extensions.DependencyInjection` for app startup wiring. | A small DI container keeps construction rules in one place and keeps the window thinner. |
 
 ## Proposed Technical Defaults
 
@@ -53,7 +54,7 @@ These are the current technical choices.
 | --- | --- | --- |
 | Installer packaging for The Pantry itself | MSIX, loose portable folder, installer | Support both installed and portable app modes; the first detector already supports a loose portable folder with a marker file. |
 | Catalog signing method | Authenticode, detached signature, or public-key signature file | Use a detached signature or public-key signature file for catalog data; finalize during catalog update design. |
-| Structured logging package | Serilog vs `Microsoft.Extensions.Logging` | Decide when operation logs are added. |
+| Structured logging package | Serilog vs `Microsoft.Extensions.Logging` | Decide when richer queue/provider logs are added. |
 | SQLite persistence shape | Direct SQL, repository services, or light data access layer | Decide when the first durable state table is added. |
 
 ## Decision Rules

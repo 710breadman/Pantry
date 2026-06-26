@@ -49,7 +49,10 @@ More projects such as `Pantry.Providers`, `Pantry.Queue`, `Pantry.Elevation`, `P
 ## Main Runtime Flow
 
 ```text
-App starts and detects portable/installed/unknown mode
+App builds DI container
+        |
+        v
+App detects portable/installed/unknown mode
         |
         v
 User chooses profile/apps
@@ -224,6 +227,23 @@ Current dry-run behavior:
 Plainly: the planner can say "this app needs that app first" and "these two do not belong together" without installing anything.
 
 The UI should explain risks in normal language and keep technical details expandable.
+
+## Startup Composition
+
+`Pantry.UI/PantryServiceProvider.cs` is the current composition root.
+
+Plainly: instead of the window manually creating every service, the app registers services once and asks the container for `MainViewModel`.
+
+Current registrations include:
+
+- catalog loader and Recipe validator
+- detection providers
+- SQLite database and stores
+- dry-run planner
+- run-mode detection result
+- `MainViewModel`
+
+The container uses startup validation so missing registrations fail early when the app starts.
 
 ## Testability
 

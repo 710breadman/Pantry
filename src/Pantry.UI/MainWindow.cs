@@ -1,19 +1,17 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using Pantry.Catalog;
-using Pantry.Core;
-using Pantry.Detection;
 using Pantry.Domain;
-using Pantry.Infrastructure;
 using Pantry.UI.ViewModels;
 
 namespace Pantry.UI;
 
 public sealed class MainWindow : Window
 {
+    private readonly ServiceProvider _services;
     private readonly MainViewModel _viewModel;
     private readonly ComboBox _profilePicker = new();
     private readonly StackPanel _catalogPanel = new();
@@ -30,22 +28,9 @@ public sealed class MainWindow : Window
     public MainWindow()
     {
         Title = "The Pantry";
-        var runMode = new PantryRunModeDetector(new WindowsAppRuntimeEnvironment()).Detect();
-        var database = new PantryDatabase(PantryDataPaths.DefaultDatabasePath(runMode));
-        _viewModel = new MainViewModel(
-            new BundledCatalogLoader(new RecipeValidator()),
-            new AppDetectionService(
-                new WingetDetectionProvider(new WindowsProcessRunner()),
-                new PortableFolderDetectionProvider(),
-                new RegistryDetectionProvider(new WindowsRegistryReader()),
-                new FileDetectionProvider(new WindowsFileSystemReader())),
-            runMode,
-            database,
-            new AppSelectionStore(database),
-            new OperationLogStore(database),
-            new ScanResultStore(database),
-            new UserSettingsStore(database),
-            new DryRunPlanner());
+        _services = PantryServiceProvider.Build();
+        _viewModel = _services.GetRequiredService<MainViewModel>();
+        Closed += (_, _) => _services.Dispose();
         Content = BuildLayout();
 
         _viewModel.PropertyChanged += (_, args) =>
