@@ -8,7 +8,7 @@ Phase 1: Read-only foundation slice
 
 ## Summary
 
-The repository now contains a buildable read-only app slice. It can load the bundled catalog, validate Recipes, switch profiles, select apps, scan installed apps with read-only checks, save latest scan results, write simple operation logs, and produce a dry-run review plan.
+The repository now contains a buildable read-only app slice. It can load the bundled catalog, validate Recipes, switch profiles, select apps, scan installed apps with read-only checks, save latest scan results, remember profile/app choices, remember portable destination, write simple operation logs, and produce a dry-run review plan.
 
 The intended upstream repository is `https://github.com/710breadman/Pantry.git`. It is public and has the initial read-only slice pushed.
 
@@ -54,15 +54,18 @@ It does not install, update, uninstall, elevate, or change installed apps.
 - Added SQLite initialization with Windows SQLite provider.
 - Added operation log storage.
 - Added saved scan result storage.
+- Added app settings storage.
+- Added saved profile/app selections.
+- Wired the UI to restore the last profile, app choices, and portable destination.
 - Added xUnit tests for Recipe validation, catalog loading, profile defaults, and dry-run planning.
 - Added xUnit tests for Winget output parsing, Winget command safety, and portable folder detection.
 - Added xUnit tests for SQLite initialization, operation logs, and scan result persistence.
+- Added xUnit tests for saved settings and per-profile app selections.
 - Built the full solution successfully.
 - Ran all tests successfully.
 
 ## Not Started
 
-- Settings service.
 - Rich detection engine beyond Winget list and portable folder checks.
 - Real queue execution.
 - Elevated helper.
@@ -74,7 +77,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 
 Do not begin real installation or elevation yet.
 
-Next, add app settings and saved profile selections. That means the app remembers the last profile, app choices, and portable destination without executing installers.
+Next, add a basic log view so operation logs can be inspected without opening the SQLite database.
 
 ## Approval Needed
 
@@ -106,4 +109,4 @@ Current approved choices:
 
 ## Next Milestone
 
-Recommended next phase: Phase 2C, settings and saved selections.
+Recommended next phase: Phase 2D, basic log viewer.

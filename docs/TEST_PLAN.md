@@ -32,7 +32,7 @@ Plainly: the app should be boringly reliable before it becomes broad.
 | --- | --- |
 | Solution | Builds cleanly. |
 | Dependency injection | Required services resolve. |
-| Settings | Settings can be saved and loaded. |
+| Settings | Settings can be saved and loaded. Current tests cover last profile, portable destination, and per-profile app choices. |
 | SQLite | Database initializes and can write/read basic records. Current tests cover operation logs and scan result storage. |
 | Logging | Operation log records include category, message, details, and timestamp. Session/job IDs come later with real queue sessions. |
 | Recipe model | Required Recipe fields are enforced. |

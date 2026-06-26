@@ -20,7 +20,7 @@ This backlog is ordered to prove safety and correctness before catalog size.
 | Create solution and project structure | Done | Buildable solution with separated UI/core/domain/catalog/infrastructure/test projects. |
 | Add dependency injection | Not started | Services are currently composed directly in the UI shell. |
 | Add structured logging | Not started | App can write session/job logs with correlation IDs. |
-| Add settings service | Not started | App can store simple local settings. |
+| Add settings service | Done | App stores last profile, portable destination, and app choices per profile. |
 | Add SQLite persistence | Done | Database initializes and stores operation logs plus latest scan results. |
 | Add portable/installed mode detection | Not started | App can tell whether it is running from installed or portable layout. |
 | Add Recipe domain models | Done | Core Recipe types compile and are covered by unit tests. |
@@ -35,7 +35,7 @@ This backlog is ordered to prove safety and correctness before catalog size.
 | Add profile definitions | Done | Three profiles can preselect recommended apps. |
 | Add catalog display | Done | User can browse apps in a basic list. |
 | Add profile selection UI | Done | User can choose a profile and modify selected apps. |
-| Save profile choices | Medium | User choices survive restart. |
+| Save profile choices | Done | Profile choices survive restart through SQLite settings tables. |
 
 ## Phase 3: Detection
 
@@ -131,4 +131,4 @@ The first feature should:
 - run detection in dry-run mode only if available: done for Winget list and portable folder checks
 - write logs: done for simple operation logs
 
-Next useful slice: add settings and saved profile selections.
+Next useful slice: add a basic log viewer.

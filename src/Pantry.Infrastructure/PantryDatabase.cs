@@ -59,6 +59,19 @@ public sealed class PantryDatabase
                 available_version text null,
                 summary text not null
             );
+
+            create table if not exists app_settings (
+                key text primary key,
+                value text not null
+            );
+
+            create table if not exists profile_selections (
+                profile_id text not null,
+                app_id text not null,
+                is_selected integer not null,
+                updated_utc text not null,
+                primary key (profile_id, app_id)
+            );
             """;
 
         await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);

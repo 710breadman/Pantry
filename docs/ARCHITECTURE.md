@@ -34,7 +34,7 @@ More projects such as `Pantry.Providers`, `Pantry.Queue`, `Pantry.Elevation`, `P
 | `Pantry.UI` | WinUI 3 screens, navigation, view models, and user-facing state. |
 | `Pantry.Core` | Application workflows that coordinate catalog, detection, queue planning, and execution. |
 | `Pantry.Domain` | Core types such as Recipe, app identity, trust level, install action, detection result, queue job, and provider result. |
-| `Pantry.Infrastructure` | SQLite database initialization, operation logs, saved scan results, and future file system/settings/platform adapters. |
+| `Pantry.Infrastructure` | SQLite database initialization, operation logs, saved scan results, saved settings, profile selections, and future platform adapters. |
 | `Pantry.Catalog` | Load bundled catalog and validate Recipe schema. Later it will apply local overrides and handle signed catalog updates. |
 | `Pantry.Detection` | Runs read-only detection. Current checks are Winget list parsing and portable folder existence. |
 | Future `Pantry.Providers` | Provider implementations such as Winget, MSI, EXE, Microsoft Store, GitHub release, and portable archive. |
@@ -147,6 +147,8 @@ Current tables:
 
 - `operation_logs`
 - `scan_results`
+- `app_settings`
+- `profile_selections`
 
 ## Trust Model
 
@@ -173,8 +175,6 @@ Providers should return structured results:
 - `UserActionRequired`
 - `NotApplicable`
 - `Unknown`
-
-The first provider should be Winget because it gives us a known integration point for a small first slice. MSI, official EXE, Microsoft Store, GitHub release, portable archive, and manual official providers can follow.
 
 The first real provider should be Winget because it gives us a known integration point. MSI, official EXE, Microsoft Store, GitHub release, portable archive, and manual official providers can follow.
 

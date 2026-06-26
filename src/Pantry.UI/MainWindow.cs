@@ -31,8 +31,10 @@ public sealed class MainWindow : Window
                 new WingetDetectionProvider(new WindowsProcessRunner()),
                 new PortableFolderDetectionProvider()),
             database,
+            new AppSelectionStore(database),
             new OperationLogStore(database),
             new ScanResultStore(database),
+            new UserSettingsStore(database),
             new DryRunPlanner());
         Content = BuildLayout();
 
@@ -96,7 +98,11 @@ public sealed class MainWindow : Window
         _profilePicker.Header = "Profile";
         _profilePicker.DisplayMemberPath = nameof(Profile.Name);
         _profilePicker.SelectionChanged += async (_, _) =>
+        {
             await _viewModel.SelectProfileAsync(_profilePicker.SelectedItem as Profile).ConfigureAwait(true);
+            RenderCatalog();
+            RenderReview();
+        };
         Grid.SetColumn(_profilePicker, 0);
         controls.Children.Add(_profilePicker);
 
@@ -192,6 +198,7 @@ public sealed class MainWindow : Window
             await _viewModel.InitializeAsync().ConfigureAwait(true);
             _profilePicker.ItemsSource = _viewModel.Profiles;
             _profilePicker.SelectedItem = _viewModel.SelectedProfile;
+            _portableDestination.Text = _viewModel.PortableDestination;
             RenderCatalog();
             RenderReview();
             _viewModel.ReviewItems.CollectionChanged += (_, _) => RenderReview();

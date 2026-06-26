@@ -15,9 +15,12 @@ public sealed class MainViewModel : ObservableObject
     private readonly OperationLogStore _operationLogStore;
     private readonly DryRunPlanner _planner;
     private readonly PantryDatabase _database;
+    private readonly AppSelectionStore _appSelectionStore;
     private readonly ScanResultStore _scanResultStore;
+    private readonly UserSettingsStore _userSettingsStore;
     private CatalogSnapshot? _catalog;
     private Profile? _selectedProfile;
+    private bool _loadingProfile;
     private IReadOnlyDictionary<string, AppDetectionResult> _detectionResults =
         new Dictionary<string, AppDetectionResult>(StringComparer.OrdinalIgnoreCase);
     private string _status = "Loading bundled catalog...";
@@ -27,15 +30,19 @@ public sealed class MainViewModel : ObservableObject
         BundledCatalogLoader catalogLoader,
         AppDetectionService detectionService,
         PantryDatabase database,
+        AppSelectionStore appSelectionStore,
         OperationLogStore operationLogStore,
         ScanResultStore scanResultStore,
+        UserSettingsStore userSettingsStore,
         DryRunPlanner planner)
     {
         _catalogLoader = catalogLoader;
         _detectionService = detectionService;
         _database = database;
+        _appSelectionStore = appSelectionStore;
         _operationLogStore = operationLogStore;
         _scanResultStore = scanResultStore;
+        _userSettingsStore = userSettingsStore;
         _planner = planner;
     }
 
@@ -64,7 +71,7 @@ public sealed class MainViewModel : ObservableObject
         {
             if (SetProperty(ref _portableDestination, value))
             {
-                _ = RefreshPlanAsync();
+                _ = SavePortableDestinationAndRefreshAsync(value);
             }
         }
     }
@@ -78,6 +85,12 @@ public sealed class MainViewModel : ObservableObject
             .ConfigureAwait(true);
 
         _detectionResults = await _scanResultStore.LoadAsync(cancellationToken).ConfigureAwait(true);
+        var settings = await _userSettingsStore.LoadAsync(cancellationToken).ConfigureAwait(true);
+        if (!string.IsNullOrWhiteSpace(settings.PortableDestination))
+        {
+            _portableDestination = settings.PortableDestination;
+            OnPropertyChanged(nameof(PortableDestination));
+        }
 
         Profiles.Clear();
         foreach (var profile in _catalog.Profiles)
@@ -89,10 +102,22 @@ public sealed class MainViewModel : ObservableObject
             .AppendAsync("catalog", $"Loaded {_catalog.Recipes.Count} bundled Recipe(s).", cancellationToken: cancellationToken)
             .ConfigureAwait(true);
 
-        await SelectProfileAsync(Profiles.FirstOrDefault(), cancellationToken).ConfigureAwait(true);
+        var selectedProfile = Profiles.FirstOrDefault(profile =>
+                string.Equals(profile.Id, settings.SelectedProfileId, StringComparison.OrdinalIgnoreCase))
+            ?? Profiles.FirstOrDefault();
+
+        await SelectProfileAsync(selectedProfile, persistChoice: false, cancellationToken).ConfigureAwait(true);
     }
 
-    public async Task SelectProfileAsync(Profile? profile, CancellationToken cancellationToken = default)
+    public Task SelectProfileAsync(Profile? profile, CancellationToken cancellationToken = default)
+    {
+        return SelectProfileAsync(profile, persistChoice: true, cancellationToken);
+    }
+
+    private async Task SelectProfileAsync(
+        Profile? profile,
+        bool persistChoice,
+        CancellationToken cancellationToken = default)
     {
         if (_catalog is null || profile is null)
         {
@@ -100,26 +125,38 @@ public sealed class MainViewModel : ObservableObject
         }
 
         SelectedProfile = profile;
+        if (persistChoice)
+        {
+            await _userSettingsStore.SaveSelectedProfileIdAsync(profile.Id, cancellationToken).ConfigureAwait(true);
+        }
+
+        var savedSelections = await _appSelectionStore.LoadAsync(profile.Id, cancellationToken).ConfigureAwait(true);
         var selectedIds = profile.Selections
             .Where(selection => selection.Preselected)
             .Select(selection => selection.AppId)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         Apps.Clear();
+        _loadingProfile = true;
         foreach (var recipe in _catalog.Recipes.OrderBy(recipe => recipe.Catalog.Name, StringComparer.OrdinalIgnoreCase))
         {
-            var app = new AppSelectionViewModel(recipe, selectedIds.Contains(recipe.Id));
+            var isSelected = savedSelections.TryGetValue(recipe.Id, out var saved)
+                ? saved
+                : selectedIds.Contains(recipe.Id);
+
+            var app = new AppSelectionViewModel(recipe, isSelected);
             app.PropertyChanged += async (_, args) =>
             {
                 if (args.PropertyName == nameof(AppSelectionViewModel.IsSelected))
                 {
-                    await RefreshPlanAsync(cancellationToken).ConfigureAwait(true);
+                    await SaveSelectionAndRefreshAsync(app, cancellationToken).ConfigureAwait(true);
                 }
             };
 
             Apps.Add(app);
         }
 
+        _loadingProfile = false;
         await RefreshPlanAsync(cancellationToken).ConfigureAwait(true);
     }
 
@@ -176,5 +213,33 @@ public sealed class MainViewModel : ObservableObject
             .ConfigureAwait(true);
 
         Status = $"Read-only scan complete. {knownCount} of {_detectionResults.Count} app(s) returned known detection state.";
+    }
+
+    private async Task SaveSelectionAndRefreshAsync(
+        AppSelectionViewModel app,
+        CancellationToken cancellationToken = default)
+    {
+        if (_loadingProfile || SelectedProfile is null)
+        {
+            return;
+        }
+
+        await _appSelectionStore
+            .SaveAsync(SelectedProfile.Id, app.AppId, app.IsSelected, cancellationToken)
+            .ConfigureAwait(true);
+
+        await RefreshPlanAsync(cancellationToken).ConfigureAwait(true);
+    }
+
+    private async Task SavePortableDestinationAndRefreshAsync(
+        string value,
+        CancellationToken cancellationToken = default)
+    {
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            await _userSettingsStore.SavePortableDestinationAsync(value, cancellationToken).ConfigureAwait(true);
+        }
+
+        await RefreshPlanAsync(cancellationToken).ConfigureAwait(true);
     }
 }

@@ -66,6 +66,58 @@ public sealed class PantryDatabaseTests
         }
     }
 
+    [Fact]
+    public async Task User_settings_can_be_saved_and_loaded()
+    {
+        var testPath = TestDatabasePath();
+        var database = new PantryDatabase(testPath.DatabasePath);
+        var settings = new UserSettingsStore(database);
+
+        try
+        {
+            await database.InitializeAsync();
+            await settings.SaveSelectedProfileIdAsync("repair-toolkit-safe");
+            await settings.SavePortableDestinationAsync(@"E:\PantryTools");
+
+            var loaded = await settings.LoadAsync();
+
+            Assert.Equal("repair-toolkit-safe", loaded.SelectedProfileId);
+            Assert.Equal(@"E:\PantryTools", loaded.PortableDestination);
+        }
+        finally
+        {
+            Directory.Delete(testPath.DirectoryPath, recursive: true);
+        }
+    }
+
+    [Fact]
+    public async Task App_selections_are_saved_per_profile()
+    {
+        var testPath = TestDatabasePath();
+        var database = new PantryDatabase(testPath.DatabasePath);
+        var selections = new AppSelectionStore(database);
+
+        try
+        {
+            await database.InitializeAsync();
+            await selections.SaveAsync("gaming-setup", "steam", isSelected: true);
+            await selections.SaveAsync("gaming-setup", "vlc", isSelected: false);
+            await selections.SaveAsync("repair-toolkit-safe", "vlc", isSelected: true);
+
+            var gaming = await selections.LoadAsync("gaming-setup");
+            var repair = await selections.LoadAsync("repair-toolkit-safe");
+
+            Assert.True(gaming["steam"]);
+            Assert.False(gaming["vlc"]);
+            Assert.True(repair["vlc"]);
+            Assert.False(gaming.ContainsKey("sysinternals-autoruns"));
+        }
+        finally
+        {
+            Directory.Delete(testPath.DirectoryPath, recursive: true);
+        }
+    }
+
     private static TestDatabaseLocation TestDatabasePath()
     {
         var folder = Path.Combine(Path.GetTempPath(), $"pantry-db-test-{Guid.NewGuid():N}");
