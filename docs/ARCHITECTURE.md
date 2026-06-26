@@ -61,7 +61,7 @@ Catalog service resolves Recipes
 Detection service checks current machine state with read-only checks
         |
         v
-Dry-run planner creates a review plan
+Dry-run planner includes known dependencies and creates a review plan
         |
         v
 Review screen shows actions, scope, trust, admin needs, risks
@@ -213,6 +213,15 @@ Future UI work should add:
 - logs view
 - settings for portable/installed mode
 
+Current dry-run behavior:
+
+- All catalog apps remain visible in the review.
+- A known dependency of a selected app is automatically included in the review.
+- Dependencies are ordered before apps that need them.
+- Dependency cycles are handled without duplicating review items.
+
+Plainly: the planner can say "this app needs that app first" without installing anything.
+
 The UI should explain risks in normal language and keep technical details expandable.
 
 ## Testability
@@ -222,6 +231,7 @@ Most logic should be testable without WinUI:
 - Recipe validation
 - trust decisions
 - detection merging
+- dry-run dependency planning
 - queue planning
 - retry handling
 - failure isolation

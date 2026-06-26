@@ -8,7 +8,7 @@ Phase 1: Read-only foundation slice
 
 ## Summary
 
-The repository now contains a buildable read-only app slice. It can load the bundled catalog, validate Recipes, switch profiles, select apps, scan installed apps with read-only checks, detect its own portable/installed/unknown run mode, save latest scan results, remember profile/app choices, remember portable destination, write simple operation logs, show recent logs, show summary counts, and produce a dry-run review plan.
+The repository now contains a buildable read-only app slice. It can load the bundled catalog, validate Recipes, switch profiles, select apps, scan installed apps with read-only checks, detect its own portable/installed/unknown run mode, save latest scan results, remember profile/app choices, remember portable destination, write simple operation logs, show recent logs, show summary counts, and produce a dependency-aware dry-run review plan.
 
 The intended upstream repository is `https://github.com/710breadman/Pantry.git`. It is public and has the initial read-only slice pushed.
 
@@ -58,6 +58,10 @@ It does not install, update, uninstall, elevate, or change installed apps.
   - development or unrecognized paths mean unknown mode.
 - Wired portable mode to use an app-local `data` folder for SQLite state.
 - Fed detection state into the dry-run plan and UI.
+- Added dependency-aware dry-run planning:
+  - known dependencies are included in review
+  - dependencies are ordered before dependents
+  - dependency cycles do not duplicate review items
 - Added a status summary band for catalog, selection, plan, detection counts, and run mode.
 - Added SQLite initialization with Windows SQLite provider.
 - Added operation log storage.
@@ -73,6 +77,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 - Added xUnit tests for portable/installed/unknown run-mode detection.
 - Added xUnit tests for SQLite initialization, operation logs, and scan result persistence.
 - Added xUnit tests for saved settings and per-profile app selections.
+- Added xUnit tests for dependency ordering and dependency-cycle handling.
 - Built the full solution successfully.
 - Ran all tests successfully.
 
@@ -89,7 +94,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 
 Do not begin real installation or elevation yet.
 
-Next, add dependency-aware dry-run ordering so future queue work has a safe planner before any real execution exists.
+Next, add conflict warnings to the dry-run review so known app conflicts are visible before any real execution exists.
 
 ## Approval Needed
 
@@ -120,8 +125,9 @@ Current approved choices:
 | Registry detection can be fuzzy | Registry fallback uses display-name matching and medium confidence only. |
 | File path detection can miss custom installs | File fallback only checks configured paths and uses low/medium confidence. |
 | Portable mode depends on marker file | This is intentional for safety; a packaged portable build should create `pantry.portable`. |
+| Dependencies can surprise users | Dependencies are visible in the dry-run reason before any execution exists. |
 | Logs are minimal | Operation logs and a basic viewer exist, but no filtering or detailed log screen yet. |
 
 ## Next Milestone
 
-Recommended next phase: dependency-aware dry-run planning, still with no real installs.
+Recommended next phase: conflict-aware dry-run planning, still with no real installs.

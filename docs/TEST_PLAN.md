@@ -65,7 +65,8 @@ Plainly: the app should be boringly reliable before it becomes broad.
 | Area | Test |
 | --- | --- |
 | Dry run | Review plan changes no system state. |
-| Dependencies | Dependencies are ordered before dependents. |
+| Dependencies | Dependencies are ordered before dependents. Current tests cover required dependency inclusion, dependency ordering, and cycle handling. |
+| Conflicts | Known conflicts are shown before execution. |
 | Failure isolation | Failed app does not block unrelated app. |
 | Retry | Failed job can retry without duplicating completed work. |
 | Cancellation | Cancelled queue records final states. |

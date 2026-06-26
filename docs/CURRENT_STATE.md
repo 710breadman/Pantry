@@ -9,7 +9,7 @@ The repository has a first read-only Phase 1 slice.
 | Area | Current state |
 | --- | --- |
 | Source code | Read-only WinUI shell plus separated domain, catalog, core, detection, and infrastructure projects |
-| Tests | xUnit tests for Recipe validation, catalog loading, profile defaults, dry-run planning, Winget/registry/file detection, run-mode detection, SQLite state, and saved settings |
+| Tests | xUnit tests for Recipe validation, catalog loading, profile defaults, dependency-aware dry-run planning, Winget/registry/file detection, run-mode detection, SQLite state, and saved settings |
 | Build system | `.NET 10` solution file: `ThePantry.slnx` |
 | Git repository | Initialized locally; `origin` points to `https://github.com/710breadman/Pantry.git` |
 | Intended upstream | `https://github.com/710breadman/Pantry.git` |
@@ -83,6 +83,7 @@ The app can now:
 - write simple operation logs locally
 - show recent operation logs in the UI
 - create a dry-run review plan
+- auto-include known dependencies in the dry-run review and order them before dependent apps
 - show install/update/skip intent, provider, trust level, scope, administrator requirement, detection state, dependencies, and portable destination
 
 The app still cannot install, update, uninstall, elevate, or change installed software.
@@ -106,9 +107,10 @@ The app still cannot install, update, uninstall, elevate, or change installed so
 The repository is ready for review of the read-only Phase 1 slice.
 
 - Build passed with 0 warnings and 0 errors.
-- Tests passed: 28 total, 0 failed.
+- Tests passed: 30 total, 0 failed.
 - Malformed Recipes are rejected by test.
 - UI scan found no installer/elevation execution logic.
 - Detection is read-only and limited to `winget list`, uninstall registry reads, configured file paths, and portable folder existence checks.
 - Run-mode detection is read-only and uses a deliberate `pantry.portable` marker rather than guessing from drive type.
+- Dry-run dependency ordering is planner-only; it does not execute queue work.
 - Real install, update, uninstall, and elevation are not implemented yet.
