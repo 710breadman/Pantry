@@ -26,6 +26,10 @@ public sealed class QueuePlannerTests
         Assert.Equal("steam", plan.Jobs[0].AppId);
         Assert.Equal(QueueJobAction.Install, plan.Jobs[0].Action);
         Assert.Equal(QueueJobStatus.WaitingForReview, plan.Jobs[0].Status);
+        Assert.Equal(QueueRetryMode.ManualOnly, plan.Jobs[0].RetryMode);
+        Assert.Equal(0, plan.Jobs[0].MaxRetryAttempts);
+        Assert.Equal(QueueCancellationBehavior.CancelBeforeStartOnly, plan.Jobs[0].CancellationBehavior);
+        Assert.Equal(QueueFailureBehavior.PauseDependentsContinueUnrelated, plan.Jobs[0].FailureBehavior);
         Assert.Equal("vlc", plan.Jobs[1].AppId);
         Assert.Equal(QueueJobAction.Update, plan.Jobs[1].Action);
     }

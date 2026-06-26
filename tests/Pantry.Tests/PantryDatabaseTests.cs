@@ -222,6 +222,10 @@ public sealed class PantryDatabaseTests
             var jobs = await queueSessions.ListJobsAsync(session.Id);
             Assert.Equal(2, jobs.Count);
             Assert.Equal(QueueJobStatus.WaitingForReview, jobs[0].Status);
+            Assert.Equal(QueueRetryMode.ManualOnly, jobs[0].RetryMode);
+            Assert.Equal(0, jobs[0].MaxRetryAttempts);
+            Assert.Equal(QueueCancellationBehavior.CancelBeforeStartOnly, jobs[0].CancellationBehavior);
+            Assert.Equal(QueueFailureBehavior.PauseDependentsContinueUnrelated, jobs[0].FailureBehavior);
             Assert.Equal(1, count);
             Assert.Equal("gaming-setup", session.ProfileId);
             Assert.Equal(2, session.JobCount);
@@ -307,6 +311,10 @@ public sealed class PantryDatabaseTests
             await database.InitializeAsync();
 
             Assert.True(await ColumnExistsAsync(database, "queue_jobs", "job_status"));
+            Assert.True(await ColumnExistsAsync(database, "queue_jobs", "retry_mode"));
+            Assert.True(await ColumnExistsAsync(database, "queue_jobs", "max_retry_attempts"));
+            Assert.True(await ColumnExistsAsync(database, "queue_jobs", "cancellation_behavior"));
+            Assert.True(await ColumnExistsAsync(database, "queue_jobs", "failure_behavior"));
         }
         finally
         {
@@ -368,6 +376,10 @@ public sealed class PantryDatabaseTests
             Status = reviewState == QueueJobReviewState.Ready
                 ? QueueJobStatus.Planned
                 : QueueJobStatus.WaitingForReview,
+            RetryMode = QueueRetryMode.ManualOnly,
+            MaxRetryAttempts = 0,
+            CancellationBehavior = QueueCancellationBehavior.CancelBeforeStartOnly,
+            FailureBehavior = QueueFailureBehavior.PauseDependentsContinueUnrelated,
             Provider = ProviderType.Winget,
             TrustLevel = TrustLevel.Experimental,
             ScopePreference = MachineScopePreference.Preferred,

@@ -72,6 +72,10 @@ public sealed class QueueSessionStore
                     app_name,
                     action,
                     job_status,
+                    retry_mode,
+                    max_retry_attempts,
+                    cancellation_behavior,
+                    failure_behavior,
                     provider,
                     trust_level,
                     scope_preference,
@@ -88,6 +92,10 @@ public sealed class QueueSessionStore
                     $appName,
                     $action,
                     $jobStatus,
+                    $retryMode,
+                    $maxRetryAttempts,
+                    $cancellationBehavior,
+                    $failureBehavior,
                     $provider,
                     $trustLevel,
                     $scopePreference,
@@ -104,6 +112,10 @@ public sealed class QueueSessionStore
             command.Parameters.AddWithValue("$appName", job.AppName);
             command.Parameters.AddWithValue("$action", job.Action.ToString());
             command.Parameters.AddWithValue("$jobStatus", job.Status.ToString());
+            command.Parameters.AddWithValue("$retryMode", job.RetryMode.ToString());
+            command.Parameters.AddWithValue("$maxRetryAttempts", job.MaxRetryAttempts);
+            command.Parameters.AddWithValue("$cancellationBehavior", job.CancellationBehavior.ToString());
+            command.Parameters.AddWithValue("$failureBehavior", job.FailureBehavior.ToString());
             command.Parameters.AddWithValue("$provider", job.Provider.ToString());
             command.Parameters.AddWithValue("$trustLevel", job.TrustLevel.ToString());
             command.Parameters.AddWithValue("$scopePreference", job.ScopePreference.ToString());
@@ -206,6 +218,10 @@ public sealed class QueueSessionStore
                 app_name,
                 action,
                 job_status,
+                retry_mode,
+                max_retry_attempts,
+                cancellation_behavior,
+                failure_behavior,
                 provider,
                 trust_level,
                 review_state,
@@ -227,10 +243,14 @@ public sealed class QueueSessionStore
                 AppName = reader.GetString(2),
                 Action = Enum.Parse<QueueJobAction>(reader.GetString(3)),
                 Status = Enum.Parse<QueueJobStatus>(reader.GetString(4)),
-                Provider = Enum.Parse<ProviderType>(reader.GetString(5)),
-                TrustLevel = Enum.Parse<TrustLevel>(reader.GetString(6)),
-                ReviewState = Enum.Parse<QueueJobReviewState>(reader.GetString(7)),
-                ReviewReason = reader.GetString(8)
+                RetryMode = Enum.Parse<QueueRetryMode>(reader.GetString(5)),
+                MaxRetryAttempts = reader.GetInt32(6),
+                CancellationBehavior = Enum.Parse<QueueCancellationBehavior>(reader.GetString(7)),
+                FailureBehavior = Enum.Parse<QueueFailureBehavior>(reader.GetString(8)),
+                Provider = Enum.Parse<ProviderType>(reader.GetString(9)),
+                TrustLevel = Enum.Parse<TrustLevel>(reader.GetString(10)),
+                ReviewState = Enum.Parse<QueueJobReviewState>(reader.GetString(11)),
+                ReviewReason = reader.GetString(12)
             });
         }
 

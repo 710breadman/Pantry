@@ -100,6 +100,7 @@ The app can now:
 - show the latest read-only queue jobs in the UI
 - mark non-`VerifiedUnattended` or conflicting queue jobs as needing review
 - assign queue jobs explicit planned/waiting-for-review status
+- assign queue jobs read-only retry, cancellation, and failure-isolation policy
 - show install/update/skip intent, provider, trust level, scope, administrator requirement, detection state, dependencies, conflicts, and portable destination
 
 The app still cannot install, update, uninstall, elevate, or change installed software.

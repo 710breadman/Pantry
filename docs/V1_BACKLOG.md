@@ -66,9 +66,9 @@ This backlog is ordered to prove safety and correctness before catalog size.
 | Add queue job status model | Done | Planned queue jobs have explicit statuses before execution exists. |
 | Show queue detail view | Done | UI shows the latest queue jobs without running them. |
 | Share retention helper | Done | Review and queue pruning use one validated SQLite retention helper. |
-| Retry model | High | Failed jobs can be retried safely. |
-| Cancellation model | High | User can cancel without corrupting queue state. |
-| Failure isolation | High | One failed app does not stop unrelated jobs. |
+| Retry model | Done | Planned jobs record manual-only retry policy with no automatic retries. |
+| Cancellation model | Done | Planned jobs record before-start-only cancellation behavior. |
+| Failure isolation | Done | Planned jobs record pause-dependents/continue-unrelated behavior. |
 
 ## Phase 5: Elevated Execution
 
@@ -142,4 +142,4 @@ The first feature should:
 - run detection in dry-run mode only if available: done for Winget list, uninstall registry reads, configured file paths, portable folder checks, and Pantry run-mode detection
 - write logs: done for simple operation logs and recent log display
 
-Next useful slice: read-only retry, cancel, and failure-isolation models for future queue execution.
+Next useful slice: queue dependency blocking model, still read-only.

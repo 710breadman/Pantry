@@ -14,6 +14,14 @@ public sealed record QueueJobPlan
 
     public required QueueJobStatus Status { get; init; }
 
+    public required QueueRetryMode RetryMode { get; init; }
+
+    public required int MaxRetryAttempts { get; init; }
+
+    public required QueueCancellationBehavior CancellationBehavior { get; init; }
+
+    public required QueueFailureBehavior FailureBehavior { get; init; }
+
     public required ProviderType Provider { get; init; }
 
     public required TrustLevel TrustLevel { get; init; }

@@ -108,6 +108,10 @@ public sealed class PantryDatabase
                 app_name text not null,
                 action text not null,
                 job_status text not null default 'Planned',
+                retry_mode text not null default 'ManualOnly',
+                max_retry_attempts integer not null default 0,
+                cancellation_behavior text not null default 'CancelBeforeStartOnly',
+                failure_behavior text not null default 'PauseDependentsContinueUnrelated',
                 provider text not null,
                 trust_level text not null,
                 scope_preference text not null,
@@ -127,6 +131,30 @@ public sealed class PantryDatabase
             "queue_jobs",
             "job_status",
             "text not null default 'Planned'",
+            cancellationToken).ConfigureAwait(false);
+        await EnsureColumnAsync(
+            connection,
+            "queue_jobs",
+            "retry_mode",
+            "text not null default 'ManualOnly'",
+            cancellationToken).ConfigureAwait(false);
+        await EnsureColumnAsync(
+            connection,
+            "queue_jobs",
+            "max_retry_attempts",
+            "integer not null default 0",
+            cancellationToken).ConfigureAwait(false);
+        await EnsureColumnAsync(
+            connection,
+            "queue_jobs",
+            "cancellation_behavior",
+            "text not null default 'CancelBeforeStartOnly'",
+            cancellationToken).ConfigureAwait(false);
+        await EnsureColumnAsync(
+            connection,
+            "queue_jobs",
+            "failure_behavior",
+            "text not null default 'PauseDependentsContinueUnrelated'",
             cancellationToken).ConfigureAwait(false);
     }
 

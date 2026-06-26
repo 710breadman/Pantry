@@ -14,7 +14,7 @@ The intended upstream repository is `https://github.com/710breadman/Pantry.git`.
 
 It does not install, update, uninstall, elevate, or change installed apps.
 
-Latest checkpoint: review and queue session pruning now share a validated SQLite retention helper.
+Latest checkpoint: read-only queue jobs now record retry, cancellation, and failure-isolation policy.
 
 ## Completed
 
@@ -110,6 +110,15 @@ Latest checkpoint: review and queue session pruning now share a validated SQLite
 - Added xUnit tests for review session storage.
 - Added xUnit tests for review-session pruning.
 - Added a shared SQLite retention helper for review and queue session pruning.
+- Added read-only queue retry policy:
+  - manual retry only
+  - zero automatic retry attempts
+- Added read-only queue cancellation policy:
+  - cancel before start only
+- Added read-only queue failure-isolation policy:
+  - pause dependents
+  - continue unrelated jobs
+- Added SQLite schema upgrades for the new queue policy fields.
 - Built the full solution successfully.
 - Ran all tests successfully.
 
@@ -126,7 +135,7 @@ Latest checkpoint: review and queue session pruning now share a validated SQLite
 
 Do not begin real installation or elevation yet.
 
-Next, add read-only retry/cancel/failure-isolation models for future queue execution.
+Next, add read-only queue dependency blocking.
 
 ## Approval Needed
 
@@ -164,4 +173,4 @@ Current approved choices:
 
 ## Next Milestone
 
-Recommended next phase: model retry/cancel/failure isolation, still with no real installs.
+Recommended next phase: model queue dependency blocking, still with no real installs.

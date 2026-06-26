@@ -41,6 +41,10 @@ public sealed class QueuePlanner
             Status = reviewState == QueueJobReviewState.Ready
                 ? QueueJobStatus.Planned
                 : QueueJobStatus.WaitingForReview,
+            RetryMode = QueueRetryMode.ManualOnly,
+            MaxRetryAttempts = 0,
+            CancellationBehavior = QueueCancellationBehavior.CancelBeforeStartOnly,
+            FailureBehavior = QueueFailureBehavior.PauseDependentsContinueUnrelated,
             Provider = item.PreferredProvider,
             TrustLevel = item.TrustLevel,
             ScopePreference = item.ScopePreference,
