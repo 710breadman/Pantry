@@ -205,6 +205,7 @@ V1 should use a quiet, practical desktop UI:
 - review screen
 - portable destination field
 - run-mode summary
+- saved-review count
 - recent logs column
 
 Future UI work should add:

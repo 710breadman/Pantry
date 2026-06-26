@@ -22,6 +22,7 @@ public sealed class MainWindow : Window
     private readonly TextBlock _planSummary = new();
     private readonly TextBlock _detectionSummary = new();
     private readonly TextBlock _modeSummary = new();
+    private readonly TextBlock _reviewSessionSummary = new();
     private readonly TextBlock _status = new();
     private readonly TextBox _portableDestination = new();
 
@@ -63,6 +64,11 @@ public sealed class MainWindow : Window
             if (args.PropertyName == nameof(MainViewModel.ModeSummary))
             {
                 _modeSummary.Text = _viewModel.ModeSummary;
+            }
+
+            if (args.PropertyName == nameof(MainViewModel.ReviewSessionSummary))
+            {
+                _reviewSessionSummary.Text = _viewModel.ReviewSessionSummary;
             }
         };
     }
@@ -237,7 +243,8 @@ public sealed class MainWindow : Window
                 new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
                 new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
                 new ColumnDefinition { Width = new GridLength(1.2, GridUnitType.Star) },
-                new ColumnDefinition { Width = new GridLength(1.2, GridUnitType.Star) }
+                new ColumnDefinition { Width = new GridLength(1.2, GridUnitType.Star) },
+                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
             }
         };
 
@@ -246,6 +253,7 @@ public sealed class MainWindow : Window
         AddSummaryCell(grid, _planSummary, 2);
         AddSummaryCell(grid, _detectionSummary, 3);
         AddSummaryCell(grid, _modeSummary, 4);
+        AddSummaryCell(grid, _reviewSessionSummary, 5);
 
         return grid;
     }
@@ -406,6 +414,7 @@ public sealed class MainWindow : Window
         _planSummary.Text = _viewModel.PlanSummary;
         _detectionSummary.Text = _viewModel.DetectionSummary;
         _modeSummary.Text = _viewModel.ModeSummary;
+        _reviewSessionSummary.Text = _viewModel.ReviewSessionSummary;
     }
 
     private static FrameworkElement BuildAppContent(AppSelectionViewModel app)

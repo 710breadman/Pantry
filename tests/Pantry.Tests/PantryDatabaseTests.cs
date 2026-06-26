@@ -140,6 +140,7 @@ public sealed class PantryDatabaseTests
             }, "0.1.0-test");
 
             var recent = await sessions.ListRecentAsync(5);
+            var count = await sessions.CountAsync();
 
             var session = Assert.Single(recent);
             Assert.Equal("gaming-setup", session.ProfileId);
@@ -148,6 +149,7 @@ public sealed class PantryDatabaseTests
             Assert.Equal(1, session.InstallCount);
             Assert.Equal(0, session.UpdateCount);
             Assert.Equal(1, session.SkipCount);
+            Assert.Equal(1, count);
         }
         finally
         {

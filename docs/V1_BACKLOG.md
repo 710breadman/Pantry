@@ -23,6 +23,7 @@ This backlog is ordered to prove safety and correctness before catalog size.
 | Add settings service | Done | App stores last profile, portable destination, and app choices per profile. |
 | Add SQLite persistence | Done | Database initializes and stores operation logs plus latest scan results. |
 | Persist dry-run review sessions | Done | SQLite stores review session summary counts and item JSON. |
+| Show saved-review count | Done | Summary band shows how many dry-run reviews are saved. |
 | Add portable/installed mode detection | Done | App can tell whether it is running from installed, portable, or unknown/development layout. |
 | Add Recipe domain models | Done | Core Recipe types compile and are covered by unit tests. |
 | Add Recipe schema validation | Done | Invalid Recipe files are rejected with clear errors. |
@@ -133,4 +134,4 @@ The first feature should:
 - run detection in dry-run mode only if available: done for Winget list, uninstall registry reads, configured file paths, portable folder checks, and Pantry run-mode detection
 - write logs: done for simple operation logs and recent log display
 
-Next useful slice: show recent review-session count.
+Next useful slice: prune old dry-run review sessions.

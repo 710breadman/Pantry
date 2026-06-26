@@ -130,4 +130,16 @@ public sealed class ReviewSessionStore
 
         return records;
     }
+
+    public async Task<int> CountAsync(CancellationToken cancellationToken = default)
+    {
+        await using var connection = _database.CreateConnection();
+        await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        await using var command = connection.CreateCommand();
+        command.CommandText = "select count(*) from review_sessions;";
+
+        var count = await command.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+        return Convert.ToInt32(count);
+    }
 }

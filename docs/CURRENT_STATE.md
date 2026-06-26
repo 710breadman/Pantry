@@ -87,6 +87,7 @@ The app can now:
 - show recent operation logs in the UI
 - create a dry-run review plan
 - save dry-run review session summaries locally
+- show a saved-review count in the summary band
 - auto-include known dependencies in the dry-run review and order them before dependent apps
 - show conflict warnings when selected apps conflict
 - show install/update/skip intent, provider, trust level, scope, administrator requirement, detection state, dependencies, conflicts, and portable destination

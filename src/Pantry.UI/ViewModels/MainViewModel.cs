@@ -31,6 +31,7 @@ public sealed class MainViewModel : ObservableObject
     private string _planSummary = "Plan: pending";
     private string _detectionSummary = "Detection: not scanned";
     private string _modeSummary;
+    private string _reviewSessionSummary = "Reviews: 0 saved";
     private string _portableDestination = @"PantryTools";
 
     public MainViewModel(
@@ -108,6 +109,12 @@ public sealed class MainViewModel : ObservableObject
         private set => SetProperty(ref _modeSummary, value);
     }
 
+    public string ReviewSessionSummary
+    {
+        get => _reviewSessionSummary;
+        private set => SetProperty(ref _reviewSessionSummary, value);
+    }
+
     public string PortableDestination
     {
         get => _portableDestination;
@@ -132,6 +139,7 @@ public sealed class MainViewModel : ObservableObject
 
         _detectionResults = await _scanResultStore.LoadAsync(cancellationToken).ConfigureAwait(true);
         UpdateDetectionSummary(_detectionResults);
+        await UpdateReviewSessionSummaryAsync(cancellationToken).ConfigureAwait(true);
         var settings = await _userSettingsStore.LoadAsync(cancellationToken).ConfigureAwait(true);
         if (!string.IsNullOrWhiteSpace(settings.PortableDestination))
         {
@@ -246,6 +254,7 @@ public sealed class MainViewModel : ObservableObject
         await _reviewSessionStore
             .SaveAsync(plan, _catalog.CatalogVersion, cancellationToken)
             .ConfigureAwait(true);
+        await UpdateReviewSessionSummaryAsync(cancellationToken).ConfigureAwait(true);
 
         SelectionSummary = $"Selected: {selectedCount}";
         PlanSummary = $"Plan: {installCount} install, {updateCount} update, {skipCount} skip";
@@ -334,5 +343,11 @@ public sealed class MainViewModel : ObservableObject
     private static string FormatRunMode(PantryRunModeDetection runMode)
     {
         return $"Mode: {runMode.Mode} | State: {runMode.StateDirectory}";
+    }
+
+    private async Task UpdateReviewSessionSummaryAsync(CancellationToken cancellationToken)
+    {
+        var reviewCount = await _reviewSessionStore.CountAsync(cancellationToken).ConfigureAwait(true);
+        ReviewSessionSummary = $"Reviews: {reviewCount} saved";
     }
 }
