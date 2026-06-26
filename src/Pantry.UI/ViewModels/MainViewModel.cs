@@ -24,6 +24,10 @@ public sealed class MainViewModel : ObservableObject
     private IReadOnlyDictionary<string, AppDetectionResult> _detectionResults =
         new Dictionary<string, AppDetectionResult>(StringComparer.OrdinalIgnoreCase);
     private string _status = "Loading bundled catalog...";
+    private string _catalogSummary = "Catalog: loading";
+    private string _selectionSummary = "Selected: 0";
+    private string _planSummary = "Plan: pending";
+    private string _detectionSummary = "Detection: not scanned";
     private string _portableDestination = @"PantryTools";
 
     public MainViewModel(
@@ -66,6 +70,30 @@ public sealed class MainViewModel : ObservableObject
         private set => SetProperty(ref _status, value);
     }
 
+    public string CatalogSummary
+    {
+        get => _catalogSummary;
+        private set => SetProperty(ref _catalogSummary, value);
+    }
+
+    public string SelectionSummary
+    {
+        get => _selectionSummary;
+        private set => SetProperty(ref _selectionSummary, value);
+    }
+
+    public string PlanSummary
+    {
+        get => _planSummary;
+        private set => SetProperty(ref _planSummary, value);
+    }
+
+    public string DetectionSummary
+    {
+        get => _detectionSummary;
+        private set => SetProperty(ref _detectionSummary, value);
+    }
+
     public string PortableDestination
     {
         get => _portableDestination;
@@ -85,8 +113,10 @@ public sealed class MainViewModel : ObservableObject
         _catalog = await _catalogLoader
             .LoadAsync(CatalogPathProvider.BundledCatalogRoot(), cancellationToken)
             .ConfigureAwait(true);
+        CatalogSummary = $"Catalog {_catalog.CatalogVersion}: {_catalog.Recipes.Count} Recipes";
 
         _detectionResults = await _scanResultStore.LoadAsync(cancellationToken).ConfigureAwait(true);
+        UpdateDetectionSummary(_detectionResults);
         var settings = await _userSettingsStore.LoadAsync(cancellationToken).ConfigureAwait(true);
         if (!string.IsNullOrWhiteSpace(settings.PortableDestination))
         {
@@ -191,6 +221,11 @@ public sealed class MainViewModel : ObservableObject
         }
 
         var selectedCount = plan.Items.Count(item => item.Intent is DryRunIntent.Install or DryRunIntent.Update);
+        var installCount = plan.Items.Count(item => item.Intent == DryRunIntent.Install);
+        var updateCount = plan.Items.Count(item => item.Intent == DryRunIntent.Update);
+        var skipCount = plan.Items.Count(item => item.Intent == DryRunIntent.Skip);
+        SelectionSummary = $"Selected: {selectedCount}";
+        PlanSummary = $"Plan: {installCount} install, {updateCount} update, {skipCount} skip";
         Status = $"Loaded {_catalog.Recipes.Count} Recipes from catalog {_catalog.CatalogVersion}. {selectedCount} item(s) selected for dry-run review.";
     }
 
@@ -211,6 +246,7 @@ public sealed class MainViewModel : ObservableObject
         await RefreshPlanAsync(cancellationToken).ConfigureAwait(true);
 
         var knownCount = _detectionResults.Count(result => result.Value.State != DetectedAppState.Unknown);
+        UpdateDetectionSummary(_detectionResults);
         await _operationLogStore
             .AppendAsync("detection", $"Read-only scan complete. Known states: {knownCount}/{_detectionResults.Count}.", cancellationToken: cancellationToken)
             .ConfigureAwait(true);
@@ -256,5 +292,19 @@ public sealed class MainViewModel : ObservableObject
         }
 
         await RefreshPlanAsync(cancellationToken).ConfigureAwait(true);
+    }
+
+    private void UpdateDetectionSummary(IReadOnlyDictionary<string, AppDetectionResult> detectionResults)
+    {
+        if (detectionResults.Count == 0)
+        {
+            DetectionSummary = "Detection: not scanned";
+            return;
+        }
+
+        var known = detectionResults.Count(result => result.Value.State != DetectedAppState.Unknown);
+        var current = detectionResults.Count(result => result.Value.State == DetectedAppState.InstalledCurrent);
+        var updates = detectionResults.Count(result => result.Value.State == DetectedAppState.UpdateAvailable);
+        DetectionSummary = $"Detection: {known}/{detectionResults.Count} known, {current} current, {updates} updates";
     }
 }

@@ -19,6 +19,10 @@ public sealed class MainWindow : Window
     private readonly StackPanel _catalogPanel = new();
     private readonly StackPanel _reviewPanel = new();
     private readonly StackPanel _logsPanel = new();
+    private readonly TextBlock _catalogSummary = new();
+    private readonly TextBlock _selectionSummary = new();
+    private readonly TextBlock _planSummary = new();
+    private readonly TextBlock _detectionSummary = new();
     private readonly TextBlock _status = new();
     private readonly TextBox _portableDestination = new();
 
@@ -30,7 +34,8 @@ public sealed class MainWindow : Window
             new BundledCatalogLoader(new RecipeValidator()),
             new AppDetectionService(
                 new WingetDetectionProvider(new WindowsProcessRunner()),
-                new PortableFolderDetectionProvider()),
+                new PortableFolderDetectionProvider(),
+                new RegistryDetectionProvider(new WindowsRegistryReader())),
             database,
             new AppSelectionStore(database),
             new OperationLogStore(database),
@@ -44,6 +49,26 @@ public sealed class MainWindow : Window
             if (args.PropertyName == nameof(MainViewModel.Status))
             {
                 _status.Text = _viewModel.Status;
+            }
+
+            if (args.PropertyName == nameof(MainViewModel.CatalogSummary))
+            {
+                _catalogSummary.Text = _viewModel.CatalogSummary;
+            }
+
+            if (args.PropertyName == nameof(MainViewModel.SelectionSummary))
+            {
+                _selectionSummary.Text = _viewModel.SelectionSummary;
+            }
+
+            if (args.PropertyName == nameof(MainViewModel.PlanSummary))
+            {
+                _planSummary.Text = _viewModel.PlanSummary;
+            }
+
+            if (args.PropertyName == nameof(MainViewModel.DetectionSummary))
+            {
+                _detectionSummary.Text = _viewModel.DetectionSummary;
             }
         };
     }
@@ -146,6 +171,7 @@ public sealed class MainWindow : Window
         controls.Children.Add(refreshButton);
 
         header.Children.Add(controls);
+        header.Children.Add(BuildSummaryBand());
         Grid.SetRow(header, 0);
         root.Children.Add(header);
 
@@ -206,6 +232,38 @@ public sealed class MainWindow : Window
         return scrollViewer;
     }
 
+    private FrameworkElement BuildSummaryBand()
+    {
+        var grid = new Grid
+        {
+            ColumnSpacing = 10,
+            ColumnDefinitions =
+            {
+                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                new ColumnDefinition { Width = new GridLength(1.2, GridUnitType.Star) }
+            }
+        };
+
+        AddSummaryCell(grid, _catalogSummary, 0);
+        AddSummaryCell(grid, _selectionSummary, 1);
+        AddSummaryCell(grid, _planSummary, 2);
+        AddSummaryCell(grid, _detectionSummary, 3);
+
+        return grid;
+    }
+
+    private static void AddSummaryCell(Grid grid, TextBlock textBlock, int column)
+    {
+        textBlock.FontSize = 13;
+        textBlock.TextWrapping = TextWrapping.Wrap;
+        textBlock.Padding = new Thickness(10);
+        textBlock.Foreground = new SolidColorBrush(ColorHelper.FromArgb(255, 28, 33, 40));
+        Grid.SetColumn(textBlock, column);
+        grid.Children.Add(textBlock);
+    }
+
     private FrameworkElement BuildLogColumn()
     {
         var scrollViewer = new ScrollViewer
@@ -230,6 +288,7 @@ public sealed class MainWindow : Window
             RenderCatalog();
             RenderReview();
             RenderLogs();
+            RenderSummary();
             _viewModel.ReviewItems.CollectionChanged += (_, _) => RenderReview();
             _viewModel.RecentLogs.CollectionChanged += (_, _) => RenderLogs();
             _status.Text = _viewModel.Status;
@@ -341,6 +400,14 @@ public sealed class MainWindow : Window
 
             _logsPanel.Children.Add(panel);
         }
+    }
+
+    private void RenderSummary()
+    {
+        _catalogSummary.Text = _viewModel.CatalogSummary;
+        _selectionSummary.Text = _viewModel.SelectionSummary;
+        _planSummary.Text = _viewModel.PlanSummary;
+        _detectionSummary.Text = _viewModel.DetectionSummary;
     }
 
     private static FrameworkElement BuildAppContent(AppSelectionViewModel app)

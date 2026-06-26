@@ -54,7 +54,7 @@ Plainly: the app should be boringly reliable before it becomes broad.
 | Area | Test |
 | --- | --- |
 | Winget detection | Known package returns installed/update/not-installed evidence. Current tests cover parser behavior and safe `winget list` command construction. |
-| Registry detection | Uninstall registry keys are parsed correctly. |
+| Registry detection | Uninstall registry keys are parsed correctly. Current tests cover display-name matching and fallback after Winget misses. |
 | File detection | Executable path and version rules work. |
 | Evidence merge | Conflicting evidence produces `Unknown` or lower confidence, not false `NotInstalled`. |
 | Installed newer | Newer installed app is not downgraded silently. |

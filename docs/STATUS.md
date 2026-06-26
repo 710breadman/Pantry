@@ -8,7 +8,7 @@ Phase 1: Read-only foundation slice
 
 ## Summary
 
-The repository now contains a buildable read-only app slice. It can load the bundled catalog, validate Recipes, switch profiles, select apps, scan installed apps with read-only checks, save latest scan results, remember profile/app choices, remember portable destination, write simple operation logs, show recent logs, and produce a dry-run review plan.
+The repository now contains a buildable read-only app slice. It can load the bundled catalog, validate Recipes, switch profiles, select apps, scan installed apps with read-only checks, save latest scan results, remember profile/app choices, remember portable destination, write simple operation logs, show recent logs, show summary counts, and produce a dry-run review plan.
 
 The intended upstream repository is `https://github.com/710breadman/Pantry.git`. It is public and has the initial read-only slice pushed.
 
@@ -49,8 +49,10 @@ It does not install, update, uninstall, elevate, or change installed apps.
   - Repair Toolkit — Safe
 - Added a basic WinUI shell for profile selection, app selection, and dry-run review.
 - Added read-only Winget detection using `winget list`.
+- Added read-only uninstall registry detection fallback.
 - Added read-only portable folder detection.
 - Fed detection state into the dry-run plan and UI.
+- Added a status summary band for catalog, selection, plan, and detection counts.
 - Added SQLite initialization with Windows SQLite provider.
 - Added operation log storage.
 - Added saved scan result storage.
@@ -60,6 +62,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 - Added a basic recent log viewer in the UI.
 - Added xUnit tests for Recipe validation, catalog loading, profile defaults, and dry-run planning.
 - Added xUnit tests for Winget output parsing, Winget command safety, and portable folder detection.
+- Added xUnit tests for registry detection and Winget-to-registry fallback.
 - Added xUnit tests for SQLite initialization, operation logs, and scan result persistence.
 - Added xUnit tests for saved settings and per-profile app selections.
 - Built the full solution successfully.
@@ -67,7 +70,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 
 ## Not Started
 
-- Rich detection engine beyond Winget list and portable folder checks.
+- Rich detection engine beyond Winget list, uninstall registry reads, and portable folder checks.
 - Real queue execution.
 - Elevated helper.
 - Providers.
@@ -78,7 +81,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 
 Do not begin real installation or elevation yet.
 
-Next, improve the UI composition and add a small status/dashboard band so scan state, selected count, and catalog version are easier to read.
+Next, add read-only file/version detection for Recipes that need evidence beyond Winget and registry.
 
 ## Approval Needed
 
@@ -106,8 +109,9 @@ Current approved choices:
 | User may see too much technical detail | Keep UI plain by default and make details expandable. |
 | Recipes are still `Experimental` | Do not execute them until real provider tests prove safe behavior. |
 | Winget output format may vary | Parser is covered by tests, but more real-machine samples are needed. |
+| Registry detection can be fuzzy | Registry fallback uses display-name matching and medium confidence only. |
 | Logs are minimal | Operation logs and a basic viewer exist, but no filtering or detailed log screen yet. |
 
 ## Next Milestone
 
-Recommended next phase: Phase 2E, dashboard/status polish.
+Recommended next phase: Phase 2F, read-only file/version detection.

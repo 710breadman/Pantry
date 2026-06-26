@@ -9,7 +9,7 @@ The repository has a first read-only Phase 1 slice.
 | Area | Current state |
 | --- | --- |
 | Source code | Read-only WinUI shell plus separated domain, catalog, core, detection, and infrastructure projects |
-| Tests | xUnit tests for Recipe validation, catalog loading, profile defaults, dry-run planning, read-only detection, SQLite state, and saved settings |
+| Tests | xUnit tests for Recipe validation, catalog loading, profile defaults, dry-run planning, read-only detection, registry fallback, SQLite state, and saved settings |
 | Build system | `.NET 10` solution file: `ThePantry.slnx` |
 | Git repository | Initialized locally; `origin` points to `https://github.com/710breadman/Pantry.git` |
 | Intended upstream | `https://github.com/710breadman/Pantry.git` |
@@ -72,6 +72,8 @@ The app can now:
 - switch profiles
 - select and deselect apps
 - scan installed apps with read-only checks
+- use Winget list, uninstall registry keys, and portable folder checks for read-only detection
+- show catalog, selection, plan, and detection summary counts
 - remember last profile
 - remember app choices per profile
 - remember portable destination
@@ -102,8 +104,8 @@ The app still cannot install, update, uninstall, elevate, or change installed so
 The repository is ready for review of the read-only Phase 1 slice.
 
 - Build passed with 0 warnings and 0 errors.
-- Tests passed: 18 total, 0 failed.
+- Tests passed: 21 total, 0 failed.
 - Malformed Recipes are rejected by test.
 - UI scan found no installer/elevation execution logic.
-- Detection is read-only and limited to `winget list` plus portable folder existence checks.
+- Detection is read-only and limited to `winget list`, uninstall registry reads, and portable folder existence checks.
 - Real install, update, uninstall, and elevation are not implemented yet.
