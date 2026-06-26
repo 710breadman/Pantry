@@ -34,7 +34,7 @@ More projects such as `Pantry.Providers`, `Pantry.Queue`, `Pantry.Elevation`, `P
 | `Pantry.UI` | WinUI 3 screens, navigation, view models, and user-facing state. |
 | `Pantry.Core` | Application workflows that coordinate catalog, detection, queue planning, and execution. |
 | `Pantry.Domain` | Core types such as Recipe, app identity, trust level, install action, detection result, queue job, and provider result. |
-| `Pantry.Infrastructure` | Future file system, settings, SQLite access, HTTP download support, clocks, and platform adapters. |
+| `Pantry.Infrastructure` | SQLite database initialization, operation logs, saved scan results, and future file system/settings/platform adapters. |
 | `Pantry.Catalog` | Load bundled catalog and validate Recipe schema. Later it will apply local overrides and handle signed catalog updates. |
 | `Pantry.Detection` | Runs read-only detection. Current checks are Winget list parsing and portable folder existence. |
 | Future `Pantry.Providers` | Provider implementations such as Winget, MSI, EXE, Microsoft Store, GitHub release, and portable archive. |
@@ -131,7 +131,7 @@ Install commands, silent arguments, hashes, signatures, fallbacks, and richer ve
 
 ## Data Storage
 
-Use SQLite for future local state:
+Use SQLite for local state:
 
 | Table area | Purpose |
 | --- | --- |
@@ -142,6 +142,11 @@ Use SQLite for future local state:
 | catalog versions | Track bundled, active, previous, and updated catalog versions. |
 | logs index | Make logs searchable without loading raw log files into the UI. |
 | portable locations | Remember managed portable destinations. |
+
+Current tables:
+
+- `operation_logs`
+- `scan_results`
 
 ## Trust Model
 

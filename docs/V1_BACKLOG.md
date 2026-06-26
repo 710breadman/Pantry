@@ -21,7 +21,7 @@ This backlog is ordered to prove safety and correctness before catalog size.
 | Add dependency injection | Not started | Services are currently composed directly in the UI shell. |
 | Add structured logging | Not started | App can write session/job logs with correlation IDs. |
 | Add settings service | Not started | App can store simple local settings. |
-| Add SQLite persistence | Not started | Database initializes and stores basic records. |
+| Add SQLite persistence | Done | Database initializes and stores operation logs plus latest scan results. |
 | Add portable/installed mode detection | Not started | App can tell whether it is running from installed or portable layout. |
 | Add Recipe domain models | Done | Core Recipe types compile and are covered by unit tests. |
 | Add Recipe schema validation | Done | Invalid Recipe files are rejected with clear errors. |
@@ -129,6 +129,6 @@ The first feature should:
 - produce a review plan: done
 - install nothing yet: done
 - run detection in dry-run mode only if available: done for Winget list and portable folder checks
-- write logs: not started
+- write logs: done for simple operation logs
 
-Next useful slice: add local state and structured logs.
+Next useful slice: add settings and saved profile selections.

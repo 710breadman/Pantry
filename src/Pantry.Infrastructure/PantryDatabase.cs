@@ -1,0 +1,66 @@
+using Microsoft.Data.Sqlite;
+
+namespace Pantry.Infrastructure;
+
+public sealed class PantryDatabase
+{
+    private readonly string _databasePath;
+
+    public PantryDatabase(string databasePath)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(databasePath);
+        _databasePath = databasePath;
+    }
+
+    public string DatabasePath => _databasePath;
+
+    public SqliteConnection CreateConnection()
+    {
+        SqliteReadiness.InitializeProvider();
+        var connectionString = new SqliteConnectionStringBuilder
+        {
+            DataSource = _databasePath,
+            Pooling = false
+        }.ToString();
+
+        return new SqliteConnection(connectionString);
+    }
+
+    public async Task InitializeAsync(CancellationToken cancellationToken = default)
+    {
+        var directory = Path.GetDirectoryName(_databasePath);
+        if (!string.IsNullOrWhiteSpace(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        await using var connection = CreateConnection();
+        await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+            create table if not exists operation_logs (
+                id text primary key,
+                timestamp_utc text not null,
+                category text not null,
+                message text not null,
+                details_json text null
+            );
+
+            create index if not exists ix_operation_logs_timestamp
+            on operation_logs (timestamp_utc);
+
+            create table if not exists scan_results (
+                app_id text primary key,
+                scanned_utc text not null,
+                state text not null,
+                confidence text not null,
+                installed_version text null,
+                available_version text null,
+                summary text not null
+            );
+            """;
+
+        await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+    }
+}

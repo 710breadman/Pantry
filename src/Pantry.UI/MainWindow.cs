@@ -7,6 +7,7 @@ using Pantry.Catalog;
 using Pantry.Core;
 using Pantry.Detection;
 using Pantry.Domain;
+using Pantry.Infrastructure;
 using Pantry.UI.ViewModels;
 
 namespace Pantry.UI;
@@ -23,11 +24,15 @@ public sealed class MainWindow : Window
     public MainWindow()
     {
         Title = "The Pantry";
+        var database = new PantryDatabase(PantryDataPaths.DefaultDatabasePath());
         _viewModel = new MainViewModel(
             new BundledCatalogLoader(new RecipeValidator()),
             new AppDetectionService(
                 new WingetDetectionProvider(new WindowsProcessRunner()),
                 new PortableFolderDetectionProvider()),
+            database,
+            new OperationLogStore(database),
+            new ScanResultStore(database),
             new DryRunPlanner());
         Content = BuildLayout();
 

@@ -22,6 +22,7 @@
     <ProjectReference Include="..\Pantry.Core\Pantry.Core.csproj" />
     <ProjectReference Include="..\Pantry.Domain\Pantry.Domain.csproj" />
     <ProjectReference Include="..\Pantry.Detection\Pantry.Detection.csproj" />
+    <ProjectReference Include="..\Pantry.Infrastructure\Pantry.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

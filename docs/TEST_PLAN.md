@@ -33,8 +33,8 @@ Plainly: the app should be boringly reliable before it becomes broad.
 | Solution | Builds cleanly. |
 | Dependency injection | Required services resolve. |
 | Settings | Settings can be saved and loaded. |
-| SQLite | Database initializes and can write/read basic records. |
-| Logging | Operation log records include session ID, action, result, and timestamp. |
+| SQLite | Database initializes and can write/read basic records. Current tests cover operation logs and scan result storage. |
+| Logging | Operation log records include category, message, details, and timestamp. Session/job IDs come later with real queue sessions. |
 | Recipe model | Required Recipe fields are enforced. |
 | Recipe schema | Invalid Recipe files fail validation with clear errors. |
 | Portable mode | Installed and portable layouts are detected correctly. |

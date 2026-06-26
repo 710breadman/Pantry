@@ -9,7 +9,7 @@ The repository has a first read-only Phase 1 slice.
 | Area | Current state |
 | --- | --- |
 | Source code | Read-only WinUI shell plus separated domain, catalog, core, detection, and infrastructure projects |
-| Tests | xUnit tests for Recipe validation, catalog loading, profile defaults, dry-run planning, and read-only detection |
+| Tests | xUnit tests for Recipe validation, catalog loading, profile defaults, dry-run planning, read-only detection, and SQLite state |
 | Build system | `.NET 10` solution file: `ThePantry.slnx` |
 | Git repository | Initialized locally; `origin` points to `https://github.com/710breadman/Pantry.git` |
 | Intended upstream | `https://github.com/710breadman/Pantry.git` |
@@ -28,7 +28,7 @@ The repository has a first read-only Phase 1 slice.
 - `src/Pantry.Catalog` loads and validates bundled JSON Recipes.
 - `src/Pantry.Core` creates the dry-run review plan.
 - `src/Pantry.Detection` runs read-only installed-app checks.
-- `src/Pantry.Infrastructure` has the first SQLite dependency boundary, but no database persistence yet.
+- `src/Pantry.Infrastructure` initializes SQLite state, operation logs, and saved scan results.
 - `tests/Pantry.Tests` covers the read-only foundation behavior.
 - `catalog/bundled` contains the JSON Schema, five approved Recipe files, and three profiles.
 
@@ -72,6 +72,8 @@ The app can now:
 - switch profiles
 - select and deselect apps
 - scan installed apps with read-only checks
+- save latest scan results locally
+- write simple operation logs locally
 - create a dry-run review plan
 - show install/update/skip intent, provider, trust level, scope, administrator requirement, detection state, dependencies, and portable destination
 
@@ -96,8 +98,8 @@ The app still cannot install, update, uninstall, elevate, or change installed so
 The repository is ready for review of the read-only Phase 1 slice.
 
 - Build passed with 0 warnings and 0 errors.
-- Tests passed: 14 total, 0 failed.
+- Tests passed: 16 total, 0 failed.
 - Malformed Recipes are rejected by test.
 - UI scan found no installer/elevation execution logic.
 - Detection is read-only and limited to `winget list` plus portable folder existence checks.
-- Real install, update, uninstall, elevation, logging, and SQLite persistence are not implemented yet.
+- Real install, update, uninstall, and elevation are not implemented yet.

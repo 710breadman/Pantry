@@ -4,6 +4,7 @@ using Pantry.Catalog;
 using Pantry.Core;
 using Pantry.Detection;
 using Pantry.Domain;
+using Pantry.Infrastructure;
 
 namespace Pantry.UI.ViewModels;
 
@@ -11,7 +12,10 @@ public sealed class MainViewModel : ObservableObject
 {
     private readonly BundledCatalogLoader _catalogLoader;
     private readonly AppDetectionService _detectionService;
+    private readonly OperationLogStore _operationLogStore;
     private readonly DryRunPlanner _planner;
+    private readonly PantryDatabase _database;
+    private readonly ScanResultStore _scanResultStore;
     private CatalogSnapshot? _catalog;
     private Profile? _selectedProfile;
     private IReadOnlyDictionary<string, AppDetectionResult> _detectionResults =
@@ -19,10 +23,19 @@ public sealed class MainViewModel : ObservableObject
     private string _status = "Loading bundled catalog...";
     private string _portableDestination = @"PantryTools";
 
-    public MainViewModel(BundledCatalogLoader catalogLoader, AppDetectionService detectionService, DryRunPlanner planner)
+    public MainViewModel(
+        BundledCatalogLoader catalogLoader,
+        AppDetectionService detectionService,
+        PantryDatabase database,
+        OperationLogStore operationLogStore,
+        ScanResultStore scanResultStore,
+        DryRunPlanner planner)
     {
         _catalogLoader = catalogLoader;
         _detectionService = detectionService;
+        _database = database;
+        _operationLogStore = operationLogStore;
+        _scanResultStore = scanResultStore;
         _planner = planner;
     }
 
@@ -58,15 +71,23 @@ public sealed class MainViewModel : ObservableObject
 
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
+        await _database.InitializeAsync(cancellationToken).ConfigureAwait(true);
+
         _catalog = await _catalogLoader
             .LoadAsync(CatalogPathProvider.BundledCatalogRoot(), cancellationToken)
             .ConfigureAwait(true);
+
+        _detectionResults = await _scanResultStore.LoadAsync(cancellationToken).ConfigureAwait(true);
 
         Profiles.Clear();
         foreach (var profile in _catalog.Profiles)
         {
             Profiles.Add(profile);
         }
+
+        await _operationLogStore
+            .AppendAsync("catalog", $"Loaded {_catalog.Recipes.Count} bundled Recipe(s).", cancellationToken: cancellationToken)
+            .ConfigureAwait(true);
 
         await SelectProfileAsync(Profiles.FirstOrDefault(), cancellationToken).ConfigureAwait(true);
     }
@@ -145,9 +166,15 @@ public sealed class MainViewModel : ObservableObject
             .ScanAsync(_catalog.Recipes, PortableDestination, cancellationToken)
             .ConfigureAwait(true);
 
+        await _scanResultStore.SaveAsync(_detectionResults.Values, cancellationToken).ConfigureAwait(true);
+
         await RefreshPlanAsync(cancellationToken).ConfigureAwait(true);
 
         var knownCount = _detectionResults.Count(result => result.Value.State != DetectedAppState.Unknown);
+        await _operationLogStore
+            .AppendAsync("detection", $"Read-only scan complete. Known states: {knownCount}/{_detectionResults.Count}.", cancellationToken: cancellationToken)
+            .ConfigureAwait(true);
+
         Status = $"Read-only scan complete. {knownCount} of {_detectionResults.Count} app(s) returned known detection state.";
     }
 }
