@@ -16,6 +16,7 @@ public sealed class MainWindow : Window
     private readonly ComboBox _profilePicker = new();
     private readonly StackPanel _catalogPanel = new();
     private readonly StackPanel _reviewPanel = new();
+    private readonly StackPanel _queuePanel = new();
     private readonly StackPanel _logsPanel = new();
     private readonly TextBlock _catalogSummary = new();
     private readonly TextBlock _selectionSummary = new();
@@ -129,6 +130,7 @@ public sealed class MainWindow : Window
             await _viewModel.SelectProfileAsync(_profilePicker.SelectedItem as Profile).ConfigureAwait(true);
             RenderCatalog();
             RenderReview();
+            RenderQueue();
         };
         Grid.SetColumn(_profilePicker, 0);
         controls.Children.Add(_profilePicker);
@@ -183,6 +185,7 @@ public sealed class MainWindow : Window
             {
                 new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
                 new ColumnDefinition { Width = new GridLength(1.2, GridUnitType.Star) },
+                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
                 new ColumnDefinition { Width = new GridLength(0.9, GridUnitType.Star) }
             }
         };
@@ -191,8 +194,11 @@ public sealed class MainWindow : Window
         var reviewColumn = BuildReviewColumn();
         Grid.SetColumn(reviewColumn, 1);
         body.Children.Add(reviewColumn);
+        var queueColumn = BuildQueueColumn();
+        Grid.SetColumn(queueColumn, 2);
+        body.Children.Add(queueColumn);
         var logColumn = BuildLogColumn();
-        Grid.SetColumn(logColumn, 2);
+        Grid.SetColumn(logColumn, 3);
         body.Children.Add(logColumn);
 
         Grid.SetRow(body, 1);
@@ -215,6 +221,19 @@ public sealed class MainWindow : Window
 
         _catalogPanel.Spacing = 10;
         _catalogPanel.Children.Add(SectionTitle("Catalog"));
+
+        return scrollViewer;
+    }
+
+    private FrameworkElement BuildQueueColumn()
+    {
+        var scrollViewer = new ScrollViewer
+        {
+            Content = _queuePanel
+        };
+
+        _queuePanel.Spacing = 10;
+        _queuePanel.Children.Add(SectionTitle("Queue plan"));
 
         return scrollViewer;
     }
@@ -291,9 +310,11 @@ public sealed class MainWindow : Window
             _portableDestination.Text = _viewModel.PortableDestination;
             RenderCatalog();
             RenderReview();
+            RenderQueue();
             RenderLogs();
             RenderSummary();
             _viewModel.ReviewItems.CollectionChanged += (_, _) => RenderReview();
+            _viewModel.QueueJobs.CollectionChanged += (_, _) => RenderQueue();
             _viewModel.RecentLogs.CollectionChanged += (_, _) => RenderLogs();
             _status.Text = _viewModel.Status;
         }
@@ -404,6 +425,40 @@ public sealed class MainWindow : Window
             }
 
             _logsPanel.Children.Add(panel);
+        }
+    }
+
+    private void RenderQueue()
+    {
+        _queuePanel.Children.Clear();
+        _queuePanel.Children.Add(SectionTitle("Queue plan"));
+
+        foreach (var item in _viewModel.QueueJobs)
+        {
+            var panel = new StackPanel
+            {
+                Padding = new Thickness(10),
+                Spacing = 3,
+                Background = new SolidColorBrush(Colors.White)
+            };
+
+            panel.Children.Add(new TextBlock
+            {
+                Text = item.Title,
+                FontWeight = FontWeights.SemiBold,
+                FontSize = 13
+            });
+            panel.Children.Add(new TextBlock { Text = item.Status });
+            panel.Children.Add(new TextBlock { Text = item.Provider });
+            panel.Children.Add(new TextBlock
+            {
+                Text = item.Reason,
+                TextWrapping = TextWrapping.Wrap,
+                FontSize = 12,
+                Foreground = new SolidColorBrush(ColorHelper.FromArgb(255, 67, 72, 80))
+            });
+
+            _queuePanel.Children.Add(panel);
         }
     }
 

@@ -219,6 +219,9 @@ public sealed class PantryDatabaseTests
             var recent = await queueSessions.ListRecentAsync(5);
 
             var session = Assert.Single(recent);
+            var jobs = await queueSessions.ListJobsAsync(session.Id);
+            Assert.Equal(2, jobs.Count);
+            Assert.Equal(QueueJobStatus.WaitingForReview, jobs[0].Status);
             Assert.Equal(1, count);
             Assert.Equal("gaming-setup", session.ProfileId);
             Assert.Equal(2, session.JobCount);

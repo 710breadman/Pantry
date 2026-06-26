@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Microsoft.Data.Sqlite;
+using Pantry.Domain;
 using Pantry.Queue;
 
 namespace Pantry.Infrastructure;
@@ -182,6 +183,54 @@ public sealed class QueueSessionStore
                 ProfileName = reader.GetString(3),
                 JobCount = reader.GetInt32(4),
                 ReviewRequiredCount = reader.GetInt32(5)
+            });
+        }
+
+        return records;
+    }
+
+    public async Task<IReadOnlyList<QueueJobRecord>> ListJobsAsync(
+        string sessionId,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(sessionId);
+
+        await using var connection = _database.CreateConnection();
+        await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+            select
+                job_order,
+                app_id,
+                app_name,
+                action,
+                job_status,
+                provider,
+                trust_level,
+                review_state,
+                review_reason
+            from queue_jobs
+            where session_id = $sessionId
+            order by job_order;
+            """;
+        command.Parameters.AddWithValue("$sessionId", sessionId);
+
+        var records = new List<QueueJobRecord>();
+        await using var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            records.Add(new QueueJobRecord
+            {
+                Order = reader.GetInt32(0),
+                AppId = reader.GetString(1),
+                AppName = reader.GetString(2),
+                Action = Enum.Parse<QueueJobAction>(reader.GetString(3)),
+                Status = Enum.Parse<QueueJobStatus>(reader.GetString(4)),
+                Provider = Enum.Parse<ProviderType>(reader.GetString(5)),
+                TrustLevel = Enum.Parse<TrustLevel>(reader.GetString(6)),
+                ReviewState = Enum.Parse<QueueJobReviewState>(reader.GetString(7)),
+                ReviewReason = reader.GetString(8)
             });
         }
 

@@ -72,6 +72,8 @@ public sealed class MainViewModel : ObservableObject
 
     public ObservableCollection<DryRunItemViewModel> ReviewItems { get; } = [];
 
+    public ObservableCollection<QueueJobViewModel> QueueJobs { get; } = [];
+
     public ObservableCollection<OperationLogEntryViewModel> RecentLogs { get; } = [];
 
     public Profile? SelectedProfile
@@ -173,6 +175,7 @@ public sealed class MainViewModel : ObservableObject
             ?? Profiles.FirstOrDefault();
 
         await SelectProfileAsync(selectedProfile, persistChoice: false, cancellationToken).ConfigureAwait(true);
+        await RefreshQueueJobsAsync(cancellationToken).ConfigureAwait(true);
         await RefreshLogsAsync(cancellationToken).ConfigureAwait(true);
     }
 
@@ -263,6 +266,7 @@ public sealed class MainViewModel : ObservableObject
             .ConfigureAwait(true);
         var queuePlan = await _queuePlanner.CreatePlanAsync(plan, cancellationToken).ConfigureAwait(true);
         await _queueSessionStore.SaveAsync(queuePlan, cancellationToken).ConfigureAwait(true);
+        await RefreshQueueJobsAsync(cancellationToken).ConfigureAwait(true);
         await UpdateReviewSessionSummaryAsync(cancellationToken).ConfigureAwait(true);
 
         SelectionSummary = $"Selected: {selectedCount}";
@@ -360,5 +364,23 @@ public sealed class MainViewModel : ObservableObject
         var reviewCount = await _reviewSessionStore.CountAsync(cancellationToken).ConfigureAwait(true);
         var queueCount = await _queueSessionStore.CountAsync(cancellationToken).ConfigureAwait(true);
         ReviewSessionSummary = $"Saved: {reviewCount} reviews, {queueCount} queues";
+    }
+
+    private async Task RefreshQueueJobsAsync(CancellationToken cancellationToken)
+    {
+        var latest = (await _queueSessionStore.ListRecentAsync(1, cancellationToken).ConfigureAwait(true))
+            .FirstOrDefault();
+        QueueJobs.Clear();
+
+        if (latest is null)
+        {
+            return;
+        }
+
+        var jobs = await _queueSessionStore.ListJobsAsync(latest.Id, cancellationToken).ConfigureAwait(true);
+        foreach (var job in jobs)
+        {
+            QueueJobs.Add(new QueueJobViewModel(job));
+        }
     }
 }

@@ -8,7 +8,7 @@ Phase 1: Read-only foundation slice
 
 ## Summary
 
-The repository now contains a buildable read-only app slice. It can load the bundled catalog, validate Recipes, switch profiles, select apps, scan installed apps with read-only checks, detect its own portable/installed/unknown run mode, save latest scan results, remember profile/app choices, remember portable destination, write simple operation logs, show recent logs, show summary counts, produce a dependency/conflict-aware dry-run review plan, create and save a read-only queue plan, save review session summaries, prune old review/queue sessions, and show saved review/queue counts. Startup services are composed through dependency injection.
+The repository now contains a buildable read-only app slice. It can load the bundled catalog, validate Recipes, switch profiles, select apps, scan installed apps with read-only checks, detect its own portable/installed/unknown run mode, save latest scan results, remember profile/app choices, remember portable destination, write simple operation logs, show recent logs, show summary counts, produce a dependency/conflict-aware dry-run review plan, create and save a read-only queue plan, show latest queue jobs, save review session summaries, prune old review/queue sessions, and show saved review/queue counts. Startup services are composed through dependency injection.
 
 The intended upstream repository is `https://github.com/710breadman/Pantry.git`. It is public and has the initial read-only slice pushed.
 
@@ -77,6 +77,8 @@ It does not install, update, uninstall, elevate, or change installed apps.
   - `Planned`
   - `WaitingForReview`
 - Added a small SQLite schema upgrade for older queue job tables missing `job_status`.
+- Added a read-only queue plan column to the UI.
+- Queue storage can now load saved queue jobs by session.
 - Added a status summary band for catalog, selection, plan, detection counts, and run mode.
 - Added SQLite initialization with Windows SQLite provider.
 - Added operation log storage.
@@ -121,7 +123,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 
 Do not begin real installation or elevation yet.
 
-Next, add a read-only queue detail view.
+Next, add queue session/job pruning to a shared retention helper.
 
 ## Approval Needed
 
@@ -159,4 +161,4 @@ Current approved choices:
 
 ## Next Milestone
 
-Recommended next phase: read-only queue detail view, still with no real installs.
+Recommended next phase: clean up retention helper duplication, still with no real installs.

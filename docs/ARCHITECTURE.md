@@ -213,6 +213,7 @@ V1 should use a quiet, practical desktop UI:
 - portable destination field
 - run-mode summary
 - saved-review count
+- read-only queue plan column
 - recent logs column
 
 Future UI work should add:
@@ -242,6 +243,7 @@ Current queue behavior:
 - It includes install/update items and skips skip items.
 - It keeps the dry-run order.
 - It marks conflicts and non-`VerifiedUnattended` jobs as needing review.
+- The UI shows the latest saved queue jobs as read-only rows.
 
 Plainly: Pantry can shape a future queue, but it cannot run it yet.
 
