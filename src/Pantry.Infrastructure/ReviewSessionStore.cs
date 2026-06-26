@@ -1,6 +1,5 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.Data.Sqlite;
 using Pantry.Domain;
 
 namespace Pantry.Infrastructure;
@@ -79,7 +78,14 @@ public sealed class ReviewSessionStore
         command.Parameters.AddWithValue("$itemsJson", itemsJson);
 
         await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
-        await PruneToLimitAsync(connection, DefaultRetentionLimit, cancellationToken).ConfigureAwait(false);
+        await SqliteRetentionPruner.PruneToLimitAsync(
+                connection,
+                "review_sessions",
+                "id",
+                "created_utc",
+                DefaultRetentionLimit,
+                cancellationToken)
+            .ConfigureAwait(false);
         return id;
     }
 
@@ -158,26 +164,13 @@ public sealed class ReviewSessionStore
         await using var connection = _database.CreateConnection();
         await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
 
-        return await PruneToLimitAsync(connection, maxSessionsToKeep, cancellationToken).ConfigureAwait(false);
-    }
-
-    private static async Task<int> PruneToLimitAsync(
-        SqliteConnection connection,
-        int maxSessionsToKeep,
-        CancellationToken cancellationToken)
-    {
-        await using var command = connection.CreateCommand();
-        command.CommandText = """
-            delete from review_sessions
-            where id not in (
-                select id
-                from review_sessions
-                order by created_utc desc, id desc
-                limit $maxSessionsToKeep
-            );
-            """;
-        command.Parameters.AddWithValue("$maxSessionsToKeep", maxSessionsToKeep);
-
-        return await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        return await SqliteRetentionPruner.PruneToLimitAsync(
+                connection,
+                "review_sessions",
+                "id",
+                "created_utc",
+                maxSessionsToKeep,
+                cancellationToken)
+            .ConfigureAwait(false);
     }
 }

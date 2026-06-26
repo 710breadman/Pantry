@@ -250,60 +250,29 @@ public sealed class QueueSessionStore
         await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
 
         await using var transaction = await connection.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
-        await DeleteOldJobsAsync(connection, (SqliteTransaction)transaction, maxSessionsToKeep, cancellationToken)
-            .ConfigureAwait(false);
-        var deletedSessions = await DeleteOldSessionsAsync(
+        var sqliteTransaction = (SqliteTransaction)transaction;
+        await SqliteRetentionPruner.DeleteChildrenOutsideParentLimitAsync(
                 connection,
-                (SqliteTransaction)transaction,
+                "queue_jobs",
+                "session_id",
+                "queue_sessions",
+                "id",
+                "created_utc",
                 maxSessionsToKeep,
-                cancellationToken)
+                cancellationToken,
+                sqliteTransaction)
+            .ConfigureAwait(false);
+        var deletedSessions = await SqliteRetentionPruner.PruneToLimitAsync(
+                connection,
+                "queue_sessions",
+                "id",
+                "created_utc",
+                maxSessionsToKeep,
+                cancellationToken,
+                sqliteTransaction)
             .ConfigureAwait(false);
 
         await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
         return deletedSessions;
-    }
-
-    private static async Task DeleteOldJobsAsync(
-        SqliteConnection connection,
-        SqliteTransaction transaction,
-        int maxSessionsToKeep,
-        CancellationToken cancellationToken)
-    {
-        await using var command = connection.CreateCommand();
-        command.Transaction = transaction;
-        command.CommandText = """
-            delete from queue_jobs
-            where session_id not in (
-                select id
-                from queue_sessions
-                order by created_utc desc, id desc
-                limit $maxSessionsToKeep
-            );
-            """;
-        command.Parameters.AddWithValue("$maxSessionsToKeep", maxSessionsToKeep);
-
-        await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
-    }
-
-    private static async Task<int> DeleteOldSessionsAsync(
-        SqliteConnection connection,
-        SqliteTransaction transaction,
-        int maxSessionsToKeep,
-        CancellationToken cancellationToken)
-    {
-        await using var command = connection.CreateCommand();
-        command.Transaction = transaction;
-        command.CommandText = """
-            delete from queue_sessions
-            where id not in (
-                select id
-                from queue_sessions
-                order by created_utc desc, id desc
-                limit $maxSessionsToKeep
-            );
-            """;
-        command.Parameters.AddWithValue("$maxSessionsToKeep", maxSessionsToKeep);
-
-        return await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
     }
 }

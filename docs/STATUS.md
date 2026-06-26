@@ -14,6 +14,8 @@ The intended upstream repository is `https://github.com/710breadman/Pantry.git`.
 
 It does not install, update, uninstall, elevate, or change installed apps.
 
+Latest checkpoint: review and queue session pruning now share a validated SQLite retention helper.
+
 ## Completed
 
 - Read `AGENTS.md`.
@@ -107,6 +109,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 - Added xUnit tests for queue job status and queue job schema upgrade.
 - Added xUnit tests for review session storage.
 - Added xUnit tests for review-session pruning.
+- Added a shared SQLite retention helper for review and queue session pruning.
 - Built the full solution successfully.
 - Ran all tests successfully.
 
@@ -123,7 +126,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 
 Do not begin real installation or elevation yet.
 
-Next, add queue session/job pruning to a shared retention helper.
+Next, add read-only retry/cancel/failure-isolation models for future queue execution.
 
 ## Approval Needed
 
@@ -161,4 +164,4 @@ Current approved choices:
 
 ## Next Milestone
 
-Recommended next phase: clean up retention helper duplication, still with no real installs.
+Recommended next phase: model retry/cancel/failure isolation, still with no real installs.
