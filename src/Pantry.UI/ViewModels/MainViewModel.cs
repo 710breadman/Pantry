@@ -18,6 +18,7 @@ public sealed class MainViewModel : ObservableObject
     private readonly PantryDatabase _database;
     private readonly AppSelectionStore _appSelectionStore;
     private readonly ScanResultStore _scanResultStore;
+    private readonly ReviewSessionStore _reviewSessionStore;
     private readonly UserSettingsStore _userSettingsStore;
     private CatalogSnapshot? _catalog;
     private Profile? _selectedProfile;
@@ -40,6 +41,7 @@ public sealed class MainViewModel : ObservableObject
         AppSelectionStore appSelectionStore,
         OperationLogStore operationLogStore,
         ScanResultStore scanResultStore,
+        ReviewSessionStore reviewSessionStore,
         UserSettingsStore userSettingsStore,
         DryRunPlanner planner)
     {
@@ -50,6 +52,7 @@ public sealed class MainViewModel : ObservableObject
         _appSelectionStore = appSelectionStore;
         _operationLogStore = operationLogStore;
         _scanResultStore = scanResultStore;
+        _reviewSessionStore = reviewSessionStore;
         _userSettingsStore = userSettingsStore;
         _planner = planner;
         _modeSummary = FormatRunMode(runMode);
@@ -240,6 +243,10 @@ public sealed class MainViewModel : ObservableObject
         var installCount = plan.Items.Count(item => item.Intent == DryRunIntent.Install);
         var updateCount = plan.Items.Count(item => item.Intent == DryRunIntent.Update);
         var skipCount = plan.Items.Count(item => item.Intent == DryRunIntent.Skip);
+        await _reviewSessionStore
+            .SaveAsync(plan, _catalog.CatalogVersion, cancellationToken)
+            .ConfigureAwait(true);
+
         SelectionSummary = $"Selected: {selectedCount}";
         PlanSummary = $"Plan: {installCount} install, {updateCount} update, {skipCount} skip";
         Status = $"Loaded {_catalog.Recipes.Count} Recipes from catalog {_catalog.CatalogVersion}. {selectedCount} item(s) selected for dry-run review.";

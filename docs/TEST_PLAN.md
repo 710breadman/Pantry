@@ -34,6 +34,7 @@ Plainly: the app should be boringly reliable before it becomes broad.
 | Dependency injection | App startup container validates registrations when built. Direct xUnit coverage is deferred because referencing the WinUI project crashed the test host. |
 | Settings | Settings can be saved and loaded. Current tests cover last profile, portable destination, and per-profile app choices. |
 | SQLite | Database initializes and can write/read basic records. Current tests cover operation logs and scan result storage. |
+| Review sessions | Dry-run review summaries are saved and listed. |
 | Logging | Operation log records include category, message, details, and timestamp. Session/job IDs come later with real queue sessions. |
 | Recipe model | Required Recipe fields are enforced. |
 | Recipe schema | Invalid Recipe files fail validation with clear errors. |

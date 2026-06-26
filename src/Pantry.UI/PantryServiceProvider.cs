@@ -38,6 +38,7 @@ public static class PantryServiceProvider
         services.AddSingleton<AppSelectionStore>();
         services.AddSingleton<OperationLogStore>();
         services.AddSingleton<ScanResultStore>();
+        services.AddSingleton<ReviewSessionStore>();
         services.AddSingleton<UserSettingsStore>();
 
         services.AddTransient<MainViewModel>();

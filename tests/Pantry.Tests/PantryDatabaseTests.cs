@@ -118,6 +118,43 @@ public sealed class PantryDatabaseTests
         }
     }
 
+    [Fact]
+    public async Task Review_sessions_can_be_saved_and_listed()
+    {
+        var testPath = TestDatabasePath();
+        var database = new PantryDatabase(testPath.DatabasePath);
+        var sessions = new ReviewSessionStore(database);
+
+        try
+        {
+            await database.InitializeAsync();
+            await sessions.SaveAsync(new DryRunPlan
+            {
+                ProfileId = "gaming-setup",
+                ProfileName = "Gaming Setup",
+                Items =
+                [
+                    TestPlanItem("steam", "Steam", DryRunIntent.Install),
+                    TestPlanItem("7zip", "7-Zip", DryRunIntent.Skip)
+                ]
+            }, "0.1.0-test");
+
+            var recent = await sessions.ListRecentAsync(5);
+
+            var session = Assert.Single(recent);
+            Assert.Equal("gaming-setup", session.ProfileId);
+            Assert.Equal("0.1.0-test", session.CatalogVersion);
+            Assert.Equal(2, session.ItemCount);
+            Assert.Equal(1, session.InstallCount);
+            Assert.Equal(0, session.UpdateCount);
+            Assert.Equal(1, session.SkipCount);
+        }
+        finally
+        {
+            Directory.Delete(testPath.DirectoryPath, recursive: true);
+        }
+    }
+
     private static TestDatabaseLocation TestDatabasePath()
     {
         var folder = Path.Combine(Path.GetTempPath(), $"pantry-db-test-{Guid.NewGuid():N}");
@@ -134,5 +171,27 @@ public sealed class PantryDatabaseTests
         public required string DirectoryPath { get; init; }
 
         public required string DatabasePath { get; init; }
+    }
+
+    private static DryRunPlanItem TestPlanItem(string appId, string appName, DryRunIntent intent)
+    {
+        return new DryRunPlanItem
+        {
+            AppId = appId,
+            AppName = appName,
+            Intent = intent,
+            PreferredProvider = ProviderType.Winget,
+            TrustLevel = TrustLevel.Experimental,
+            ScopePreference = MachineScopePreference.Preferred,
+            AdministratorRequirement = AdministratorRequirement.Required,
+            DetectionState = DetectedAppState.Unknown,
+            DetectionConfidence = DetectionConfidence.Unknown,
+            DetectionSummary = "Test.",
+            Dependencies = [],
+            Conflicts = [],
+            ConflictSummary = "None",
+            PortableDestination = null,
+            Reason = "Test."
+        };
     }
 }

@@ -8,7 +8,7 @@ Phase 1: Read-only foundation slice
 
 ## Summary
 
-The repository now contains a buildable read-only app slice. It can load the bundled catalog, validate Recipes, switch profiles, select apps, scan installed apps with read-only checks, detect its own portable/installed/unknown run mode, save latest scan results, remember profile/app choices, remember portable destination, write simple operation logs, show recent logs, show summary counts, and produce a dependency/conflict-aware dry-run review plan. Startup services are now composed through dependency injection.
+The repository now contains a buildable read-only app slice. It can load the bundled catalog, validate Recipes, switch profiles, select apps, scan installed apps with read-only checks, detect its own portable/installed/unknown run mode, save latest scan results, remember profile/app choices, remember portable destination, write simple operation logs, show recent logs, show summary counts, produce a dependency/conflict-aware dry-run review plan, and save review session summaries. Startup services are composed through dependency injection.
 
 The intended upstream repository is `https://github.com/710breadman/Pantry.git`. It is public and has the initial read-only slice pushed.
 
@@ -73,6 +73,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 - Added a basic recent log viewer in the UI.
 - Added a small dependency injection composition root for startup service wiring.
 - Added `Microsoft.Extensions.DependencyInjection` to the UI project.
+- Added SQLite storage for dry-run review session summaries.
 - Added xUnit tests for Recipe validation, catalog loading, profile defaults, and dry-run planning.
 - Added xUnit tests for Winget output parsing, Winget command safety, and portable folder detection.
 - Added xUnit tests for registry detection and Winget-to-registry fallback.
@@ -82,6 +83,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 - Added xUnit tests for saved settings and per-profile app selections.
 - Added xUnit tests for dependency ordering and dependency-cycle handling.
 - Added xUnit tests for symmetric conflict warnings.
+- Added xUnit tests for review session storage.
 - Built the full solution successfully.
 - Ran all tests successfully.
 
@@ -98,7 +100,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 
 Do not begin real installation or elevation yet.
 
-Next, add a small review/session model in SQLite so dry-run plans can be stored before real queue execution exists.
+Next, add a simple UI count for recent review sessions.
 
 ## Approval Needed
 
@@ -136,4 +138,4 @@ Current approved choices:
 
 ## Next Milestone
 
-Recommended next phase: persist dry-run review sessions, still with no real installs.
+Recommended next phase: show recent review-session count, still with no real installs.

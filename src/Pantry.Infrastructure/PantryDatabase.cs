@@ -72,6 +72,22 @@ public sealed class PantryDatabase
                 updated_utc text not null,
                 primary key (profile_id, app_id)
             );
+
+            create table if not exists review_sessions (
+                id text primary key,
+                created_utc text not null,
+                profile_id text not null,
+                profile_name text not null,
+                catalog_version text not null,
+                item_count integer not null,
+                install_count integer not null,
+                update_count integer not null,
+                skip_count integer not null,
+                items_json text not null
+            );
+
+            create index if not exists ix_review_sessions_created
+            on review_sessions (created_utc);
             """;
 
         await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);

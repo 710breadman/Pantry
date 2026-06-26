@@ -155,6 +155,7 @@ Current tables:
 - `scan_results`
 - `app_settings`
 - `profile_selections`
+- `review_sessions`
 
 Current state location:
 
