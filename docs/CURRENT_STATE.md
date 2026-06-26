@@ -9,7 +9,7 @@ The repository has a first read-only Phase 1 slice.
 | Area | Current state |
 | --- | --- |
 | Source code | Read-only WinUI shell plus separated domain, catalog, core, detection, and infrastructure projects |
-| Tests | xUnit tests for Recipe validation, catalog loading, profile defaults, dry-run planning, Winget/registry/file detection, SQLite state, and saved settings |
+| Tests | xUnit tests for Recipe validation, catalog loading, profile defaults, dry-run planning, Winget/registry/file detection, run-mode detection, SQLite state, and saved settings |
 | Build system | `.NET 10` solution file: `ThePantry.slnx` |
 | Git repository | Initialized locally; `origin` points to `https://github.com/710breadman/Pantry.git` |
 | Intended upstream | `https://github.com/710breadman/Pantry.git` |
@@ -28,7 +28,7 @@ The repository has a first read-only Phase 1 slice.
 - `src/Pantry.Catalog` loads and validates bundled JSON Recipes.
 - `src/Pantry.Core` creates the dry-run review plan.
 - `src/Pantry.Detection` runs read-only installed-app checks.
-- `src/Pantry.Infrastructure` initializes SQLite state, operation logs, saved scan results, app settings, and saved profile selections.
+- `src/Pantry.Infrastructure` detects installed/portable run mode and initializes SQLite state, operation logs, saved scan results, app settings, and saved profile selections.
 - `tests/Pantry.Tests` covers the read-only foundation behavior.
 - `catalog/bundled` contains the JSON Schema, five approved Recipe files, and three profiles.
 
@@ -73,7 +73,8 @@ The app can now:
 - select and deselect apps
 - scan installed apps with read-only checks
 - use Winget list, uninstall registry keys, configured file paths, and portable folder checks for read-only detection
-- use Winget list, uninstall registry keys, and portable folder checks for read-only detection
+- detect whether the app is running in portable, installed, or unknown/development mode
+- use local app data for normal/unknown mode state and an app-local `data` folder when a `pantry.portable` marker exists
 - show catalog, selection, plan, and detection summary counts
 - remember last profile
 - remember app choices per profile
@@ -105,8 +106,9 @@ The app still cannot install, update, uninstall, elevate, or change installed so
 The repository is ready for review of the read-only Phase 1 slice.
 
 - Build passed with 0 warnings and 0 errors.
-- Tests passed: 24 total, 0 failed.
+- Tests passed: 28 total, 0 failed.
 - Malformed Recipes are rejected by test.
 - UI scan found no installer/elevation execution logic.
 - Detection is read-only and limited to `winget list`, uninstall registry reads, configured file paths, and portable folder existence checks.
+- Run-mode detection is read-only and uses a deliberate `pantry.portable` marker rather than guessing from drive type.
 - Real install, update, uninstall, and elevation are not implemented yet.

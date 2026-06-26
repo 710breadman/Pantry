@@ -22,7 +22,7 @@ This backlog is ordered to prove safety and correctness before catalog size.
 | Add structured logging | Partial | App writes simple operation logs and shows recent logs; session/job correlation comes later. |
 | Add settings service | Done | App stores last profile, portable destination, and app choices per profile. |
 | Add SQLite persistence | Done | Database initializes and stores operation logs plus latest scan results. |
-| Add portable/installed mode detection | Not started | App can tell whether it is running from installed or portable layout. |
+| Add portable/installed mode detection | Done | App can tell whether it is running from installed, portable, or unknown/development layout. |
 | Add Recipe domain models | Done | Core Recipe types compile and are covered by unit tests. |
 | Add Recipe schema validation | Done | Invalid Recipe files are rejected with clear errors. |
 
@@ -46,7 +46,7 @@ This backlog is ordered to prove safety and correctness before catalog size.
 | File/version detection | Done | Recipe can check configured executable paths and read file version where available. |
 | Detection confidence model | Done | Results include state, confidence, and evidence. |
 | Portable folder detection | Done | Portable app path can be checked without changing files. |
-| Dashboard installed state | Partial | UI shows catalog, selection, plan, and detection summary counts. |
+| Dashboard installed state | Partial | UI shows catalog, selection, plan, detection, and run-mode summary counts. |
 
 ## Phase 4: Queue And Review
 
@@ -128,7 +128,7 @@ The first feature should:
 - show profiles with default selections: done
 - produce a review plan: done
 - install nothing yet: done
-- run detection in dry-run mode only if available: done for Winget list, uninstall registry reads, configured file paths, and portable folder checks
+- run detection in dry-run mode only if available: done for Winget list, uninstall registry reads, configured file paths, portable folder checks, and Pantry run-mode detection
 - write logs: done for simple operation logs and recent log display
 
-Next useful slice: portable/installed mode detection.
+Next useful slice: dependency-aware dry-run ordering.

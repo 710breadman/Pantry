@@ -12,6 +12,7 @@ public sealed class MainViewModel : ObservableObject
 {
     private readonly BundledCatalogLoader _catalogLoader;
     private readonly AppDetectionService _detectionService;
+    private readonly PantryRunModeDetection _runMode;
     private readonly OperationLogStore _operationLogStore;
     private readonly DryRunPlanner _planner;
     private readonly PantryDatabase _database;
@@ -28,11 +29,13 @@ public sealed class MainViewModel : ObservableObject
     private string _selectionSummary = "Selected: 0";
     private string _planSummary = "Plan: pending";
     private string _detectionSummary = "Detection: not scanned";
+    private string _modeSummary;
     private string _portableDestination = @"PantryTools";
 
     public MainViewModel(
         BundledCatalogLoader catalogLoader,
         AppDetectionService detectionService,
+        PantryRunModeDetection runMode,
         PantryDatabase database,
         AppSelectionStore appSelectionStore,
         OperationLogStore operationLogStore,
@@ -42,12 +45,14 @@ public sealed class MainViewModel : ObservableObject
     {
         _catalogLoader = catalogLoader;
         _detectionService = detectionService;
+        _runMode = runMode;
         _database = database;
         _appSelectionStore = appSelectionStore;
         _operationLogStore = operationLogStore;
         _scanResultStore = scanResultStore;
         _userSettingsStore = userSettingsStore;
         _planner = planner;
+        _modeSummary = FormatRunMode(runMode);
     }
 
     public ObservableCollection<Profile> Profiles { get; } = [];
@@ -94,6 +99,12 @@ public sealed class MainViewModel : ObservableObject
         private set => SetProperty(ref _detectionSummary, value);
     }
 
+    public string ModeSummary
+    {
+        get => _modeSummary;
+        private set => SetProperty(ref _modeSummary, value);
+    }
+
     public string PortableDestination
     {
         get => _portableDestination;
@@ -114,6 +125,7 @@ public sealed class MainViewModel : ObservableObject
             .LoadAsync(CatalogPathProvider.BundledCatalogRoot(), cancellationToken)
             .ConfigureAwait(true);
         CatalogSummary = $"Catalog {_catalog.CatalogVersion}: {_catalog.Recipes.Count} Recipes";
+        ModeSummary = FormatRunMode(_runMode);
 
         _detectionResults = await _scanResultStore.LoadAsync(cancellationToken).ConfigureAwait(true);
         UpdateDetectionSummary(_detectionResults);
@@ -132,6 +144,10 @@ public sealed class MainViewModel : ObservableObject
 
         await _operationLogStore
             .AppendAsync("catalog", $"Loaded {_catalog.Recipes.Count} bundled Recipe(s).", cancellationToken: cancellationToken)
+            .ConfigureAwait(true);
+
+        await _operationLogStore
+            .AppendAsync("startup", $"Run mode: {_runMode.Mode}. {_runMode.Reason}", cancellationToken: cancellationToken)
             .ConfigureAwait(true);
 
         var selectedProfile = Profiles.FirstOrDefault(profile =>
@@ -306,5 +322,10 @@ public sealed class MainViewModel : ObservableObject
         var current = detectionResults.Count(result => result.Value.State == DetectedAppState.InstalledCurrent);
         var updates = detectionResults.Count(result => result.Value.State == DetectedAppState.UpdateAvailable);
         DetectionSummary = $"Detection: {known}/{detectionResults.Count} known, {current} current, {updates} updates";
+    }
+
+    private static string FormatRunMode(PantryRunModeDetection runMode)
+    {
+        return $"Mode: {runMode.Mode} | State: {runMode.StateDirectory}";
     }
 }

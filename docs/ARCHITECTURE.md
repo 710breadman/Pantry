@@ -34,14 +34,14 @@ More projects such as `Pantry.Providers`, `Pantry.Queue`, `Pantry.Elevation`, `P
 | `Pantry.UI` | WinUI 3 screens, navigation, view models, and user-facing state. |
 | `Pantry.Core` | Application workflows that coordinate catalog, detection, queue planning, and execution. |
 | `Pantry.Domain` | Core types such as Recipe, app identity, trust level, install action, detection result, queue job, and provider result. |
-| `Pantry.Infrastructure` | SQLite database initialization, operation logs, saved scan results, saved settings, profile selections, and future platform adapters. |
+| `Pantry.Infrastructure` | Run-mode detection, SQLite database initialization, operation logs, saved scan results, saved settings, profile selections, and future platform adapters. |
 | `Pantry.Catalog` | Load bundled catalog and validate Recipe schema. Later it will apply local overrides and handle signed catalog updates. |
 | `Pantry.Detection` | Runs read-only detection. Current checks are Winget list parsing, uninstall registry reads, configured file paths, file versions, and portable folder existence. |
 | Future `Pantry.Providers` | Provider implementations such as Winget, MSI, EXE, Microsoft Store, GitHub release, and portable archive. |
 | Future richer detection | AppX, services, portable managed folders, and Pantry history. |
 | Future `Pantry.Queue` | Plan executable jobs, order dependencies, handle retries, cancellation, failure isolation, and final job states. |
 | Future `Pantry.Elevation` | Broker communication with the elevated helper and validate privileged job requests. |
-| Future `Pantry.Portable` | Portable mode detection, portable destination choices, managed folders, and portable tool deployment. |
+| Future `Pantry.Portable` | Portable destination choices, managed folders, portable profiles, and portable tool deployment. |
 | Future `Pantry.Logging` | Structured operation logging and log index records. |
 | `Pantry.Tests` | Unit tests for planning, Recipes, trust, detection mapping, queue behavior, and validation. |
 | Future `Pantry.IntegrationTests` | Tests for provider behavior, database persistence, helper IPC, and controlled install flows. |
@@ -49,6 +49,9 @@ More projects such as `Pantry.Providers`, `Pantry.Queue`, `Pantry.Elevation`, `P
 ## Main Runtime Flow
 
 ```text
+App starts and detects portable/installed/unknown mode
+        |
+        v
 User chooses profile/apps
         |
         v
@@ -150,6 +153,13 @@ Current tables:
 - `app_settings`
 - `profile_selections`
 
+Current state location:
+
+- Portable mode: a `pantry.portable` marker beside the app moves state to an app-local `data` folder.
+- Installed or unknown/development mode: state stays under the user's local app data folder.
+
+Plainly: a portable copy keeps its Pantry data next to the app only when the marker says that is intentional.
+
 ## Trust Model
 
 Trust levels:
@@ -190,6 +200,7 @@ V1 should use a quiet, practical desktop UI:
 - read-only installed-app scan button
 - review screen
 - portable destination field
+- run-mode summary
 - recent logs column
 
 Future UI work should add:
@@ -217,5 +228,6 @@ Most logic should be testable without WinUI:
 - catalog rollback
 - provider result mapping
 - elevation job validation
+- portable/installed run-mode detection
 
 This is why the engine should not live inside button-click handlers.

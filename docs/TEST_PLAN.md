@@ -37,7 +37,7 @@ Plainly: the app should be boringly reliable before it becomes broad.
 | Logging | Operation log records include category, message, details, and timestamp. Session/job IDs come later with real queue sessions. |
 | Recipe model | Required Recipe fields are enforced. |
 | Recipe schema | Invalid Recipe files fail validation with clear errors. |
-| Portable mode | Installed and portable layouts are detected correctly. |
+| Portable mode | Installed, portable, and unknown/development layouts are detected correctly. Current tests cover marker-file portable mode, Program Files installed mode, unknown mode, and marker priority. |
 
 ## Phase 2 Catalog And Profile Tests
 

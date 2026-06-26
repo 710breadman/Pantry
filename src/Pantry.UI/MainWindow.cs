@@ -23,13 +23,15 @@ public sealed class MainWindow : Window
     private readonly TextBlock _selectionSummary = new();
     private readonly TextBlock _planSummary = new();
     private readonly TextBlock _detectionSummary = new();
+    private readonly TextBlock _modeSummary = new();
     private readonly TextBlock _status = new();
     private readonly TextBox _portableDestination = new();
 
     public MainWindow()
     {
         Title = "The Pantry";
-        var database = new PantryDatabase(PantryDataPaths.DefaultDatabasePath());
+        var runMode = new PantryRunModeDetector(new WindowsAppRuntimeEnvironment()).Detect();
+        var database = new PantryDatabase(PantryDataPaths.DefaultDatabasePath(runMode));
         _viewModel = new MainViewModel(
             new BundledCatalogLoader(new RecipeValidator()),
             new AppDetectionService(
@@ -37,6 +39,7 @@ public sealed class MainWindow : Window
                 new PortableFolderDetectionProvider(),
                 new RegistryDetectionProvider(new WindowsRegistryReader()),
                 new FileDetectionProvider(new WindowsFileSystemReader())),
+            runMode,
             database,
             new AppSelectionStore(database),
             new OperationLogStore(database),
@@ -70,6 +73,11 @@ public sealed class MainWindow : Window
             if (args.PropertyName == nameof(MainViewModel.DetectionSummary))
             {
                 _detectionSummary.Text = _viewModel.DetectionSummary;
+            }
+
+            if (args.PropertyName == nameof(MainViewModel.ModeSummary))
+            {
+                _modeSummary.Text = _viewModel.ModeSummary;
             }
         };
     }
@@ -243,6 +251,7 @@ public sealed class MainWindow : Window
                 new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
                 new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
                 new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                new ColumnDefinition { Width = new GridLength(1.2, GridUnitType.Star) },
                 new ColumnDefinition { Width = new GridLength(1.2, GridUnitType.Star) }
             }
         };
@@ -251,6 +260,7 @@ public sealed class MainWindow : Window
         AddSummaryCell(grid, _selectionSummary, 1);
         AddSummaryCell(grid, _planSummary, 2);
         AddSummaryCell(grid, _detectionSummary, 3);
+        AddSummaryCell(grid, _modeSummary, 4);
 
         return grid;
     }
@@ -409,6 +419,7 @@ public sealed class MainWindow : Window
         _selectionSummary.Text = _viewModel.SelectionSummary;
         _planSummary.Text = _viewModel.PlanSummary;
         _detectionSummary.Text = _viewModel.DetectionSummary;
+        _modeSummary.Text = _viewModel.ModeSummary;
     }
 
     private static FrameworkElement BuildAppContent(AppSelectionViewModel app)

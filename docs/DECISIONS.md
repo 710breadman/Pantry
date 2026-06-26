@@ -26,6 +26,7 @@ This document records product and engineering decisions so the project does not 
 | D-016 | Use named pipes for future UI-to-helper IPC. | Named pipes are a normal Windows local communication choice and can be locked down. |
 | D-017 | Use xUnit for tests. | It is simple, common, and already working in this repo. |
 | D-018 | Keep the first slice read-only. | The app should prove catalog/profile/review behavior before touching installs or admin work. |
+| D-019 | Portable mode is activated by a `pantry.portable` marker beside the app. | A marker is clearer and safer than guessing from drive type or folder name. |
 
 ## Proposed Technical Defaults
 
@@ -38,7 +39,7 @@ These are the current technical choices.
 | P-003 | Use JSON Schema for Recipe validation. | A schema catches missing or malformed Recipe fields before unsafe work starts. |
 | P-004 | Use named pipes for UI-to-helper IPC. | Named pipes are a common local Windows communication method and can be locked down. |
 | P-005 | Use Winget as the first provider. | Winget can install known packages and gives us a safer first integration than custom EXE automation. |
-| P-006 | Use the `Microsoft.Data.Sqlite` family for local state. | `Microsoft.Data.Sqlite.Core` is referenced now; actual DB initialization is still pending. |
+| P-006 | Use the `Microsoft.Data.Sqlite` family for local state. | `Microsoft.Data.Sqlite.Core` plus the Windows SQLite provider are used for the local database. |
 | P-007 | Use Serilog or `Microsoft.Extensions.Logging` structured logging. | Both support structured logs; the final choice should match the app host setup in Phase 1. |
 | P-008 | Use `Microsoft.WindowsAppSDK` `2.2.0`. | This was the latest stable-looking package found during setup. |
 | P-009 | Use `NJsonSchema` for schema validation. | It gives real JSON Schema validation instead of hand-written checks. |
@@ -48,7 +49,7 @@ These are the current technical choices.
 
 | Topic | Options | Recommendation |
 | --- | --- | --- |
-| Installer packaging for The Pantry itself | MSIX, loose portable folder, installer | Support both installed and portable app modes, but decide packaging after foundation work. |
+| Installer packaging for The Pantry itself | MSIX, loose portable folder, installer | Support both installed and portable app modes; the first detector already supports a loose portable folder with a marker file. |
 | Catalog signing method | Authenticode, detached signature, or public-key signature file | Use a detached signature or public-key signature file for catalog data; finalize during catalog update design. |
 | Structured logging package | Serilog vs `Microsoft.Extensions.Logging` | Decide when operation logs are added. |
 | SQLite persistence shape | Direct SQL, repository services, or light data access layer | Decide when the first durable state table is added. |
