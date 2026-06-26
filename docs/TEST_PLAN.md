@@ -69,7 +69,7 @@ Plainly: the app should be boringly reliable before it becomes broad.
 | Dependencies | Dependencies are ordered before dependents. Current tests cover required dependency inclusion, dependency ordering, and cycle handling. |
 | Conflicts | Known conflicts are shown before execution. Current tests cover symmetric warnings when selected apps conflict. |
 | Queue model | Queue plans are created without execution. Current tests cover install/update inclusion, skip exclusion, order, and review-required jobs. |
-| Queue storage | Queue sessions and job counts are saved, counted, and listed. |
+| Queue storage | Queue sessions and job counts are saved, counted, listed, and pruned. |
 | Failure isolation | Failed app does not block unrelated app. |
 | Retry | Failed job can retry without duplicating completed work. |
 | Cancellation | Cancelled queue records final states. |

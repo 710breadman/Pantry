@@ -230,6 +230,44 @@ public sealed class PantryDatabaseTests
         }
     }
 
+    [Fact]
+    public async Task Queue_sessions_can_be_pruned_to_limit()
+    {
+        var testPath = TestDatabasePath();
+        var database = new PantryDatabase(testPath.DatabasePath);
+        var queueSessions = new QueueSessionStore(database);
+
+        try
+        {
+            await database.InitializeAsync();
+            for (var index = 0; index < 4; index++)
+            {
+                await queueSessions.SaveAsync(new QueueSessionPlan
+                {
+                    Id = Guid.NewGuid().ToString("N"),
+                    CreatedUtc = DateTimeOffset.UtcNow,
+                    ProfileId = $"profile-{index}",
+                    ProfileName = $"Profile {index}",
+                    Jobs = [TestQueueJob("steam", "Steam", QueueJobReviewState.ReviewRequired)]
+                });
+            }
+
+            var pruned = await queueSessions.PruneToLimitAsync(2);
+            var sessionCount = await queueSessions.CountAsync();
+            var jobCount = await queueSessions.CountJobsAsync();
+            var recent = await queueSessions.ListRecentAsync(5);
+
+            Assert.Equal(2, pruned);
+            Assert.Equal(2, sessionCount);
+            Assert.Equal(2, jobCount);
+            Assert.Equal(2, recent.Count);
+        }
+        finally
+        {
+            Directory.Delete(testPath.DirectoryPath, recursive: true);
+        }
+    }
+
     private static TestDatabaseLocation TestDatabasePath()
     {
         var folder = Path.Combine(Path.GetTempPath(), $"pantry-db-test-{Guid.NewGuid():N}");

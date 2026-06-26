@@ -6,6 +6,8 @@ namespace Pantry.Infrastructure;
 
 public sealed class QueueSessionStore
 {
+    public const int DefaultRetentionLimit = 100;
+
     private readonly PantryDatabase _database;
 
     public QueueSessionStore(PantryDatabase database)
@@ -111,6 +113,7 @@ public sealed class QueueSessionStore
         }
 
         await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+        await PruneToLimitAsync(DefaultRetentionLimit, cancellationToken).ConfigureAwait(false);
     }
 
     public async Task<int> CountAsync(CancellationToken cancellationToken = default)
@@ -120,6 +123,18 @@ public sealed class QueueSessionStore
 
         await using var command = connection.CreateCommand();
         command.CommandText = "select count(*) from queue_sessions;";
+
+        var count = await command.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+        return Convert.ToInt32(count);
+    }
+
+    public async Task<int> CountJobsAsync(CancellationToken cancellationToken = default)
+    {
+        await using var connection = _database.CreateConnection();
+        await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        await using var command = connection.CreateCommand();
+        command.CommandText = "select count(*) from queue_jobs;";
 
         var count = await command.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
         return Convert.ToInt32(count);
@@ -168,5 +183,75 @@ public sealed class QueueSessionStore
         }
 
         return records;
+    }
+
+    public async Task<int> PruneToLimitAsync(
+        int maxSessionsToKeep,
+        CancellationToken cancellationToken = default)
+    {
+        if (maxSessionsToKeep < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(maxSessionsToKeep), "Must keep at least one queue session.");
+        }
+
+        await using var connection = _database.CreateConnection();
+        await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        await using var transaction = await connection.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
+        await DeleteOldJobsAsync(connection, (SqliteTransaction)transaction, maxSessionsToKeep, cancellationToken)
+            .ConfigureAwait(false);
+        var deletedSessions = await DeleteOldSessionsAsync(
+                connection,
+                (SqliteTransaction)transaction,
+                maxSessionsToKeep,
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+        return deletedSessions;
+    }
+
+    private static async Task DeleteOldJobsAsync(
+        SqliteConnection connection,
+        SqliteTransaction transaction,
+        int maxSessionsToKeep,
+        CancellationToken cancellationToken)
+    {
+        await using var command = connection.CreateCommand();
+        command.Transaction = transaction;
+        command.CommandText = """
+            delete from queue_jobs
+            where session_id not in (
+                select id
+                from queue_sessions
+                order by created_utc desc, id desc
+                limit $maxSessionsToKeep
+            );
+            """;
+        command.Parameters.AddWithValue("$maxSessionsToKeep", maxSessionsToKeep);
+
+        await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    private static async Task<int> DeleteOldSessionsAsync(
+        SqliteConnection connection,
+        SqliteTransaction transaction,
+        int maxSessionsToKeep,
+        CancellationToken cancellationToken)
+    {
+        await using var command = connection.CreateCommand();
+        command.Transaction = transaction;
+        command.CommandText = """
+            delete from queue_sessions
+            where id not in (
+                select id
+                from queue_sessions
+                order by created_utc desc, id desc
+                limit $maxSessionsToKeep
+            );
+            """;
+        command.Parameters.AddWithValue("$maxSessionsToKeep", maxSessionsToKeep);
+
+        return await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
     }
 }
