@@ -50,6 +50,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 - Added a basic WinUI shell for profile selection, app selection, and dry-run review.
 - Added read-only Winget detection using `winget list`.
 - Added read-only uninstall registry detection fallback.
+- Added read-only configured file path/version detection fallback.
 - Added read-only portable folder detection.
 - Fed detection state into the dry-run plan and UI.
 - Added a status summary band for catalog, selection, plan, and detection counts.
@@ -63,6 +64,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 - Added xUnit tests for Recipe validation, catalog loading, profile defaults, and dry-run planning.
 - Added xUnit tests for Winget output parsing, Winget command safety, and portable folder detection.
 - Added xUnit tests for registry detection and Winget-to-registry fallback.
+- Added xUnit tests for file path detection and Winget/registry-to-file fallback.
 - Added xUnit tests for SQLite initialization, operation logs, and scan result persistence.
 - Added xUnit tests for saved settings and per-profile app selections.
 - Built the full solution successfully.
@@ -70,7 +72,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 
 ## Not Started
 
-- Rich detection engine beyond Winget list, uninstall registry reads, and portable folder checks.
+- Rich detection engine beyond Winget list, uninstall registry reads, configured file paths, and portable folder checks.
 - Real queue execution.
 - Elevated helper.
 - Providers.
@@ -81,7 +83,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 
 Do not begin real installation or elevation yet.
 
-Next, add read-only file/version detection for Recipes that need evidence beyond Winget and registry.
+Next, add portable/installed mode detection so the app can tell whether it is running from a normal install location or a portable folder.
 
 ## Approval Needed
 
@@ -110,8 +112,9 @@ Current approved choices:
 | Recipes are still `Experimental` | Do not execute them until real provider tests prove safe behavior. |
 | Winget output format may vary | Parser is covered by tests, but more real-machine samples are needed. |
 | Registry detection can be fuzzy | Registry fallback uses display-name matching and medium confidence only. |
+| File path detection can miss custom installs | File fallback only checks configured paths and uses low/medium confidence. |
 | Logs are minimal | Operation logs and a basic viewer exist, but no filtering or detailed log screen yet. |
 
 ## Next Milestone
 
-Recommended next phase: Phase 2F, read-only file/version detection.
+Recommended next phase: Phase 2G, portable/installed mode detection.

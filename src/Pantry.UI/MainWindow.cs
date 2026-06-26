@@ -35,7 +35,8 @@ public sealed class MainWindow : Window
             new AppDetectionService(
                 new WingetDetectionProvider(new WindowsProcessRunner()),
                 new PortableFolderDetectionProvider(),
-                new RegistryDetectionProvider(new WindowsRegistryReader())),
+                new RegistryDetectionProvider(new WindowsRegistryReader()),
+                new FileDetectionProvider(new WindowsFileSystemReader())),
             database,
             new AppSelectionStore(database),
             new OperationLogStore(database),

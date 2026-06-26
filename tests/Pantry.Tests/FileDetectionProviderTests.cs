@@ -4,21 +4,15 @@ using Pantry.Domain;
 
 namespace Pantry.Tests;
 
-public sealed class RegistryDetectionProviderTests
+public sealed class FileDetectionProviderTests
 {
     [Fact]
-    public async Task Registry_provider_matches_uninstall_display_name()
+    public async Task File_provider_finds_configured_file_path()
     {
         var recipe = await LoadRecipeAsync("7zip");
-        var provider = new RegistryDetectionProvider(new FakeRegistryReader(
-        [
-            new RegistryAppEntry
-            {
-                DisplayName = "7-Zip 24.09 (x64)",
-                DisplayVersion = "24.09",
-                RegistryPath = @"LocalMachine\Software\...\7-Zip"
-            }
-        ]));
+        var provider = new FileDetectionProvider(new FakeFileSystemReader(
+            Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\7-Zip\7zFM.exe"),
+            "24.09"));
 
         var result = await provider.DetectAsync(recipe);
 
@@ -28,26 +22,19 @@ public sealed class RegistryDetectionProviderTests
     }
 
     [Fact]
-    public async Task Registry_provider_returns_not_installed_when_no_rule_matches()
+    public async Task File_provider_returns_low_confidence_not_installed_when_path_missing()
     {
         var recipe = await LoadRecipeAsync("7zip");
-        var provider = new RegistryDetectionProvider(new FakeRegistryReader(
-        [
-            new RegistryAppEntry
-            {
-                DisplayName = "Other App",
-                RegistryPath = @"LocalMachine\Software\...\Other"
-            }
-        ]));
+        var provider = new FileDetectionProvider(new FakeFileSystemReader());
 
         var result = await provider.DetectAsync(recipe);
 
         Assert.Equal(DetectedAppState.NotInstalled, result.State);
-        Assert.Equal(DetectionConfidence.Medium, result.Confidence);
+        Assert.Equal(DetectionConfidence.Low, result.Confidence);
     }
 
     [Fact]
-    public async Task App_detection_service_uses_registry_when_winget_misses_installed_app()
+    public async Task App_detection_service_uses_file_when_winget_and_registry_miss()
     {
         var recipe = await LoadRecipeAsync("7zip");
         var service = new AppDetectionService(
@@ -58,16 +45,10 @@ public sealed class RegistryDetectionProviderTests
                 StandardError = string.Empty
             })),
             new PortableFolderDetectionProvider(),
-            new RegistryDetectionProvider(new FakeRegistryReader(
-            [
-                new RegistryAppEntry
-                {
-                    DisplayName = "7-Zip 24.09 (x64)",
-                    DisplayVersion = "24.09",
-                    RegistryPath = @"LocalMachine\Software\...\7-Zip"
-                }
-            ])),
-            new FileDetectionProvider(new FakeFileSystemReader()));
+            new RegistryDetectionProvider(new FakeRegistryReader()),
+            new FileDetectionProvider(new FakeFileSystemReader(
+                Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\7-Zip\7zFM.exe"),
+                "24.09")));
 
         var results = await service.ScanAsync([recipe], portableDestination: null);
 
@@ -82,18 +63,25 @@ public sealed class RegistryDetectionProviderTests
         return catalog.GetRecipe(appId);
     }
 
-    private sealed class FakeRegistryReader : IRegistryReader
+    private sealed class FakeFileSystemReader : IFileSystemReader
     {
-        private readonly IReadOnlyList<RegistryAppEntry> _entries;
+        private readonly string? _existingPath;
+        private readonly string? _version;
 
-        public FakeRegistryReader(IReadOnlyList<RegistryAppEntry> entries)
+        public FakeFileSystemReader(string? existingPath = null, string? version = null)
         {
-            _entries = entries;
+            _existingPath = existingPath;
+            _version = version;
         }
 
-        public Task<IReadOnlyList<RegistryAppEntry>> ReadInstalledAppsAsync(CancellationToken cancellationToken = default)
+        public bool FileExists(string path)
         {
-            return Task.FromResult(_entries);
+            return string.Equals(path, _existingPath, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public string? TryGetFileVersion(string path)
+        {
+            return FileExists(path) ? _version : null;
         }
     }
 
@@ -116,16 +104,12 @@ public sealed class RegistryDetectionProviderTests
         }
     }
 
-    private sealed class FakeFileSystemReader : IFileSystemReader
+    private sealed class FakeRegistryReader : IRegistryReader
     {
-        public bool FileExists(string path)
+        public Task<IReadOnlyList<RegistryAppEntry>> ReadInstalledAppsAsync(CancellationToken cancellationToken = default)
         {
-            return false;
-        }
-
-        public string? TryGetFileVersion(string path)
-        {
-            return null;
+            return Task.FromResult<IReadOnlyList<RegistryAppEntry>>([]);
         }
     }
 }
+

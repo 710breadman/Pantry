@@ -43,7 +43,7 @@ This backlog is ordered to prove safety and correctness before catalog size.
 | --- | --- | --- |
 | Winget detection | Done | Known Winget apps can be detected with evidence from `winget list`. |
 | Registry detection | Done | Installed desktop apps can be detected from uninstall registry keys with medium confidence. |
-| File/version detection | Medium | Recipe can check known executable paths and versions. |
+| File/version detection | Done | Recipe can check configured executable paths and read file version where available. |
 | Detection confidence model | Done | Results include state, confidence, and evidence. |
 | Portable folder detection | Done | Portable app path can be checked without changing files. |
 | Dashboard installed state | Partial | UI shows catalog, selection, plan, and detection summary counts. |
@@ -128,7 +128,7 @@ The first feature should:
 - show profiles with default selections: done
 - produce a review plan: done
 - install nothing yet: done
-- run detection in dry-run mode only if available: done for Winget list, uninstall registry reads, and portable folder checks
+- run detection in dry-run mode only if available: done for Winget list, uninstall registry reads, configured file paths, and portable folder checks
 - write logs: done for simple operation logs and recent log display
 
-Next useful slice: read-only file/version detection.
+Next useful slice: portable/installed mode detection.

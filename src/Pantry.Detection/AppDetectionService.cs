@@ -7,15 +7,18 @@ public sealed class AppDetectionService
     private readonly WingetDetectionProvider _wingetProvider;
     private readonly PortableFolderDetectionProvider _portableProvider;
     private readonly RegistryDetectionProvider _registryProvider;
+    private readonly FileDetectionProvider _fileProvider;
 
     public AppDetectionService(
         WingetDetectionProvider wingetProvider,
         PortableFolderDetectionProvider portableProvider,
-        RegistryDetectionProvider registryProvider)
+        RegistryDetectionProvider registryProvider,
+        FileDetectionProvider fileProvider)
     {
         _wingetProvider = wingetProvider;
         _portableProvider = portableProvider;
         _registryProvider = registryProvider;
+        _fileProvider = fileProvider;
     }
 
     public async Task<IReadOnlyDictionary<string, AppDetectionResult>> ScanAsync(
@@ -54,6 +57,12 @@ public sealed class AppDetectionService
         if (registryResult.State is DetectedAppState.InstalledCurrent or DetectedAppState.UpdateAvailable)
         {
             return registryResult;
+        }
+
+        var fileResult = await _fileProvider.DetectAsync(recipe, cancellationToken).ConfigureAwait(false);
+        if (fileResult.State is DetectedAppState.InstalledCurrent or DetectedAppState.UpdateAvailable)
+        {
+            return fileResult;
         }
 
         return wingetResult.State == DetectedAppState.Unknown ? wingetResult : registryResult;
