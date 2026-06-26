@@ -32,6 +32,8 @@ public sealed record QueueJobPlan
 
     public required IReadOnlyList<string> Dependencies { get; init; }
 
+    public required IReadOnlyList<string> BlockedByAppIds { get; init; }
+
     public required IReadOnlyList<string> Conflicts { get; init; }
 
     public required QueueJobReviewState ReviewState { get; init; }

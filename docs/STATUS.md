@@ -14,7 +14,7 @@ The intended upstream repository is `https://github.com/710breadman/Pantry.git`.
 
 It does not install, update, uninstall, elevate, or change installed apps.
 
-Latest checkpoint: read-only queue jobs now record retry, cancellation, and failure-isolation policy.
+Latest checkpoint: read-only queue jobs now record dependency blockers.
 
 ## Completed
 
@@ -119,6 +119,11 @@ Latest checkpoint: read-only queue jobs now record retry, cancellation, and fail
   - pause dependents
   - continue unrelated jobs
 - Added SQLite schema upgrades for the new queue policy fields.
+- Added read-only queue dependency blocking:
+  - queued dependencies are stored as blocker app IDs
+  - ready jobs with blockers start as `WaitingForDependencies`
+  - review-required jobs still wait for review first
+- Added SQLite schema upgrade for saved blocker app IDs.
 - Built the full solution successfully.
 - Ran all tests successfully.
 
@@ -135,7 +140,7 @@ Latest checkpoint: read-only queue jobs now record retry, cancellation, and fail
 
 Do not begin real installation or elevation yet.
 
-Next, add read-only queue dependency blocking.
+Next, add a read-only queue state transition validator.
 
 ## Approval Needed
 
@@ -173,4 +178,4 @@ Current approved choices:
 
 ## Next Milestone
 
-Recommended next phase: model queue dependency blocking, still with no real installs.
+Recommended next phase: model valid queue state transitions, still with no real installs.

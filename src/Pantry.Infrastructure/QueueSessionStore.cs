@@ -83,6 +83,7 @@ public sealed class QueueSessionStore
                     review_state,
                     review_reason,
                     dependencies_json,
+                    blocked_by_app_ids_json,
                     conflicts_json
                 )
                 values (
@@ -103,6 +104,7 @@ public sealed class QueueSessionStore
                     $reviewState,
                     $reviewReason,
                     $dependenciesJson,
+                    $blockedByAppIdsJson,
                     $conflictsJson
                 );
                 """;
@@ -123,6 +125,7 @@ public sealed class QueueSessionStore
             command.Parameters.AddWithValue("$reviewState", job.ReviewState.ToString());
             command.Parameters.AddWithValue("$reviewReason", job.ReviewReason);
             command.Parameters.AddWithValue("$dependenciesJson", JsonSerializer.Serialize(job.Dependencies));
+            command.Parameters.AddWithValue("$blockedByAppIdsJson", JsonSerializer.Serialize(job.BlockedByAppIds));
             command.Parameters.AddWithValue("$conflictsJson", JsonSerializer.Serialize(job.Conflicts));
 
             await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
@@ -225,7 +228,8 @@ public sealed class QueueSessionStore
                 provider,
                 trust_level,
                 review_state,
-                review_reason
+                review_reason,
+                blocked_by_app_ids_json
             from queue_jobs
             where session_id = $sessionId
             order by job_order;
@@ -250,7 +254,8 @@ public sealed class QueueSessionStore
                 Provider = Enum.Parse<ProviderType>(reader.GetString(9)),
                 TrustLevel = Enum.Parse<TrustLevel>(reader.GetString(10)),
                 ReviewState = Enum.Parse<QueueJobReviewState>(reader.GetString(11)),
-                ReviewReason = reader.GetString(12)
+                ReviewReason = reader.GetString(12),
+                BlockedByAppIds = JsonSerializer.Deserialize<string[]>(reader.GetString(13)) ?? []
             });
         }
 

@@ -23,6 +23,8 @@ public sealed record QueueJobRecord
 
     public required QueueFailureBehavior FailureBehavior { get; init; }
 
+    public required IReadOnlyList<string> BlockedByAppIds { get; init; }
+
     public required ProviderType Provider { get; init; }
 
     public required TrustLevel TrustLevel { get; init; }

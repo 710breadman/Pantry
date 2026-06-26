@@ -11,9 +11,15 @@ public sealed class QueuePlanner
         ArgumentNullException.ThrowIfNull(dryRunPlan);
         cancellationToken.ThrowIfCancellationRequested();
 
-        var jobs = dryRunPlan.Items
+        var queueItems = dryRunPlan.Items
             .Where(item => item.Intent is DryRunIntent.Install or DryRunIntent.Update)
-            .Select((item, index) => CreateJob(item, index + 1))
+            .ToArray();
+        var queuedAppIds = queueItems
+            .Select(item => item.AppId)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var jobs = queueItems
+            .Select((item, index) => CreateJob(item, index + 1, queuedAppIds))
             .ToArray();
 
         return Task.FromResult(new QueueSessionPlan
@@ -26,11 +32,16 @@ public sealed class QueuePlanner
         });
     }
 
-    private static QueueJobPlan CreateJob(DryRunPlanItem item, int order)
+    private static QueueJobPlan CreateJob(
+        DryRunPlanItem item,
+        int order,
+        IReadOnlySet<string> queuedAppIds)
     {
         var reviewReason = ResolveReviewReason(item);
-
         var reviewState = reviewReason is null ? QueueJobReviewState.Ready : QueueJobReviewState.ReviewRequired;
+        var blockedByAppIds = item.Dependencies
+            .Where(queuedAppIds.Contains)
+            .ToArray();
 
         return new QueueJobPlan
         {
@@ -38,9 +49,7 @@ public sealed class QueuePlanner
             AppId = item.AppId,
             AppName = item.AppName,
             Action = item.Intent == DryRunIntent.Update ? QueueJobAction.Update : QueueJobAction.Install,
-            Status = reviewState == QueueJobReviewState.Ready
-                ? QueueJobStatus.Planned
-                : QueueJobStatus.WaitingForReview,
+            Status = ResolveStatus(reviewState, blockedByAppIds),
             RetryMode = QueueRetryMode.ManualOnly,
             MaxRetryAttempts = 0,
             CancellationBehavior = QueueCancellationBehavior.CancelBeforeStartOnly,
@@ -50,10 +59,25 @@ public sealed class QueuePlanner
             ScopePreference = item.ScopePreference,
             AdministratorRequirement = item.AdministratorRequirement,
             Dependencies = item.Dependencies,
+            BlockedByAppIds = blockedByAppIds,
             Conflicts = item.Conflicts,
             ReviewState = reviewState,
             ReviewReason = reviewReason ?? "Ready for future queue review."
         };
+    }
+
+    private static QueueJobStatus ResolveStatus(
+        QueueJobReviewState reviewState,
+        IReadOnlyCollection<string> blockedByAppIds)
+    {
+        if (reviewState == QueueJobReviewState.ReviewRequired)
+        {
+            return QueueJobStatus.WaitingForReview;
+        }
+
+        return blockedByAppIds.Count > 0
+            ? QueueJobStatus.WaitingForDependencies
+            : QueueJobStatus.Planned;
     }
 
     private static string? ResolveReviewReason(DryRunPlanItem item)

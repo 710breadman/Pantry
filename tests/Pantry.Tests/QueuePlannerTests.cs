@@ -57,6 +57,33 @@ public sealed class QueuePlannerTests
     }
 
     [Fact]
+    public async Task Queue_plan_blocks_jobs_on_queued_dependencies()
+    {
+        var planner = new QueuePlanner();
+
+        var plan = await planner.CreatePlanAsync(new DryRunPlan
+        {
+            ProfileId = "test",
+            ProfileName = "Test",
+            Items =
+            [
+                Item("runtime", "Runtime", DryRunIntent.Install, trustLevel: TrustLevel.VerifiedUnattended),
+                Item(
+                    "app",
+                    "App",
+                    DryRunIntent.Install,
+                    trustLevel: TrustLevel.VerifiedUnattended,
+                    dependencies: ["runtime", "already-installed"])
+            ]
+        });
+
+        Assert.Empty(plan.Jobs[0].BlockedByAppIds);
+        Assert.Equal(QueueJobStatus.Planned, plan.Jobs[0].Status);
+        Assert.Equal(["runtime"], plan.Jobs[1].BlockedByAppIds);
+        Assert.Equal(QueueJobStatus.WaitingForDependencies, plan.Jobs[1].Status);
+    }
+
+    [Fact]
     public async Task Queue_plan_requires_review_for_non_verified_or_conflicting_jobs()
     {
         var planner = new QueuePlanner();

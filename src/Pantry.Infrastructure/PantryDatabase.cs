@@ -119,6 +119,7 @@ public sealed class PantryDatabase
                 review_state text not null,
                 review_reason text not null,
                 dependencies_json text not null,
+                blocked_by_app_ids_json text not null default '[]',
                 conflicts_json text not null,
                 primary key (session_id, job_order),
                 foreign key (session_id) references queue_sessions(id) on delete cascade
@@ -155,6 +156,12 @@ public sealed class PantryDatabase
             "queue_jobs",
             "failure_behavior",
             "text not null default 'PauseDependentsContinueUnrelated'",
+            cancellationToken).ConfigureAwait(false);
+        await EnsureColumnAsync(
+            connection,
+            "queue_jobs",
+            "blocked_by_app_ids_json",
+            "text not null default '[]'",
             cancellationToken).ConfigureAwait(false);
     }
 

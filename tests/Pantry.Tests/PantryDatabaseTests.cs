@@ -226,6 +226,7 @@ public sealed class PantryDatabaseTests
             Assert.Equal(0, jobs[0].MaxRetryAttempts);
             Assert.Equal(QueueCancellationBehavior.CancelBeforeStartOnly, jobs[0].CancellationBehavior);
             Assert.Equal(QueueFailureBehavior.PauseDependentsContinueUnrelated, jobs[0].FailureBehavior);
+            Assert.Empty(jobs[0].BlockedByAppIds);
             Assert.Equal(1, count);
             Assert.Equal("gaming-setup", session.ProfileId);
             Assert.Equal(2, session.JobCount);
@@ -315,6 +316,7 @@ public sealed class PantryDatabaseTests
             Assert.True(await ColumnExistsAsync(database, "queue_jobs", "max_retry_attempts"));
             Assert.True(await ColumnExistsAsync(database, "queue_jobs", "cancellation_behavior"));
             Assert.True(await ColumnExistsAsync(database, "queue_jobs", "failure_behavior"));
+            Assert.True(await ColumnExistsAsync(database, "queue_jobs", "blocked_by_app_ids_json"));
         }
         finally
         {
@@ -385,6 +387,7 @@ public sealed class PantryDatabaseTests
             ScopePreference = MachineScopePreference.Preferred,
             AdministratorRequirement = AdministratorRequirement.Required,
             Dependencies = [],
+            BlockedByAppIds = [],
             Conflicts = [],
             ReviewState = reviewState,
             ReviewReason = "Test."
