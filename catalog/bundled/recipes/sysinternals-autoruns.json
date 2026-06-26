@@ -1,0 +1,47 @@
+{
+  "id": "sysinternals-autoruns",
+  "recipeVersion": "0.1.0",
+  "catalog": {
+    "name": "Microsoft Sysinternals Autoruns",
+    "shortDescription": "Portable startup and auto-run inspection utility for repair work.",
+    "category": "Repair",
+    "homepage": "https://learn.microsoft.com/sysinternals/downloads/autoruns",
+    "isPortable": true
+  },
+  "preferredProvider": "PortableArchive",
+  "source": {
+    "type": "PortableArchive",
+    "identifier": "https://download.sysinternals.com/files/Autoruns.zip",
+    "officialUrl": "https://learn.microsoft.com/sysinternals/downloads/autoruns"
+  },
+  "trustLevel": "Experimental",
+  "scopePreference": "NotApplicable",
+  "administratorRequirement": "NotRequired",
+  "portableDestinationHint": "PantryTools\\Sysinternals\\Autoruns",
+  "dependencies": [],
+  "conflicts": [],
+  "expectedExitCodes": [
+    0
+  ],
+  "rebootBehavior": "NeverAutomatic",
+  "detection": {
+    "rules": [
+      "managedPortableFolder:PantryTools\\Sysinternals\\Autoruns",
+      "fileName:Autoruns64.exe"
+    ],
+    "minimumConfidence": "High"
+  },
+  "update": {
+    "method": "PortableArchive",
+    "supported": false
+  },
+  "uninstall": {
+    "method": "ManagedPortableFolderRemoval",
+    "supported": false
+  },
+  "verification": {
+    "verifiedOn": "2026-06-26",
+    "evidence": "Read-only Phase 1 catalog entry. Portable deployment execution is intentionally not implemented yet."
+  }
+}
+

@@ -1,0 +1,101 @@
+{
+  "catalogVersion": "0.1.0",
+  "profiles": [
+    {
+      "id": "gaming-setup",
+      "name": "Gaming Setup",
+      "description": "Core game setup with Steam, a browser, archive support, and media playback.",
+      "selections": [
+        {
+          "appId": "steam",
+          "preselected": true,
+          "reason": "Steam is the default launcher for the first gaming setup path."
+        },
+        {
+          "appId": "firefox",
+          "preselected": true,
+          "reason": "A reliable browser helps account setup, downloads, and support flows."
+        },
+        {
+          "appId": "7zip",
+          "preselected": true,
+          "reason": "Archive support is useful for mods, tools, and downloaded packages."
+        },
+        {
+          "appId": "vlc",
+          "preselected": false,
+          "reason": "Useful for media playback, but not essential to the base gaming setup."
+        },
+        {
+          "appId": "sysinternals-autoruns",
+          "preselected": false,
+          "reason": "Repair utility belongs in the repair profile by default."
+        }
+      ]
+    },
+    {
+      "id": "living-room-media-pc",
+      "name": "Living-Room Media PC",
+      "description": "Focused setup for couch-friendly media playback and basic browsing.",
+      "selections": [
+        {
+          "appId": "vlc",
+          "preselected": true,
+          "reason": "VLC is the strongest default for local playback in the first media profile."
+        },
+        {
+          "appId": "firefox",
+          "preselected": true,
+          "reason": "A browser is useful for streaming sites and device setup."
+        },
+        {
+          "appId": "7zip",
+          "preselected": true,
+          "reason": "Archive support helps with media tools and downloaded files."
+        },
+        {
+          "appId": "steam",
+          "preselected": false,
+          "reason": "Useful on some living-room PCs, but not assumed by default."
+        },
+        {
+          "appId": "sysinternals-autoruns",
+          "preselected": false,
+          "reason": "Repair utility is available but not part of the default media path."
+        }
+      ]
+    },
+    {
+      "id": "repair-toolkit-safe",
+      "name": "Repair Toolkit — Safe",
+      "description": "Low-risk tools for inspection, troubleshooting, and basic support.",
+      "selections": [
+        {
+          "appId": "sysinternals-autoruns",
+          "preselected": true,
+          "reason": "Autoruns is a strong inspection utility for startup and persistence checks."
+        },
+        {
+          "appId": "7zip",
+          "preselected": true,
+          "reason": "Archive support is commonly needed during repair work."
+        },
+        {
+          "appId": "firefox",
+          "preselected": true,
+          "reason": "A browser helps research, downloads, and vendor support pages."
+        },
+        {
+          "appId": "vlc",
+          "preselected": false,
+          "reason": "Media playback is not part of the safe repair default."
+        },
+        {
+          "appId": "steam",
+          "preselected": false,
+          "reason": "Game launcher is not part of the safe repair default."
+        }
+      ]
+    }
+  ]
+}

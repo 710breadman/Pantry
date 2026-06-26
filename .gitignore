@@ -1,0 +1,68 @@
+# Build output
+bin/
+obj/
+out/
+artifacts/
+TestResults/
+*.binlog
+
+# Visual Studio and user-specific files
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.rsuser
+*.vcxproj.user
+*.csproj.user
+
+# Rider / ReSharper
+.idea/
+_ReSharper*/
+*.DotSettings.user
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+
+# WinUI / Windows App SDK packaging output
+AppPackages/
+BundleArtifacts/
+Package.StoreAssociation.xml
+*.appx
+*.appxbundle
+*.msix
+*.msixbundle
+*.cer
+*.pfx
+
+# Local databases and app state
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+data/
+state/
+
+# Logs and diagnostics
+logs/
+*.log
+*.etl
+*.dmp
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.cache
+Thumbs.db
+Desktop.ini
+
+# Local environment files
+.env
+.env.*
+!.env.example
+

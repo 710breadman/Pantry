@@ -1,0 +1,47 @@
+{
+  "id": "vlc",
+  "recipeVersion": "0.1.0",
+  "catalog": {
+    "name": "VLC media player",
+    "shortDescription": "Flexible media player for local video and audio playback.",
+    "category": "Media",
+    "homepage": "https://www.videolan.org/vlc/",
+    "isPortable": false
+  },
+  "preferredProvider": "Winget",
+  "source": {
+    "type": "Winget",
+    "identifier": "VideoLAN.VLC",
+    "officialUrl": "https://www.videolan.org/vlc/"
+  },
+  "trustLevel": "Experimental",
+  "scopePreference": "Preferred",
+  "administratorRequirement": "Required",
+  "portableDestinationHint": null,
+  "dependencies": [],
+  "conflicts": [],
+  "expectedExitCodes": [
+    0
+  ],
+  "rebootBehavior": "NeverAutomatic",
+  "detection": {
+    "rules": [
+      "wingetPackage:VideoLAN.VLC",
+      "uninstallRegistryDisplayName:VLC media player"
+    ],
+    "minimumConfidence": "High"
+  },
+  "update": {
+    "method": "Winget",
+    "supported": true
+  },
+  "uninstall": {
+    "method": "Winget",
+    "supported": true
+  },
+  "verification": {
+    "verifiedOn": "2026-06-26",
+    "evidence": "Read-only Phase 1 catalog entry. Install, update, and uninstall execution are intentionally not implemented yet."
+  }
+}
+
