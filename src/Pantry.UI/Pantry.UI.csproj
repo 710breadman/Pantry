@@ -24,6 +24,7 @@
     <ProjectReference Include="..\Pantry.Domain\Pantry.Domain.csproj" />
     <ProjectReference Include="..\Pantry.Detection\Pantry.Detection.csproj" />
     <ProjectReference Include="..\Pantry.Infrastructure\Pantry.Infrastructure.csproj" />
+    <ProjectReference Include="..\Pantry.Queue\Pantry.Queue.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,4 +32,3 @@
   </ItemGroup>
 
 </Project>
-

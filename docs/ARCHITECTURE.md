@@ -161,6 +161,8 @@ Current tables:
 - `app_settings`
 - `profile_selections`
 - `review_sessions`
+- `queue_sessions`
+- `queue_jobs`
 
 Current state location:
 
@@ -236,6 +238,7 @@ Plainly: the planner can say "this app needs that app first" and "these two do n
 Current queue behavior:
 
 - It only creates in-memory plans.
+- The UI now saves those plans to SQLite.
 - It includes install/update items and skips skip items.
 - It keeps the dry-run order.
 - It marks conflicts and non-`VerifiedUnattended` jobs as needing review.

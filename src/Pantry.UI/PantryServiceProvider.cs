@@ -3,6 +3,7 @@ using Pantry.Catalog;
 using Pantry.Core;
 using Pantry.Detection;
 using Pantry.Infrastructure;
+using Pantry.Queue;
 using Pantry.UI.ViewModels;
 
 namespace Pantry.UI;
@@ -25,6 +26,7 @@ public static class PantryServiceProvider
         services.AddSingleton<RecipeValidator>();
         services.AddSingleton<BundledCatalogLoader>();
         services.AddSingleton<DryRunPlanner>();
+        services.AddSingleton<QueuePlanner>();
 
         services.AddSingleton<IProcessRunner, WindowsProcessRunner>();
         services.AddSingleton<WingetDetectionProvider>();
@@ -39,6 +41,7 @@ public static class PantryServiceProvider
         services.AddSingleton<OperationLogStore>();
         services.AddSingleton<ScanResultStore>();
         services.AddSingleton<ReviewSessionStore>();
+        services.AddSingleton<QueueSessionStore>();
         services.AddSingleton<UserSettingsStore>();
 
         services.AddTransient<MainViewModel>();

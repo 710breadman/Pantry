@@ -32,6 +32,7 @@ The repository has a first read-only Phase 1 slice.
 - `src/Pantry.Queue` creates a read-only queue plan from the dry-run review.
 - `src/Pantry.Infrastructure` detects installed/portable run mode and initializes SQLite state, operation logs, saved scan results, app settings, and saved profile selections.
 - SQLite also stores dry-run review session summaries.
+- SQLite also stores read-only queue session summaries and job rows.
 - `tests/Pantry.Tests` covers the read-only foundation behavior.
 - `catalog/bundled` contains the JSON Schema, five approved Recipe files, and three profiles.
 
@@ -93,6 +94,7 @@ The app can now:
 - auto-include known dependencies in the dry-run review and order them before dependent apps
 - show conflict warnings when selected apps conflict
 - create a read-only queue plan from install/update review items
+- save read-only queue session summaries and jobs locally
 - mark non-`VerifiedUnattended` or conflicting queue jobs as needing review
 - show install/update/skip intent, provider, trust level, scope, administrator requirement, detection state, dependencies, conflicts, and portable destination
 
@@ -117,7 +119,7 @@ The app still cannot install, update, uninstall, elevate, or change installed so
 The repository is ready for review of the read-only Phase 1 slice.
 
 - Build passed with 0 warnings and 0 errors.
-- Tests passed: 36 total, 0 failed.
+- Tests passed: 37 total, 0 failed.
 - Malformed Recipes are rejected by test.
 - UI scan found no installer/elevation execution logic.
 - Detection is read-only and limited to `winget list`, uninstall registry reads, configured file paths, and portable folder existence checks.

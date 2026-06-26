@@ -5,6 +5,7 @@ using Pantry.Core;
 using Pantry.Detection;
 using Pantry.Domain;
 using Pantry.Infrastructure;
+using Pantry.Queue;
 
 namespace Pantry.UI.ViewModels;
 
@@ -15,10 +16,12 @@ public sealed class MainViewModel : ObservableObject
     private readonly PantryRunModeDetection _runMode;
     private readonly OperationLogStore _operationLogStore;
     private readonly DryRunPlanner _planner;
+    private readonly QueuePlanner _queuePlanner;
     private readonly PantryDatabase _database;
     private readonly AppSelectionStore _appSelectionStore;
     private readonly ScanResultStore _scanResultStore;
     private readonly ReviewSessionStore _reviewSessionStore;
+    private readonly QueueSessionStore _queueSessionStore;
     private readonly UserSettingsStore _userSettingsStore;
     private CatalogSnapshot? _catalog;
     private Profile? _selectedProfile;
@@ -43,8 +46,10 @@ public sealed class MainViewModel : ObservableObject
         OperationLogStore operationLogStore,
         ScanResultStore scanResultStore,
         ReviewSessionStore reviewSessionStore,
+        QueueSessionStore queueSessionStore,
         UserSettingsStore userSettingsStore,
-        DryRunPlanner planner)
+        DryRunPlanner planner,
+        QueuePlanner queuePlanner)
     {
         _catalogLoader = catalogLoader;
         _detectionService = detectionService;
@@ -54,8 +59,10 @@ public sealed class MainViewModel : ObservableObject
         _operationLogStore = operationLogStore;
         _scanResultStore = scanResultStore;
         _reviewSessionStore = reviewSessionStore;
+        _queueSessionStore = queueSessionStore;
         _userSettingsStore = userSettingsStore;
         _planner = planner;
+        _queuePlanner = queuePlanner;
         _modeSummary = FormatRunMode(runMode);
     }
 
@@ -254,10 +261,13 @@ public sealed class MainViewModel : ObservableObject
         await _reviewSessionStore
             .SaveAsync(plan, _catalog.CatalogVersion, cancellationToken)
             .ConfigureAwait(true);
+        var queuePlan = await _queuePlanner.CreatePlanAsync(plan, cancellationToken).ConfigureAwait(true);
+        await _queueSessionStore.SaveAsync(queuePlan, cancellationToken).ConfigureAwait(true);
         await UpdateReviewSessionSummaryAsync(cancellationToken).ConfigureAwait(true);
 
         SelectionSummary = $"Selected: {selectedCount}";
-        PlanSummary = $"Plan: {installCount} install, {updateCount} update, {skipCount} skip";
+        var reviewRequiredCount = queuePlan.Jobs.Count(job => job.ReviewState == QueueJobReviewState.ReviewRequired);
+        PlanSummary = $"Plan: {installCount} install, {updateCount} update, {skipCount} skip | Queue: {queuePlan.Jobs.Count} jobs, {reviewRequiredCount} review";
         Status = $"Loaded {_catalog.Recipes.Count} Recipes from catalog {_catalog.CatalogVersion}. {selectedCount} item(s) selected for dry-run review.";
     }
 

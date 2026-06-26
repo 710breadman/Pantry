@@ -1,5 +1,6 @@
 using Pantry.Domain;
 using Pantry.Infrastructure;
+using Pantry.Queue;
 
 namespace Pantry.Tests;
 
@@ -191,6 +192,44 @@ public sealed class PantryDatabaseTests
         }
     }
 
+    [Fact]
+    public async Task Queue_sessions_can_be_saved_counted_and_listed()
+    {
+        var testPath = TestDatabasePath();
+        var database = new PantryDatabase(testPath.DatabasePath);
+        var queueSessions = new QueueSessionStore(database);
+
+        try
+        {
+            await database.InitializeAsync();
+            await queueSessions.SaveAsync(new QueueSessionPlan
+            {
+                Id = Guid.NewGuid().ToString("N"),
+                CreatedUtc = DateTimeOffset.UtcNow,
+                ProfileId = "gaming-setup",
+                ProfileName = "Gaming Setup",
+                Jobs =
+                [
+                    TestQueueJob("steam", "Steam", QueueJobReviewState.ReviewRequired),
+                    TestQueueJob("7zip", "7-Zip", QueueJobReviewState.Ready)
+                ]
+            });
+
+            var count = await queueSessions.CountAsync();
+            var recent = await queueSessions.ListRecentAsync(5);
+
+            var session = Assert.Single(recent);
+            Assert.Equal(1, count);
+            Assert.Equal("gaming-setup", session.ProfileId);
+            Assert.Equal(2, session.JobCount);
+            Assert.Equal(1, session.ReviewRequiredCount);
+        }
+        finally
+        {
+            Directory.Delete(testPath.DirectoryPath, recursive: true);
+        }
+    }
+
     private static TestDatabaseLocation TestDatabasePath()
     {
         var folder = Path.Combine(Path.GetTempPath(), $"pantry-db-test-{Guid.NewGuid():N}");
@@ -228,6 +267,28 @@ public sealed class PantryDatabaseTests
             ConflictSummary = "None",
             PortableDestination = null,
             Reason = "Test."
+        };
+    }
+
+    private static QueueJobPlan TestQueueJob(
+        string appId,
+        string appName,
+        QueueJobReviewState reviewState)
+    {
+        return new QueueJobPlan
+        {
+            Order = appId == "steam" ? 1 : 2,
+            AppId = appId,
+            AppName = appName,
+            Action = QueueJobAction.Install,
+            Provider = ProviderType.Winget,
+            TrustLevel = TrustLevel.Experimental,
+            ScopePreference = MachineScopePreference.Preferred,
+            AdministratorRequirement = AdministratorRequirement.Required,
+            Dependencies = [],
+            Conflicts = [],
+            ReviewState = reviewState,
+            ReviewReason = "Test."
         };
     }
 }

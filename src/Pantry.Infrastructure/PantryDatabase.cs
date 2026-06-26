@@ -88,6 +88,36 @@ public sealed class PantryDatabase
 
             create index if not exists ix_review_sessions_created
             on review_sessions (created_utc);
+
+            create table if not exists queue_sessions (
+                id text primary key,
+                created_utc text not null,
+                profile_id text not null,
+                profile_name text not null,
+                job_count integer not null,
+                review_required_count integer not null
+            );
+
+            create index if not exists ix_queue_sessions_created
+            on queue_sessions (created_utc);
+
+            create table if not exists queue_jobs (
+                session_id text not null,
+                job_order integer not null,
+                app_id text not null,
+                app_name text not null,
+                action text not null,
+                provider text not null,
+                trust_level text not null,
+                scope_preference text not null,
+                administrator_requirement text not null,
+                review_state text not null,
+                review_reason text not null,
+                dependencies_json text not null,
+                conflicts_json text not null,
+                primary key (session_id, job_order),
+                foreign key (session_id) references queue_sessions(id) on delete cascade
+            );
             """;
 
         await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);

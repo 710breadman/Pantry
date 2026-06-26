@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Pantry.Domain\Pantry.Domain.csproj" />
+    <ProjectReference Include="..\Pantry.Queue\Pantry.Queue.csproj" />
   </ItemGroup>
 
   <ItemGroup>
