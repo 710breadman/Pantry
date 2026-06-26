@@ -98,6 +98,7 @@ The app can now:
 - keep only the latest 100 saved queue sessions by default
 - show saved review and queue counts in the summary band
 - mark non-`VerifiedUnattended` or conflicting queue jobs as needing review
+- assign queue jobs explicit planned/waiting-for-review status
 - show install/update/skip intent, provider, trust level, scope, administrator requirement, detection state, dependencies, conflicts, and portable destination
 
 The app still cannot install, update, uninstall, elevate, or change installed software.
@@ -121,7 +122,7 @@ The app still cannot install, update, uninstall, elevate, or change installed so
 The repository is ready for review of the read-only Phase 1 slice.
 
 - Build passed with 0 warnings and 0 errors.
-- Tests passed: 38 total, 0 failed.
+- Tests passed: 39 total, 0 failed.
 - Malformed Recipes are rejected by test.
 - UI scan found no installer/elevation execution logic.
 - Detection is read-only and limited to `winget list`, uninstall registry reads, configured file paths, and portable folder existence checks.

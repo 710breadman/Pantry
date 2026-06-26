@@ -73,6 +73,10 @@ It does not install, update, uninstall, elevate, or change installed apps.
 - UI refresh now stores the read-only queue plan and shows queue job counts in the plan summary.
 - Added queue-session pruning. Default keeps latest 100 queue sessions.
 - Summary band now shows saved review and queue counts together.
+- Added explicit queue job status:
+  - `Planned`
+  - `WaitingForReview`
+- Added a small SQLite schema upgrade for older queue job tables missing `job_status`.
 - Added a status summary band for catalog, selection, plan, detection counts, and run mode.
 - Added SQLite initialization with Windows SQLite provider.
 - Added operation log storage.
@@ -98,6 +102,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 - Added xUnit tests for read-only queue planning.
 - Added xUnit tests for queue session storage.
 - Added xUnit tests for queue-session pruning.
+- Added xUnit tests for queue job status and queue job schema upgrade.
 - Added xUnit tests for review session storage.
 - Added xUnit tests for review-session pruning.
 - Built the full solution successfully.
@@ -116,7 +121,7 @@ It does not install, update, uninstall, elevate, or change installed apps.
 
 Do not begin real installation or elevation yet.
 
-Next, add explicit queue job statuses for future execution.
+Next, add a read-only queue detail view.
 
 ## Approval Needed
 
@@ -154,4 +159,4 @@ Current approved choices:
 
 ## Next Milestone
 
-Recommended next phase: explicit queue job status model, still with no real installs.
+Recommended next phase: read-only queue detail view, still with no real installs.

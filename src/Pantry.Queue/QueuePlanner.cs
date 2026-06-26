@@ -30,19 +30,24 @@ public sealed class QueuePlanner
     {
         var reviewReason = ResolveReviewReason(item);
 
+        var reviewState = reviewReason is null ? QueueJobReviewState.Ready : QueueJobReviewState.ReviewRequired;
+
         return new QueueJobPlan
         {
             Order = order,
             AppId = item.AppId,
             AppName = item.AppName,
             Action = item.Intent == DryRunIntent.Update ? QueueJobAction.Update : QueueJobAction.Install,
+            Status = reviewState == QueueJobReviewState.Ready
+                ? QueueJobStatus.Planned
+                : QueueJobStatus.WaitingForReview,
             Provider = item.PreferredProvider,
             TrustLevel = item.TrustLevel,
             ScopePreference = item.ScopePreference,
             AdministratorRequirement = item.AdministratorRequirement,
             Dependencies = item.Dependencies,
             Conflicts = item.Conflicts,
-            ReviewState = reviewReason is null ? QueueJobReviewState.Ready : QueueJobReviewState.ReviewRequired,
+            ReviewState = reviewState,
             ReviewReason = reviewReason ?? "Ready for future queue review."
         };
     }

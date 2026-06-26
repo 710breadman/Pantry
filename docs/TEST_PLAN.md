@@ -68,8 +68,9 @@ Plainly: the app should be boringly reliable before it becomes broad.
 | Dry run | Review plan changes no system state. |
 | Dependencies | Dependencies are ordered before dependents. Current tests cover required dependency inclusion, dependency ordering, and cycle handling. |
 | Conflicts | Known conflicts are shown before execution. Current tests cover symmetric warnings when selected apps conflict. |
-| Queue model | Queue plans are created without execution. Current tests cover install/update inclusion, skip exclusion, order, and review-required jobs. |
+| Queue model | Queue plans are created without execution. Current tests cover install/update inclusion, skip exclusion, order, review-required jobs, and queue job status. |
 | Queue storage | Queue sessions and job counts are saved, counted, listed, and pruned. |
+| SQLite upgrades | Existing queue job tables are upgraded with the `job_status` column. |
 | Failure isolation | Failed app does not block unrelated app. |
 | Retry | Failed job can retry without duplicating completed work. |
 | Cancellation | Cancelled queue records final states. |

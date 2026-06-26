@@ -25,6 +25,7 @@ public sealed class QueuePlannerTests
         Assert.Equal(2, plan.Jobs.Count);
         Assert.Equal("steam", plan.Jobs[0].AppId);
         Assert.Equal(QueueJobAction.Install, plan.Jobs[0].Action);
+        Assert.Equal(QueueJobStatus.WaitingForReview, plan.Jobs[0].Status);
         Assert.Equal("vlc", plan.Jobs[1].AppId);
         Assert.Equal(QueueJobAction.Update, plan.Jobs[1].Action);
     }
@@ -69,9 +70,12 @@ public sealed class QueuePlannerTests
         });
 
         Assert.Equal(QueueJobReviewState.Ready, plan.Jobs[0].ReviewState);
+        Assert.Equal(QueueJobStatus.Planned, plan.Jobs[0].Status);
         Assert.Equal(QueueJobReviewState.ReviewRequired, plan.Jobs[1].ReviewState);
+        Assert.Equal(QueueJobStatus.WaitingForReview, plan.Jobs[1].Status);
         Assert.Contains("unattended execution is not allowed", plan.Jobs[1].ReviewReason);
         Assert.Equal(QueueJobReviewState.ReviewRequired, plan.Jobs[2].ReviewState);
+        Assert.Equal(QueueJobStatus.WaitingForReview, plan.Jobs[2].Status);
         Assert.Contains("conflict", plan.Jobs[2].ReviewReason, StringComparison.OrdinalIgnoreCase);
     }
 

@@ -107,6 +107,7 @@ public sealed class PantryDatabase
                 app_id text not null,
                 app_name text not null,
                 action text not null,
+                job_status text not null default 'Planned',
                 provider text not null,
                 trust_level text not null,
                 scope_preference text not null,
@@ -121,5 +122,37 @@ public sealed class PantryDatabase
             """;
 
         await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        await EnsureColumnAsync(
+            connection,
+            "queue_jobs",
+            "job_status",
+            "text not null default 'Planned'",
+            cancellationToken).ConfigureAwait(false);
+    }
+
+    private static async Task EnsureColumnAsync(
+        SqliteConnection connection,
+        string tableName,
+        string columnName,
+        string columnDefinition,
+        CancellationToken cancellationToken)
+    {
+        await using (var command = connection.CreateCommand())
+        {
+            command.CommandText = $"pragma table_info({tableName});";
+
+            await using var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            {
+                if (string.Equals(reader.GetString(1), columnName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+            }
+        }
+
+        await using var alterCommand = connection.CreateCommand();
+        alterCommand.CommandText = $"alter table {tableName} add column {columnName} {columnDefinition};";
+        await alterCommand.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
     }
 }

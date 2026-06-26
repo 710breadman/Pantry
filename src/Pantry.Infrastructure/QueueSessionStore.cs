@@ -70,6 +70,7 @@ public sealed class QueueSessionStore
                     app_id,
                     app_name,
                     action,
+                    job_status,
                     provider,
                     trust_level,
                     scope_preference,
@@ -85,6 +86,7 @@ public sealed class QueueSessionStore
                     $appId,
                     $appName,
                     $action,
+                    $jobStatus,
                     $provider,
                     $trustLevel,
                     $scopePreference,
@@ -100,6 +102,7 @@ public sealed class QueueSessionStore
             command.Parameters.AddWithValue("$appId", job.AppId);
             command.Parameters.AddWithValue("$appName", job.AppName);
             command.Parameters.AddWithValue("$action", job.Action.ToString());
+            command.Parameters.AddWithValue("$jobStatus", job.Status.ToString());
             command.Parameters.AddWithValue("$provider", job.Provider.ToString());
             command.Parameters.AddWithValue("$trustLevel", job.TrustLevel.ToString());
             command.Parameters.AddWithValue("$scopePreference", job.ScopePreference.ToString());

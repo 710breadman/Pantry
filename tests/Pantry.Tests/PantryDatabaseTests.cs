@@ -268,6 +268,49 @@ public sealed class PantryDatabaseTests
         }
     }
 
+    [Fact]
+    public async Task Database_initialization_adds_queue_job_status_to_existing_table()
+    {
+        var testPath = TestDatabasePath();
+        var database = new PantryDatabase(testPath.DatabasePath);
+
+        try
+        {
+            await using (var connection = database.CreateConnection())
+            {
+                await connection.OpenAsync();
+                await using var command = connection.CreateCommand();
+                command.CommandText = """
+                    create table queue_jobs (
+                        session_id text not null,
+                        job_order integer not null,
+                        app_id text not null,
+                        app_name text not null,
+                        action text not null,
+                        provider text not null,
+                        trust_level text not null,
+                        scope_preference text not null,
+                        administrator_requirement text not null,
+                        review_state text not null,
+                        review_reason text not null,
+                        dependencies_json text not null,
+                        conflicts_json text not null,
+                        primary key (session_id, job_order)
+                    );
+                    """;
+                await command.ExecuteNonQueryAsync();
+            }
+
+            await database.InitializeAsync();
+
+            Assert.True(await ColumnExistsAsync(database, "queue_jobs", "job_status"));
+        }
+        finally
+        {
+            Directory.Delete(testPath.DirectoryPath, recursive: true);
+        }
+    }
+
     private static TestDatabaseLocation TestDatabasePath()
     {
         var folder = Path.Combine(Path.GetTempPath(), $"pantry-db-test-{Guid.NewGuid():N}");
@@ -319,6 +362,9 @@ public sealed class PantryDatabaseTests
             AppId = appId,
             AppName = appName,
             Action = QueueJobAction.Install,
+            Status = reviewState == QueueJobReviewState.Ready
+                ? QueueJobStatus.Planned
+                : QueueJobStatus.WaitingForReview,
             Provider = ProviderType.Winget,
             TrustLevel = TrustLevel.Experimental,
             ScopePreference = MachineScopePreference.Preferred,
@@ -328,5 +374,27 @@ public sealed class PantryDatabaseTests
             ReviewState = reviewState,
             ReviewReason = "Test."
         };
+    }
+
+    private static async Task<bool> ColumnExistsAsync(
+        PantryDatabase database,
+        string tableName,
+        string columnName)
+    {
+        await using var connection = database.CreateConnection();
+        await connection.OpenAsync();
+        await using var command = connection.CreateCommand();
+        command.CommandText = $"pragma table_info({tableName});";
+
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            if (string.Equals(reader.GetString(1), columnName, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

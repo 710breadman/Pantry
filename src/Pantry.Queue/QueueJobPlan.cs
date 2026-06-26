@@ -12,6 +12,8 @@ public sealed record QueueJobPlan
 
     public required QueueJobAction Action { get; init; }
 
+    public required QueueJobStatus Status { get; init; }
+
     public required ProviderType Provider { get; init; }
 
     public required TrustLevel TrustLevel { get; init; }
