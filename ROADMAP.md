@@ -23,7 +23,7 @@ Goal: every change has a reviewable diff and repeatable verification.
 - [ ] Select and add project license
 - [x] Connect intended Git remote (`710breadman/Pantry`)
 - [ ] Configure branch protections
-- [ ] Confirm CI passes on hosted `windows-latest`
+- [x] Confirm CI passes on hosted `windows-latest`
 
 Exit criteria: clean clone restores, builds, and passes all checks using only
 documented commands.

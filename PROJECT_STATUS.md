@@ -23,8 +23,8 @@ all pass. The legacy CLI self-test and 9 Pester tests also pass.
 Local Git, ignore/attribute rules, SDK pinning, CI config, artifact policy,
 catalog contracts, versioned release metadata, SHA-256 output, signing support,
 test isolation, and async-command error reporting now exist. Remaining main
-risks: no hosted CI result, catalog migration incomplete, native tests still
-custom, large controller files, and no signing certificate.
+risks: catalog migration incomplete, native tests still custom, large
+controller files, and no signing certificate.
 
 ## Current Verification
 
@@ -117,7 +117,7 @@ is ignored.
 Remaining:
 
 - Select project license; this requires owner intent.
-- Confirm hosted CI, then add branch protection.
+- Configure branch protection.
 
 ### P1-02: Native and legacy catalogs have diverged
 
@@ -228,10 +228,9 @@ Mode disabled. Re-scan before acting; this data may describe another machine.
 
 Start with remaining Phase 0 and catalog schema v2:
 
-1. Confirm hosted CI.
-2. Select license and configure branch protection.
-3. Design catalog schema v2; migrate legacy installer fields.
-4. Obtain signing certificate before public distribution.
+1. Select license and configure branch protection.
+2. Design catalog schema v2; migrate legacy installer fields.
+3. Obtain signing certificate before public distribution.
 
 Detailed sequencing and acceptance criteria: `ROADMAP.md`.
 
@@ -274,6 +273,9 @@ For each future iteration:
 - Pushed `main` without force.
 - Added workflow rule: verify, commit, and push after every completed roadmap
   step.
+- Confirmed hosted Windows CI passes.
+- Updated official GitHub actions to `actions/checkout@v7` and
+  `actions/setup-dotnet@v5` after runner flagged Node 20 deprecation.
 
 ### 2026-06-28 — Baseline remediation and roadmap
 
@@ -288,8 +290,8 @@ For each future iteration:
   optional timestamped Authenticode signing.
 - Rebuilt release `0.1.0`; checksum and packaged self-checks pass.
 - Verified legacy Pester suite 9/9.
-- Remaining external decisions: initial commit approval, license, remote,
-  hosted CI, signing certificate.
+- Remaining external decisions: license, branch protection, signing
+  certificate.
 
 ### 2026-06-28 — Initial project scan
 
