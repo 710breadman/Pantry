@@ -19,9 +19,10 @@ Goal: every change has a reviewable diff and repeatable verification.
 - [x] Add Windows GitHub Actions workflow
 - [x] Define artifact ownership and retention
 - [x] Isolate PATH-repair regression test from real user PATH
-- [ ] Create initial reviewed commit
+- [x] Create initial reviewed commit
 - [ ] Select and add project license
-- [ ] Connect intended Git remote and branch protections
+- [x] Connect intended Git remote (`710breadman/Pantry`)
+- [ ] Configure branch protections
 - [ ] Confirm CI passes on hosted `windows-latest`
 
 Exit criteria: clean clone restores, builds, and passes all checks using only

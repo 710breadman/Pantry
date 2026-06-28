@@ -23,8 +23,8 @@ all pass. The legacy CLI self-test and 9 Pester tests also pass.
 Local Git, ignore/attribute rules, SDK pinning, CI config, artifact policy,
 catalog contracts, versioned release metadata, SHA-256 output, signing support,
 test isolation, and async-command error reporting now exist. Remaining main
-risks: no initial commit/remote/hosted CI result, catalog migration incomplete,
-native tests still custom, large controller files, and no signing certificate.
+risks: no hosted CI result, catalog migration incomplete, native tests still
+custom, large controller files, and no signing certificate.
 
 ## Current Verification
 
@@ -105,17 +105,18 @@ than the legacy dashboard.
 
 ### P1-01: Source-control baseline needs external completion
 
-Status: Mitigated locally; external setup open
+Status: Mitigated; external policy setup open
 
-Local Git repository now exists on `main`. `.gitignore`, `.gitattributes`,
-`global.json`, `Directory.Build.props`, contribution guidance, artifact policy,
-and GitHub Actions CI config now exist. Generated output is ignored.
+Local Git repository exists on `main` and tracks
+`https://github.com/710breadman/Pantry.git`. Existing Pantry history was
+preserved; DevKit takeover commit is a fast-forward descendant. `.gitignore`,
+`.gitattributes`, `global.json`, `Directory.Build.props`, contribution
+guidance, artifact policy, and GitHub Actions CI config exist. Generated output
+is ignored.
 
 Remaining:
 
-- Review and create initial commit.
 - Select project license; this requires owner intent.
-- Connect intended remote.
 - Confirm hosted CI, then add branch protection.
 
 ### P1-02: Native and legacy catalogs have diverged
@@ -227,11 +228,10 @@ Mode disabled. Re-scan before acting; this data may describe another machine.
 
 Start with remaining Phase 0 and catalog schema v2:
 
-1. Review and create initial commit.
-2. Select license and connect intended remote.
-3. Confirm hosted CI.
-4. Design catalog schema v2; migrate legacy installer fields.
-5. Obtain signing certificate before public distribution.
+1. Confirm hosted CI.
+2. Select license and configure branch protection.
+3. Design catalog schema v2; migrate legacy installer fields.
+4. Obtain signing certificate before public distribution.
 
 Detailed sequencing and acceptance criteria: `ROADMAP.md`.
 
@@ -265,6 +265,15 @@ For each future iteration:
    verification.
 
 ## Iteration Log
+
+### 2026-06-28 — Pantry repository takeover
+
+- Connected `origin` to `710breadman/Pantry`.
+- Committed DevKit baseline.
+- Preserved previous Pantry history using a merge commit with DevKit tree.
+- Pushed `main` without force.
+- Added workflow rule: verify, commit, and push after every completed roadmap
+  step.
 
 ### 2026-06-28 — Baseline remediation and roadmap
 

@@ -38,5 +38,7 @@ if ($result.FailedCount -gt 0) { exit $result.FailedCount }
 - Add/update tests with behavior changes.
 - Update `PROJECT_STATUS.md` after verified work.
 - Update `ROADMAP.md` only when scope or completion state changes.
+- After each completed, verified roadmap step: create a focused commit and push
+  it to `origin`. Do not accumulate multiple completed steps locally.
 - Public release builds require version, checksum, provenance metadata, and
   Authenticode signature.
