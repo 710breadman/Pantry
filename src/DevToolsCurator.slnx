@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="DevToolsCurator.App/DevToolsCurator.App.csproj" />
+  <Project Path="DevToolsCurator.Core/DevToolsCurator.Core.csproj" />
+  <Project Path="DevToolsCurator.Tests/DevToolsCurator.Tests.csproj" />
+</Solution>

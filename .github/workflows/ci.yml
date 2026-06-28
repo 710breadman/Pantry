@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore .\src\DevToolsCurator.slnx
+
+      - name: Build
+        run: dotnet build .\src\DevToolsCurator.slnx -c Release --no-restore
+
+      - name: Native regression tests
+        run: dotnet run --project .\src\DevToolsCurator.Tests\DevToolsCurator.Tests.csproj -c Release --no-build
+
+      - name: Native self-checks
+        shell: pwsh
+        run: |
+          dotnet run --project .\src\DevToolsCurator.App\DevToolsCurator.App.csproj -c Release --no-build -- --smoke-test
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet run --project .\src\DevToolsCurator.App\DevToolsCurator.App.csproj -c Release --no-build -- --ui-self-check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet run --project .\src\DevToolsCurator.App\DevToolsCurator.App.csproj -c Release --no-build -- --contract-self-check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Legacy CLI self-test
+        shell: powershell
+        run: .\setup-devtools.ps1 -SelfTest
+
+      - name: Legacy Pester tests
+        shell: powershell
+        run: |
+          Install-Module Pester -RequiredVersion 4.10.1 -Scope CurrentUser -Force -SkipPublisherCheck
+          $result = Invoke-Pester -Script .\tests\DevTools.Tests.ps1 -PassThru
+          if ($result.FailedCount -gt 0) { exit $result.FailedCount }
