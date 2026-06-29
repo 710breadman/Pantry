@@ -19,13 +19,13 @@ $script:CurrentLogLineCount = 0
 $script:PostActionValidationPending = $false
 
 if (-not $SmokeTest) {
-  $releaseExe = Join-Path $script:ProjectRoot "release\DevKit\DevKit.exe"
+  $releaseExe = Join-Path $script:ProjectRoot "release\RecipeCard\RecipeCard.exe"
   if (Test-Path -LiteralPath $releaseExe) {
     Start-Process -FilePath $releaseExe -WorkingDirectory (Split-Path -Parent $releaseExe)
     return
   }
 
-  throw "The legacy PowerShell dashboard is retired. Build and run the native DevKit app with: .\build-release.ps1"
+  throw "The legacy PowerShell dashboard is retired. Build and run the native Recipe Card app with: .\build-release.ps1"
 }
 
 Import-Module $script:GuiModelModule -Force

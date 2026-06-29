@@ -1,6 +1,10 @@
-# Windows DevTools Curator
+# Recipe Card
 
-Safe Windows 11 developer-environment setup for app creation, automation, scripting, GitHub workflows, Python, Java, C#/.NET, Node/TypeScript, Android, Linux/WSL, and code-quality tooling.
+![Recipe Card icon](assets/recipe-card-icon.png)
+
+Professional Windows 11 developer-environment setup, detection, updates, and
+repair for app creation, automation, scripting, GitHub workflows, Python, Java,
+C#/.NET, Node/TypeScript, Android, Linux/WSL, and code-quality tooling.
 
 The CLI is still available. The new GUI is a native .NET WPF dashboard backed
 by the shared .NET Core project. The PowerShell CLI currently retains a
@@ -34,7 +38,7 @@ Build the double-clickable release EXE:
 .\build-release.ps1
 ```
 
-The release is written to `release\DevKit\DevKit.exe`. Normal users can double-click that EXE; no command prompt or Visual Studio is required.
+The release is written to `release\RecipeCard\RecipeCard.exe`. Normal users can double-click that EXE; no command prompt or Visual Studio is required.
 
 Build and run directly:
 
@@ -85,11 +89,15 @@ The wizard opens as a modal setup assistant with Back, Next, Cancel, Save Plan, 
 
 The published EXE uses AppData by default:
 
-- config: `%AppData%\DevKit\config.json`
-- reports: `%AppData%\DevKit\reports`
-- cache: `%LocalAppData%\DevKit\cache`
+- config: `%AppData%\RecipeCard\config.json`
+- reports: `%AppData%\RecipeCard\reports`
+- cache: `%LocalAppData%\RecipeCard\cache`
 
-Portable mode is enabled only when `config.json`, `reports`, `cache`, `.portable`, or `DevKit.portable` exists next to `DevKit.exe`. A loose `tool_catalog.json` beside the EXE can override the embedded catalog, but if that file is missing or corrupt the app falls back to its embedded default catalog and still opens.
+Portable mode is enabled only when `config.json`, `reports`, `cache`,
+`.portable`, or `RecipeCard.portable` exists next to `RecipeCard.exe`. A loose
+`tool_catalog.json` beside the EXE can override the embedded catalog, but if
+that file is missing or corrupt the app falls back to its embedded default
+catalog and still opens.
 
 ## Detection
 

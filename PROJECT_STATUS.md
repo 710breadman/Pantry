@@ -1,4 +1,4 @@
-# DevKit Project Status
+# Recipe Card Project Status
 
 Last verified: 2026-06-29 (America/Denver)
 
@@ -10,13 +10,13 @@ check results, issue states, and recent changes after each iteration.
 
 ## Executive Status
 
-DevKit is a functional Windows 11 developer-environment curator with two
+Recipe Card is a functional Windows 11 developer-environment curator with two
 frontends:
 
 - Native .NET 10 WPF app (`src/DevToolsCurator.App`)
 - Legacy PowerShell CLI (`setup-devtools.ps1`)
 
-The native app builds after a NuGet restore. Its 25-test console regression
+The native app builds after a NuGet restore. Its 26-test console regression
 suite, smoke test, UI self-check, contract self-check, and packaged-EXE checks
 all pass. The legacy CLI self-test and 9 Pester tests also pass.
 
@@ -42,15 +42,15 @@ Results on 2026-06-28:
 | --- | --- | --- |
 | `dotnet restore .\src\DevToolsCurator.slnx` | PASS | All three projects restored |
 | `dotnet build .\src\DevToolsCurator.slnx -c Release --no-restore` | PASS | 0 warnings, 0 errors |
-| Native console regression suite | PASS | 25/25 |
+| Native console regression suite | PASS | 26/26 |
 | Native app `--smoke-test` | PASS | Exit 0 |
 | Native app `--ui-self-check` | PASS | Exit 0 |
 | Native app `--contract-self-check` | PASS | Exit 0 |
-| Packaged `release\DevKit\DevKit.exe --smoke-test` | PASS | Exit 0 |
-| Packaged `release\DevKit\DevKit.exe --contract-self-check` | PASS | Exit 0 |
+| Packaged `release\RecipeCard\RecipeCard.exe --smoke-test` | PASS | Exit 0 |
+| Packaged `release\RecipeCard\RecipeCard.exe --contract-self-check` | PASS | Exit 0 |
 | `setup-devtools.ps1 -SelfTest` | PASS | `Self-test passed.` |
 | Legacy Pester suite | PASS | 9/9 using installed Pester 3.4.0 |
-| `build-release.ps1 -Version 0.1.0` | PASS | Versioned EXE, metadata, checksum, smoke/contract checks |
+| `build-release.ps1 -Version 0.2.0` | PASS | Versioned EXE, metadata, checksum, smoke/contract checks |
 
 Important build detail: an initial `--no-restore` build failed with
 `NETSDK1064` because `Microsoft.NET.ILLink.Tasks 10.0.8` was absent from the
@@ -93,13 +93,13 @@ than the legacy dashboard.
 ### Release
 
 - Build entry: `build-release.ps1`
-- Output: `release\DevKit\DevKit.exe`
+- Output: `release\RecipeCard\RecipeCard.exe`
 - Shape: self-contained, compressed, single-file `win-x64` WPF executable
-- Current file version/product version: `0.1.0.0` / `0.1.0`
+- Current file version/product version: `0.2.0.0` / `0.2.0`
 - Current EXE size: about 61.8 MiB
 - Current EXE signature: not signed
 - Current checksum matches `build-metadata.json` and `SHA256SUMS`
-- Current provenance: `source_commit=uncommitted`, `source_dirty=true`
+- Release metadata records source commit and dirty state.
 
 ## Problems Needing Attention
 
@@ -108,8 +108,8 @@ than the legacy dashboard.
 Status: Mitigated; external policy setup open
 
 Local Git repository exists on `main` and tracks
-`https://github.com/710breadman/Pantry.git`. Existing Pantry history was
-preserved; DevKit takeover commit is a fast-forward descendant. `.gitignore`,
+`https://github.com/710breadman/Recipe-Card.git`. Previous Pantry remote is
+retained locally as `pantry` for historical access. `.gitignore`,
 `.gitattributes`, `global.json`, `Directory.Build.props`, contribution
 guidance, artifact policy, and GitHub Actions CI config exist. Generated output
 is ignored.
@@ -253,7 +253,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\setup-devtools.ps1 -Se
 ```
 
 Use `build-release.ps1` only when intentionally replacing
-`release\DevKit`; it removes and recreates that directory.
+`release\RecipeCard`; it removes and recreates that directory.
 
 ## Update Protocol
 
@@ -268,6 +268,18 @@ For each future iteration:
    verification.
 
 ## Iteration Log
+
+### 2026-06-29 — Recipe Card rebrand
+
+- Renamed user-facing product, executable, release, runtime folders, dialogs,
+  reports, and docs to Recipe Card.
+- Added supplied Recipe Card PNG and generated multi-resolution Windows icon.
+- Rebuilt `RecipeCard.exe` version `0.2.0`; embedded icon, checksum, smoke test,
+  and contract self-check pass.
+- Retained internal `DevToolsCurator.*` namespaces/project paths to keep rebrand
+  low risk.
+- Moved primary remote to `710breadman/Recipe-Card`; retained Pantry as
+  historical remote.
 
 ### 2026-06-29 — Catalog v2 professional contract
 

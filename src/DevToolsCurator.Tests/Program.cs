@@ -23,8 +23,9 @@ var tests = new List<(string Name, Func<Task> Test)>
     ("central app state refreshes dashboard counts", AppStateRefreshesDashboardCounts),
     ("runtime paths default to AppData unless portable", RuntimePathsDefaultToAppData),
     ("catalog falls back to embedded resource", CatalogEmbeddedFallback),
-    ("DevKit contract self-check passes", DevKitContractSelfCheckPasses),
+    ("Recipe Card contract self-check passes", DevKitContractSelfCheckPasses),
     ("GUI launchers do not use legacy dashboard", GuiLaunchersUseNativeExe),
+    ("Recipe Card branding and icon are packaged", RecipeCardBranding),
     ("release build script is present", ReleaseBuildScriptExists),
     ("report writer emits required files", ReportWriterEmitsFiles),
     ("dashboard summary computes readiness", DashboardSummary)
@@ -428,7 +429,7 @@ static Task RuntimePathsDefaultToAppData()
     {
         var paths = DevKitRuntimePaths.Resolve(temp.FullName);
         Assert(!paths.IsPortable, "runtime should default to AppData without a portable marker");
-        Assert(paths.ConfigPath.Contains(Path.Combine("AppData", "Roaming", "DevKit"), StringComparison.OrdinalIgnoreCase), "config should default to AppData");
+        Assert(paths.ConfigPath.Contains(Path.Combine("AppData", "Roaming", "RecipeCard"), StringComparison.OrdinalIgnoreCase), "config should default to Recipe Card AppData");
 
         File.WriteAllText(Path.Combine(temp.FullName, "config.json"), "{}");
         var portable = DevKitRuntimePaths.Resolve(temp.FullName);
@@ -480,10 +481,27 @@ static Task GuiLaunchersUseNativeExe()
     var root = CatalogService.FindProjectRoot(AppContext.BaseDirectory);
     var setup = File.ReadAllText(Path.Combine(root, "setup-devtools.ps1"));
     var legacy = File.ReadAllText(Path.Combine(root, "gui", "DevToolsDashboard.ps1"));
-    Assert(setup.Contains("release\\DevKit\\DevKit.exe", StringComparison.OrdinalIgnoreCase), "setup -Gui should launch the release DevKit EXE first");
+    Assert(setup.Contains("release\\RecipeCard\\RecipeCard.exe", StringComparison.OrdinalIgnoreCase), "setup -Gui should launch the release Recipe Card EXE first");
     Assert(!setup.Contains("DevToolsDashboard.ps1", StringComparison.OrdinalIgnoreCase), "setup -Gui must not fall back to the legacy dashboard");
     Assert(legacy.Contains("legacy PowerShell dashboard is retired", StringComparison.OrdinalIgnoreCase), "legacy dashboard should be retired");
     Assert(legacy.Contains("Start-Process -FilePath $releaseExe", StringComparison.OrdinalIgnoreCase), "legacy dashboard should redirect to the native EXE");
+    return Task.CompletedTask;
+}
+
+static Task RecipeCardBranding()
+{
+    var root = CatalogService.FindProjectRoot(AppContext.BaseDirectory);
+    var icon = Path.Combine(root, "assets", "recipe-card.ico");
+    var sourceIcon = Path.Combine(root, "assets", "recipe-card-icon.png");
+    var project = File.ReadAllText(Path.Combine(root, "src", "DevToolsCurator.App", "DevToolsCurator.App.csproj"));
+    var mainWindow = File.ReadAllText(Path.Combine(root, "src", "DevToolsCurator.App", "MainWindow.xaml"));
+
+    Assert(File.Exists(icon) && new FileInfo(icon).Length > 0, "Windows Recipe Card icon should exist");
+    Assert(File.Exists(sourceIcon) && new FileInfo(sourceIcon).Length > 0, "source Recipe Card icon should exist");
+    Assert(project.Contains("<AssemblyName>RecipeCard</AssemblyName>", StringComparison.Ordinal), "app assembly should be RecipeCard");
+    Assert(project.Contains("<ApplicationIcon>..\\..\\assets\\recipe-card.ico</ApplicationIcon>", StringComparison.Ordinal), "app should embed Recipe Card Windows icon");
+    Assert(mainWindow.Contains("Title=\"Recipe Card\"", StringComparison.Ordinal), "main window should use Recipe Card title");
+    Assert(mainWindow.Contains("Icon=\"/Assets/recipe-card-icon.png\"", StringComparison.Ordinal), "main window should use Recipe Card icon");
     return Task.CompletedTask;
 }
 
@@ -494,7 +512,7 @@ static Task ReleaseBuildScriptExists()
     Assert(File.Exists(script), "build-release.ps1 should exist");
     var text = File.ReadAllText(script);
     Assert(text.Contains("PublishSingleFile=true", StringComparison.Ordinal), "release script should publish a single-file EXE");
-    Assert(text.Contains("release\\DevKit", StringComparison.Ordinal), "release script should target release\\DevKit");
+    Assert(text.Contains("release\\RecipeCard", StringComparison.Ordinal), "release script should target release\\RecipeCard");
     return Task.CompletedTask;
 }
 

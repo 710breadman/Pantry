@@ -41,7 +41,7 @@ public sealed class ReportWriter
     private static string BuildSummary(ScanSnapshot snapshot, InstallPlan plan)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("# Windows DevTools Curator Summary");
+        sb.AppendLine("# Recipe Card Summary");
         sb.AppendLine();
         sb.AppendLine($"Generated: {DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss zzz}");
         sb.AppendLine($"Goal profile: {plan.GoalProfileName}");

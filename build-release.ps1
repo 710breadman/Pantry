@@ -3,7 +3,7 @@ param(
     [switch]$SkipTests,
     [switch]$SkipSmokeTest,
     [ValidatePattern('^\d+\.\d+\.\d+([-.+][0-9A-Za-z.-]+)?$')]
-    [string]$Version = '0.1.0',
+    [string]$Version = '0.2.0',
     [string]$SigningCertificateThumbprint,
     [string]$TimestampServer = 'http://timestamp.digicert.com'
 )
@@ -15,9 +15,9 @@ $solution = Join-Path $repoRoot 'src\DevToolsCurator.slnx'
 $appProject = Join-Path $repoRoot 'src\DevToolsCurator.App\DevToolsCurator.App.csproj'
 $testsProject = Join-Path $repoRoot 'src\DevToolsCurator.Tests\DevToolsCurator.Tests.csproj'
 $releaseParent = Join-Path $repoRoot 'release'
-$releaseRoot = Join-Path $repoRoot 'release\DevKit'
-$publishDir = Join-Path $releaseParent '.publish-temp-DevKit'
-$exePath = Join-Path $releaseRoot 'DevKit.exe'
+$releaseRoot = Join-Path $repoRoot 'release\RecipeCard'
+$publishDir = Join-Path $releaseParent '.publish-temp-RecipeCard'
+$exePath = Join-Path $releaseRoot 'RecipeCard.exe'
 
 function Resolve-DotNet {
     $command = Get-Command dotnet -ErrorAction SilentlyContinue
@@ -45,7 +45,7 @@ function Assert-UnderRepo {
 $dotnet = Resolve-DotNet
 Assert-UnderRepo -Path $releaseRoot
 
-Get-Process -Name DevKit -ErrorAction SilentlyContinue |
+Get-Process -Name RecipeCard -ErrorAction SilentlyContinue |
     Where-Object { $_.Path -and ([System.IO.Path]::GetFullPath($_.Path)).Equals([System.IO.Path]::GetFullPath($exePath), [System.StringComparison]::OrdinalIgnoreCase) } |
     Stop-Process -Force
 
@@ -87,7 +87,7 @@ Write-Host 'Publishing self-contained win-x64 single-file EXE...'
     /p:EnableCompressionInSingleFile=true `
     /p:Version=$Version
 
-$publishedExe = Join-Path $publishDir 'DevKit.exe'
+$publishedExe = Join-Path $publishDir 'RecipeCard.exe'
 if (-not (Test-Path -LiteralPath $publishedExe)) {
     throw "Publish did not create $publishedExe"
 }
@@ -106,19 +106,19 @@ if (Test-Path -LiteralPath $configPath) {
 }
 
 @"
-DevKit
-======
+Recipe Card
+===========
 
 Version: $Version
 
-Double-click DevKit.exe to launch the Windows developer environment curator.
+Double-click RecipeCard.exe to launch the Windows developer environment curator.
 
 Runtime behavior:
-- By default, DevKit stores config in %AppData%\DevKit\config.json.
-- Reports are written to %AppData%\DevKit\reports.
-- Cache files are written to %LocalAppData%\DevKit\cache.
-- Portable mode is enabled only when config.json, reports, cache, .portable, or DevKit.portable exists next to DevKit.exe.
-- tool_catalog.json next to DevKit.exe can override the embedded catalog. If it is missing or invalid, DevKit uses the embedded default catalog and still opens.
+- By default, Recipe Card stores config in %AppData%\RecipeCard\config.json.
+- Reports are written to %AppData%\RecipeCard\reports.
+- Cache files are written to %LocalAppData%\RecipeCard\cache.
+- Portable mode is enabled only when config.json, reports, cache, .portable, or RecipeCard.portable exists next to RecipeCard.exe.
+- tool_catalog.json next to RecipeCard.exe can override the embedded catalog. If it is missing or invalid, Recipe Card uses the embedded default catalog and still opens.
 
 No command prompt is required for normal use.
 "@ | Set-Content -LiteralPath (Join-Path $releaseRoot 'README_RUN.txt') -Encoding UTF8
@@ -133,7 +133,7 @@ if (-not [string]::IsNullOrWhiteSpace($SigningCertificateThumbprint)) {
         throw "Signing certificate with thumbprint $normalizedThumbprint and a private key was not found."
     }
 
-    Write-Host "Signing DevKit.exe with certificate $normalizedThumbprint..."
+    Write-Host "Signing RecipeCard.exe with certificate $normalizedThumbprint..."
     $signature = Set-AuthenticodeSignature `
         -FilePath $exePath `
         -Certificate $certificate `
@@ -160,7 +160,7 @@ if (Test-Path -LiteralPath (Join-Path $repoRoot '.git')) {
 $exeHash = (Get-FileHash -LiteralPath $exePath -Algorithm SHA256).Hash.ToLowerInvariant()
 $sdkVersion = (& $dotnet --version).Trim()
 $metadata = [ordered]@{
-    product = 'DevKit'
+    product = 'Recipe Card'
     version = $Version
     built_at_utc = [DateTimeOffset]::UtcNow.ToString('O')
     source_commit = $sourceCommit
@@ -172,7 +172,7 @@ $metadata = [ordered]@{
     sha256 = $exeHash
 }
 $metadata | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $releaseRoot 'build-metadata.json') -Encoding UTF8
-"$exeHash *DevKit.exe" | Set-Content -LiteralPath (Join-Path $releaseRoot 'SHA256SUMS') -Encoding ascii
+"$exeHash *RecipeCard.exe" | Set-Content -LiteralPath (Join-Path $releaseRoot 'SHA256SUMS') -Encoding ascii
 
 if (-not $SkipSmokeTest) {
     Write-Host 'Running published EXE smoke test...'

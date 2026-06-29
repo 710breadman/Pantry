@@ -1,4 +1,4 @@
-# Catalog Contract
+# Recipe Card Catalog Contract
 
 ## Authority
 

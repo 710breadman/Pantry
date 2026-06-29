@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\..\tool_catalog.json" LogicalName="DevKit.tool_catalog.json" />
-    <EmbeddedResource Include="..\..\schemas\tool-catalog-v2.schema.json" LogicalName="DevKit.tool_catalog.schema.json" />
+    <EmbeddedResource Include="..\..\tool_catalog.json" LogicalName="RecipeCard.tool_catalog.json" />
+    <EmbeddedResource Include="..\..\schemas\tool-catalog-v2.schema.json" LogicalName="RecipeCard.tool_catalog.schema.json" />
   </ItemGroup>
 
 </Project>

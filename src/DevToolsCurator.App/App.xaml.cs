@@ -75,7 +75,7 @@ public partial class App : Application
                 var report = DevKitContractSelfCheck.Run(runtimePaths, catalogResult.Catalog);
                 Directory.CreateDirectory(runtimePaths.ReportDirectory);
                 await File.WriteAllTextAsync(
-                    Path.Combine(runtimePaths.ReportDirectory, "devkit_contract_self_check.json"),
+                    Path.Combine(runtimePaths.ReportDirectory, "recipe_card_contract_self_check.json"),
                     System.Text.Json.JsonSerializer.Serialize(report, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
                 Shutdown(report.Passed ? 0 : 4);
             }
@@ -97,7 +97,7 @@ public partial class App : Application
         System.Diagnostics.Trace.TraceError(exception.ToString());
         MessageBox.Show(
             "The operation failed. No further actions were started.\n\n" + exception.Message,
-            "DevKit operation failed",
+            "Recipe Card operation failed",
             MessageBoxButton.OK,
             MessageBoxImage.Error);
     }

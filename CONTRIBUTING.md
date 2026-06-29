@@ -40,5 +40,5 @@ if ($result.FailedCount -gt 0) { exit $result.FailedCount }
 - Update `ROADMAP.md` only when scope or completion state changes.
 - After each completed, verified roadmap step: create a focused commit and push
   it to `origin`. Do not accumulate multiple completed steps locally.
-- Public release builds require version, checksum, provenance metadata, and
+- Public Recipe Card releases require version, checksum, provenance metadata, and
   Authenticode signature.

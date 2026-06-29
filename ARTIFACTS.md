@@ -26,11 +26,11 @@ are point-in-time machine snapshots and may contain local usernames or paths.
 
 ## Release output
 
-`build-release.ps1` recreates `release\DevKit`. Published deliverables should
+`build-release.ps1` recreates `release\RecipeCard`. Published deliverables should
 be attached to a versioned release, not committed to source. Each release must
 include:
 
-- `DevKit.exe`
+- `RecipeCard.exe`
 - `README_RUN.txt`
 - `tool_catalog.json`
 - `config.default.json`

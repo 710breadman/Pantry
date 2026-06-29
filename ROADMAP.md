@@ -1,4 +1,4 @@
-# DevKit Roadmap
+# Recipe Card Roadmap
 
 Roadmap baseline: 2026-06-28
 
@@ -21,7 +21,7 @@ Goal: every change has a reviewable diff and repeatable verification.
 - [x] Isolate PATH-repair regression test from real user PATH
 - [x] Create initial reviewed commit
 - [ ] Select and add project license
-- [x] Connect intended Git remote (`710breadman/Pantry`)
+- [x] Connect intended Git remote (`710breadman/Recipe-Card`)
 - [ ] Configure branch protections
 - [x] Confirm CI passes on hosted `windows-latest`
 

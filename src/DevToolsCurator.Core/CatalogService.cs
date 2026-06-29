@@ -13,7 +13,7 @@ public sealed class CatalogLoadResult
 
 public sealed class CatalogService
 {
-    public const string EmbeddedCatalogResourceName = "DevKit.tool_catalog.json";
+    public const string EmbeddedCatalogResourceName = "RecipeCard.tool_catalog.json";
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
