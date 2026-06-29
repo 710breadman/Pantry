@@ -2054,9 +2054,9 @@ function Invoke-DevToolsSetup {
 
 if (-not $LoadOnly) {
   if ($Gui) {
-    $releaseExe = Join-Path $PSScriptRoot "release\RecipeCard\RecipeCard.exe"
+    $releaseExe = Join-Path $PSScriptRoot "release\ThePantry\ThePantry.exe"
     $appProject = Join-Path $PSScriptRoot "src\DevToolsCurator.App\DevToolsCurator.App.csproj"
-    $appExe = Join-Path $PSScriptRoot "src\DevToolsCurator.App\bin\Debug\net10.0-windows\RecipeCard.exe"
+    $appExe = Join-Path $PSScriptRoot "src\DevToolsCurator.App\bin\Debug\net10.0-windows\ThePantry.exe"
     $releaseBuilder = Join-Path $PSScriptRoot "build-release.ps1"
     $dotnet = Get-CommandPath "dotnet"
     if ([string]::IsNullOrWhiteSpace($dotnet)) {
@@ -2073,7 +2073,7 @@ if (-not $LoadOnly) {
       if (Test-Path -LiteralPath $releaseExe) {
         Start-Process -FilePath $releaseExe -WorkingDirectory (Split-Path -Parent $releaseExe)
       } else {
-        throw "Release build completed but RecipeCard.exe was not found at: $releaseExe"
+        throw "Release build completed but ThePantry.exe was not found at: $releaseExe"
       }
     } elseif (-not [string]::IsNullOrWhiteSpace($dotnet) -and (Test-Path -LiteralPath $appProject)) {
       & $dotnet "build" $appProject
@@ -2083,7 +2083,7 @@ if (-not $LoadOnly) {
         & $dotnet "run" "--project" $appProject
       }
     } else {
-      throw "Recipe Card GUI is unavailable. Build it with: .\build-release.ps1"
+      throw "The Pantry GUI is unavailable. Build it with: .\build-release.ps1"
     }
   } elseif ($SelfTest) {
     $ok = Invoke-SelfTest

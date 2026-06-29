@@ -97,7 +97,7 @@ public partial class App : Application
         System.Diagnostics.Trace.TraceError(exception.ToString());
         MessageBox.Show(
             "The operation failed. No further actions were started.\n\n" + exception.Message,
-            "Recipe Card operation failed",
+            "The Pantry operation failed",
             MessageBoxButton.OK,
             MessageBoxImage.Error);
     }

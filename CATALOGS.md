@@ -1,4 +1,4 @@
-# Recipe Card Catalog Contract
+# The Pantry Catalog Contract
 
 ## Authority
 

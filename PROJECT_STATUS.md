@@ -1,4 +1,4 @@
-# Recipe Card Project Status
+# The Pantry Project Status
 
 Last verified: 2026-06-29 (America/Denver)
 
@@ -10,7 +10,7 @@ check results, issue states, and recent changes after each iteration.
 
 ## Executive Status
 
-Recipe Card is a functional Windows 11 developer-environment curator with two
+The Pantry is a functional Windows 11 developer-environment curator with two
 frontends:
 
 - Native .NET 10 WPF app (`src/DevToolsCurator.App`)
@@ -46,8 +46,8 @@ Results on 2026-06-28:
 | Native app `--smoke-test` | PASS | Exit 0 |
 | Native app `--ui-self-check` | PASS | Exit 0 |
 | Native app `--contract-self-check` | PASS | Exit 0 |
-| Packaged `release\RecipeCard\RecipeCard.exe --smoke-test` | PASS | Exit 0 |
-| Packaged `release\RecipeCard\RecipeCard.exe --contract-self-check` | PASS | Exit 0 |
+| Packaged `release\ThePantry\ThePantry.exe --smoke-test` | PASS | Exit 0 |
+| Packaged `release\ThePantry\ThePantry.exe --contract-self-check` | PASS | Exit 0 |
 | `setup-devtools.ps1 -SelfTest` | PASS | `Self-test passed.` |
 | Legacy Pester suite | PASS | 9/9 using installed Pester 3.4.0 |
 | `build-release.ps1 -Version 0.2.0` | PASS | Versioned EXE, metadata, checksum, smoke/contract checks |
@@ -93,7 +93,7 @@ than the legacy dashboard.
 ### Release
 
 - Build entry: `build-release.ps1`
-- Output: `release\RecipeCard\RecipeCard.exe`
+- Output: `release\ThePantry\ThePantry.exe`
 - Shape: self-contained, compressed, single-file `win-x64` WPF executable
 - Current file version/product version: `0.2.0.0` / `0.2.0`
 - Current EXE size: about 61.8 MiB
@@ -253,7 +253,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\setup-devtools.ps1 -Se
 ```
 
 Use `build-release.ps1` only when intentionally replacing
-`release\RecipeCard`; it removes and recreates that directory.
+`release\ThePantry`; it removes and recreates that directory.
 
 ## Update Protocol
 
@@ -269,12 +269,12 @@ For each future iteration:
 
 ## Iteration Log
 
-### 2026-06-29 — Recipe Card rebrand
+### 2026-06-29 — The Pantry rebrand
 
 - Renamed user-facing product, executable, release, runtime folders, dialogs,
-  reports, and docs to Recipe Card.
-- Added supplied Recipe Card PNG and generated multi-resolution Windows icon.
-- Rebuilt `RecipeCard.exe` version `0.2.0`; embedded icon, checksum, smoke test,
+  reports, and docs to The Pantry.
+- Added supplied The Pantry PNG and generated multi-resolution Windows icon.
+- Rebuilt `ThePantry.exe` version `0.2.0`; embedded icon, checksum, smoke test,
   and contract self-check pass.
 - Retained internal `DevToolsCurator.*` namespaces/project paths to keep rebrand
   low risk.

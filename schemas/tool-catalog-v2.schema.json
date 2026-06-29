@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/710breadman/Recipe-Card/blob/main/schemas/tool-catalog-v2.schema.json",
-  "title": "Recipe Card Tool Catalog",
-  "description": "Canonical Recipe Card catalog schema for tool metadata, goals, installation, and detection.",
+  "title": "The Pantry Tool Catalog",
+  "description": "Canonical The Pantry catalog schema for tool metadata, goals, installation, and detection.",
   "type": "object",
   "additionalProperties": false,
   "required": [

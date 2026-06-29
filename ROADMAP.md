@@ -1,4 +1,4 @@
-# Recipe Card Roadmap
+# The Pantry Roadmap
 
 Roadmap baseline: 2026-06-28
 

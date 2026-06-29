@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <ProjectReference Include="..\DevToolsCurator.Core\DevToolsCurator.Core.csproj" />
@@ -7,16 +7,16 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
-    <AssemblyName>RecipeCard</AssemblyName>
+    <AssemblyName>ThePantry</AssemblyName>
     <RootNamespace>DevToolsCurator.App</RootNamespace>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>..\..\assets\recipe-card.ico</ApplicationIcon>
+    <ApplicationIcon>..\..\assets\the-pantry.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <Resource Include="..\..\assets\recipe-card-icon.png" Link="Assets\recipe-card-icon.png" />
+    <Resource Include="..\..\assets\the-pantry-icon.png" Link="Assets\the-pantry-icon.png" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,6 @@
-# Recipe Card
+# The Pantry
 
-![Recipe Card icon](assets/recipe-card-icon.png)
+![The Pantry icon](assets/the-pantry-icon.png)
 
 Professional Windows 11 developer-environment setup, detection, updates, and
 repair for app creation, automation, scripting, GitHub workflows, Python, Java,
@@ -38,7 +38,7 @@ Build the double-clickable release EXE:
 .\build-release.ps1
 ```
 
-The release is written to `release\RecipeCard\RecipeCard.exe`. Normal users can double-click that EXE; no command prompt or Visual Studio is required.
+The release is written to `release\ThePantry\ThePantry.exe`. Normal users can double-click that EXE; no command prompt or Visual Studio is required.
 
 Build and run directly:
 
@@ -89,12 +89,12 @@ The wizard opens as a modal setup assistant with Back, Next, Cancel, Save Plan, 
 
 The published EXE uses AppData by default:
 
-- config: `%AppData%\RecipeCard\config.json`
-- reports: `%AppData%\RecipeCard\reports`
-- cache: `%LocalAppData%\RecipeCard\cache`
+- config: `%AppData%\ThePantry\config.json`
+- reports: `%AppData%\ThePantry\reports`
+- cache: `%LocalAppData%\ThePantry\cache`
 
 Portable mode is enabled only when `config.json`, `reports`, `cache`,
-`.portable`, or `RecipeCard.portable` exists next to `RecipeCard.exe`. A loose
+`.portable`, or `ThePantry.portable` exists next to `ThePantry.exe`. A loose
 `tool_catalog.json` beside the EXE can override the embedded catalog, but if
 that file is missing or corrupt the app falls back to its embedded default
 catalog and still opens.

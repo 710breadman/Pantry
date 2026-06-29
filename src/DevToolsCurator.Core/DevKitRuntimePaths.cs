@@ -2,7 +2,7 @@ namespace DevToolsCurator.Core;
 
 public sealed class DevKitRuntimePaths
 {
-    private const string AppFolderName = "RecipeCard";
+    private const string AppFolderName = "ThePantry";
 
     public string AppBaseDirectory { get; init; } = "";
     public bool IsPortable { get; init; }
@@ -16,7 +16,7 @@ public sealed class DevKitRuntimePaths
     {
         var baseDirectory = Path.GetFullPath(appBaseDirectory);
         var portableMarker = File.Exists(Path.Combine(baseDirectory, ".portable")) ||
-                             File.Exists(Path.Combine(baseDirectory, "RecipeCard.portable")) ||
+                             File.Exists(Path.Combine(baseDirectory, "ThePantry.portable")) ||
                              File.Exists(Path.Combine(baseDirectory, "DevKit.portable")) ||
                              File.Exists(Path.Combine(baseDirectory, "config.json")) ||
                              Directory.Exists(Path.Combine(baseDirectory, "reports")) ||
