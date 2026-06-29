@@ -113,6 +113,7 @@ public sealed class CatalogService
             throw new InvalidDataException($"Tool catalog '{source}' is empty or invalid.");
         }
 
+        CatalogValidator.ThrowIfInvalid(catalog, source);
         return catalog;
     }
 }

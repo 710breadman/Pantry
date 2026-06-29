@@ -1,6 +1,6 @@
 # DevKit Project Status
 
-Last verified: 2026-06-28 (America/Denver)
+Last verified: 2026-06-29 (America/Denver)
 
 ## Purpose
 
@@ -16,7 +16,7 @@ frontends:
 - Native .NET 10 WPF app (`src/DevToolsCurator.App`)
 - Legacy PowerShell CLI (`setup-devtools.ps1`)
 
-The native app builds after a NuGet restore. Its 24-test console regression
+The native app builds after a NuGet restore. Its 25-test console regression
 suite, smoke test, UI self-check, contract self-check, and packaged-EXE checks
 all pass. The legacy CLI self-test and 9 Pester tests also pass.
 
@@ -42,7 +42,7 @@ Results on 2026-06-28:
 | --- | --- | --- |
 | `dotnet restore .\src\DevToolsCurator.slnx` | PASS | All three projects restored |
 | `dotnet build .\src\DevToolsCurator.slnx -c Release --no-restore` | PASS | 0 warnings, 0 errors |
-| Native console regression suite | PASS | 24/24 |
+| Native console regression suite | PASS | 25/25 |
 | Native app `--smoke-test` | PASS | Exit 0 |
 | Native app `--ui-self-check` | PASS | Exit 0 |
 | Native app `--contract-self-check` | PASS | Exit 0 |
@@ -121,7 +121,7 @@ Remaining:
 
 ### P1-02: Native and legacy catalogs have diverged
 
-Status: Mitigated; schema migration open
+Status: Mitigated; compatibility migration open
 
 `tool_catalog.json` contains 51 native-tool definitions. `tool-catalog.json`
 contains 102 legacy-tool definitions. Schemas and filenames differ. Native
@@ -136,7 +136,11 @@ Impact:
 
 `tool_catalog.json` is now declared canonical in `CATALOGS.md`. Regression tests
 enforce unique IDs, minimum overlap, and the explicit native-only boundary.
-Full fix requires schema v2 and legacy CLI migration; tracked in `ROADMAP.md`.
+JSON Schema 2020-12 now formalizes v2 identity, goal, installer, fallback, and
+detection fields. `CatalogValidator` enforces semantic constraints on every
+catalog load; invalid external overrides fall back safely to the embedded
+catalog with a warning. Full fix requires legacy CLI migration; tracked in
+`ROADMAP.md`.
 
 ### P1-03: Release has no trustworthy provenance
 
@@ -264,6 +268,15 @@ For each future iteration:
    verification.
 
 ## Iteration Log
+
+### 2026-06-29 — Catalog v2 professional contract
+
+- Added formal JSON Schema 2020-12 catalog contract.
+- Added runtime semantic validation for schema version, IDs, references,
+  required metadata, install methods/tiers, scores, URLs, and detection.
+- Enforced validation on external and embedded catalog loads.
+- Added invalid external override fallback coverage.
+- Native regression suite now 25 tests.
 
 ### 2026-06-28 — Pantry repository takeover
 

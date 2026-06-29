@@ -4,6 +4,7 @@ using System.Text.Json;
 var tests = new List<(string Name, Func<Task> Test)>
 {
     ("catalog parses and Best Dev Stack is curated", CatalogParses),
+    ("catalog schema and semantic validation are enforced", CatalogSchemaValidation),
     ("native and legacy catalog boundary is explicit", CatalogCompatibilityBoundary),
     ("version parsing is stable", VersionParsing),
     ("PATH append avoids duplicates", PathAppendAvoidsDuplicates),
@@ -69,6 +70,44 @@ static async Task CatalogParses()
     Assert(!catalog.BestDevStack.Contains("docker-desktop"), "Best Dev Stack should exclude Docker Desktop");
     Assert(!catalog.BestDevStack.Contains("wsl2"), "Best Dev Stack should exclude WSL2");
     Assert(catalog.Tools.First(x => x.ToolId == "7zip").DisplayName == "7-Zip File Archiver", "friendly 7-Zip name expected");
+}
+
+static async Task CatalogSchemaValidation()
+{
+    var catalog = await LoadCatalog();
+    var valid = CatalogValidator.Validate(catalog);
+    Assert(valid.IsValid, string.Join("; ", valid.Errors));
+
+    var invalid = new ToolCatalog
+    {
+        SchemaVersion = "99",
+        SourceNotes = ["test"],
+        BestDevStack = ["missing-tool"],
+        Tools =
+        [
+            new ToolDefinition
+            {
+                ToolId = "Invalid ID",
+                DisplayName = "Invalid",
+                Category = "Test",
+                Description = "Invalid test fixture.",
+                WhyItMatters = "Exercises schema failures.",
+                UsedFor = ["testing"],
+                InstallMethod = "unknown",
+                InstallTier = "Wrong",
+                ImportanceScore = 101,
+                GoalTags = ["test"]
+            }
+        ]
+    };
+    var result = CatalogValidator.Validate(invalid);
+    Assert(!result.IsValid, "invalid catalog should fail validation");
+    Assert(result.Errors.Count >= 7, "invalid catalog should report all useful failures");
+
+    var root = CatalogService.FindProjectRoot(AppContext.BaseDirectory);
+    using var schema = JsonDocument.Parse(await File.ReadAllTextAsync(Path.Combine(root, "schemas", "tool-catalog-v2.schema.json")));
+    Assert(schema.RootElement.GetProperty("$schema").GetString() == "https://json-schema.org/draft/2020-12/schema", "catalog schema must use JSON Schema 2020-12");
+    Assert(schema.RootElement.GetProperty("properties").GetProperty("schema_version").GetProperty("const").GetString() == CatalogValidator.SupportedSchemaVersion, "schema document and runtime validator version must match");
 }
 
 static async Task CatalogCompatibilityBoundary()
@@ -407,9 +446,23 @@ static Task RuntimePathsDefaultToAppData()
 static async Task CatalogEmbeddedFallback()
 {
     var missingPath = Path.Combine(Path.GetTempPath(), "definitely-missing-tool-catalog-" + Guid.NewGuid() + ".json");
-    var result = await new CatalogService().LoadWithFallbackAsync(missingPath);
-    Assert(result.UsedEmbeddedFallback, "missing external catalog should use embedded fallback");
-    Assert(result.Catalog.Tools.Count > 30, "embedded fallback catalog should be useful");
+    var service = new CatalogService();
+    var missingResult = await service.LoadWithFallbackAsync(missingPath);
+    Assert(missingResult.UsedEmbeddedFallback, "missing external catalog should use embedded fallback");
+    Assert(missingResult.Catalog.Tools.Count > 30, "embedded fallback catalog should be useful");
+
+    var invalidPath = Path.Combine(Path.GetTempPath(), "invalid-tool-catalog-" + Guid.NewGuid() + ".json");
+    try
+    {
+        await File.WriteAllTextAsync(invalidPath, """{"schema_version":"99","source_notes":[],"best_dev_stack":[],"tools":[{}]}""");
+        var invalidResult = await service.LoadWithFallbackAsync(invalidPath);
+        Assert(invalidResult.UsedEmbeddedFallback, "schema-invalid external catalog should use embedded fallback");
+        Assert(invalidResult.Warnings.Any(warning => warning.Contains("failed schema validation", StringComparison.OrdinalIgnoreCase)), "schema-invalid fallback should explain the validation failure");
+    }
+    finally
+    {
+        File.Delete(invalidPath);
+    }
 }
 
 static async Task DevKitContractSelfCheckPasses()

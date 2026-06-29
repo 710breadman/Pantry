@@ -30,15 +30,15 @@ documented commands.
 
 ## Phase 1 — Catalog convergence
 
-Status: Planned
+Status: In progress
 
 Goal: one schema and source of truth for native app and PowerShell CLI.
 
 - [x] Declare `tool_catalog.json` canonical
 - [x] Document legacy compatibility boundary
 - [x] Add uniqueness/overlap/native-only contract test
-- [ ] Design catalog schema v2 with detection, goal, and installer fields
-- [ ] Add schema validation
+- [x] Design catalog schema v2 with detection, goal, and installer fields
+- [x] Add schema validation
 - [ ] Convert legacy-only entries or mark each deprecated
 - [ ] Make `setup-devtools.ps1` consume schema v2
 - [ ] Remove `tool-catalog.json`

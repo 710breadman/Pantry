@@ -1,0 +1,271 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/710breadman/Pantry/blob/main/schemas/tool-catalog-v2.schema.json",
+  "title": "DevKit Tool Catalog",
+  "description": "Canonical DevKit catalog schema for tool metadata, goals, installation, and detection.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_notes",
+    "best_dev_stack",
+    "tools"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "2.0"
+    },
+    "source_notes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "best_dev_stack": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/toolId"
+      }
+    },
+    "tools": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/tool"
+      }
+    }
+  },
+  "$defs": {
+    "toolId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "uniqueStrings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "versionCommand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "executable",
+        "arguments"
+      ],
+      "properties": {
+        "executable": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "arguments": {
+          "$ref": "#/$defs/uniqueStrings"
+        }
+      }
+    },
+    "detection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "executables",
+        "common_paths",
+        "registry_patterns",
+        "version_commands",
+        "env_vars",
+        "winget_names"
+      ],
+      "properties": {
+        "executables": {
+          "$ref": "#/$defs/uniqueStrings"
+        },
+        "common_paths": {
+          "$ref": "#/$defs/uniqueStrings"
+        },
+        "registry_patterns": {
+          "$ref": "#/$defs/uniqueStrings"
+        },
+        "version_commands": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/versionCommand"
+          }
+        },
+        "env_vars": {
+          "$ref": "#/$defs/uniqueStrings"
+        },
+        "winget_names": {
+          "$ref": "#/$defs/uniqueStrings"
+        }
+      },
+      "anyOf": [
+        {
+          "properties": {
+            "executables": {
+              "minItems": 1
+            }
+          }
+        },
+        {
+          "properties": {
+            "common_paths": {
+              "minItems": 1
+            }
+          }
+        },
+        {
+          "properties": {
+            "registry_patterns": {
+              "minItems": 1
+            }
+          }
+        },
+        {
+          "properties": {
+            "version_commands": {
+              "minItems": 1
+            }
+          }
+        },
+        {
+          "properties": {
+            "env_vars": {
+              "minItems": 1
+            }
+          }
+        },
+        {
+          "properties": {
+            "winget_names": {
+              "minItems": 1
+            }
+          }
+        }
+      ]
+    },
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tool_id",
+        "display_name",
+        "category",
+        "description",
+        "why_it_matters",
+        "used_for",
+        "install_method",
+        "install_tier",
+        "is_heavy",
+        "importance_score",
+        "goal_tags",
+        "winget_ids",
+        "fallback_urls",
+        "detection"
+      ],
+      "properties": {
+        "tool_id": {
+          "$ref": "#/$defs/toolId"
+        },
+        "display_name": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "category": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "description": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "why_it_matters": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "used_for": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/uniqueStrings"
+            },
+            {
+              "minItems": 1
+            }
+          ]
+        },
+        "install_method": {
+          "enum": [
+            "builtin",
+            "manual",
+            "npm-global",
+            "pipx",
+            "python-user",
+            "windows-feature",
+            "winget"
+          ]
+        },
+        "install_tier": {
+          "enum": [
+            "Core",
+            "Recommended",
+            "Optional"
+          ]
+        },
+        "is_heavy": {
+          "type": "boolean"
+        },
+        "importance_score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "goal_tags": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/uniqueStrings"
+            },
+            {
+              "minItems": 1
+            }
+          ]
+        },
+        "winget_ids": {
+          "$ref": "#/$defs/uniqueStrings"
+        },
+        "fallback_urls": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          }
+        },
+        "detection": {
+          "$ref": "#/$defs/detection"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "install_method": {
+                "const": "winget"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "winget_ids": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

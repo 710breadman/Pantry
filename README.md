@@ -154,6 +154,9 @@ Heavy tools such as Android Studio, Docker Desktop, WSL2, and full Visual Studio
 - `fallback_urls`
 - `detection`
 
+Formal schema: `schemas/tool-catalog-v2.schema.json`. Runtime loads also enforce
+semantic validation before any catalog is used.
+
 Friendly names are shown in the GUI. Raw package IDs stay in details and install commands.
 
 ## Reports
